@@ -4,11 +4,11 @@ import com.tecknobit.neutroncore.records.NeutronItem;
 
 public abstract class Revenue extends NeutronItem {
 
-    private final String title;
+    protected final String title;
 
-    private final double value;
+    protected final double value;
 
-    private final long revenueDate;
+    protected final long revenueDate;
 
     public Revenue(String id, String title, double value, long revenueDate) {
         super(id);
