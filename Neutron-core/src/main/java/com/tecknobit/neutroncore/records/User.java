@@ -1,5 +1,7 @@
 package com.tecknobit.neutroncore.records;
 
+import java.util.HashMap;
+
 public class User extends NeutronItem {
 
     public enum ApplicationTheme {
@@ -12,6 +14,23 @@ public class User extends NeutronItem {
 
     }
 
+    public enum UserStorage {
+
+        Local,
+
+        Online
+
+    }
+
+    public static final HashMap<String, String> LANGUAGES_SUPPORTED = new HashMap<>();
+
+    static {
+        LANGUAGES_SUPPORTED.put("it", "Italiano");
+        LANGUAGES_SUPPORTED.put("en", "English");
+        LANGUAGES_SUPPORTED.put("fr", "Francais");
+        LANGUAGES_SUPPORTED.put("es", "Espanol");
+    }
+
     private final String name;
 
     private final String surname;
@@ -22,20 +41,24 @@ public class User extends NeutronItem {
 
     private final String profilePic;
 
-    private final String language;
+    // TODO: CHECK TO SET AS FINAL
+    private String language;
 
     // TODO: CHECK TO SET AS FINAL
     private ApplicationTheme theme;
+
+    // TODO: CHECK TO SET AS FINAL
+    private UserStorage storage;
 
     // TODO: TO REMOVE
     public User() {
         this("id", "User", "Name", "user.name@gmail.com", "password",
                 "https://res.cloudinary.com/momentum-media-group-pty-ltd/image/upload/v1686795211/Space%20Connect/space-exploration-sc_fm1ysf.jpg",
-                "Italian", ApplicationTheme.Auto);
+                "it", ApplicationTheme.Auto, UserStorage.Online);
     }
 
     public User(String id, String name, String surname, String email, String password, String profilePic, String language,
-                ApplicationTheme theme) {
+                ApplicationTheme theme, UserStorage storage) {
         super(id);
         this.name = name;
         this.surname = surname;
@@ -44,6 +67,7 @@ public class User extends NeutronItem {
         this.profilePic = profilePic;
         this.language = language;
         this.theme = theme;
+        this.storage = storage;
     }
 
     public String getName() {
@@ -70,6 +94,10 @@ public class User extends NeutronItem {
         return profilePic;
     }
 
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
     public String getLanguage() {
         return language;
     }
@@ -81,6 +109,15 @@ public class User extends NeutronItem {
     // TODO: TO REMOVE
     public void setTheme(ApplicationTheme theme) {
         this.theme = theme;
+    }
+
+    public UserStorage getStorage() {
+        return storage;
+    }
+
+    // TODO: TO REMOVE
+    public void setStorage(UserStorage storage) {
+        this.storage = storage;
     }
 
 }
