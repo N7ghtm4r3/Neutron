@@ -39,7 +39,8 @@ public class User extends NeutronItem {
 
     private String password;
 
-    private final String profilePic;
+    // TODO: CHECK TO SET AS FINAL
+    private String profilePic;
 
     // TODO: CHECK TO SET AS FINAL
     private String language;
@@ -102,12 +103,17 @@ public class User extends NeutronItem {
         return profilePic;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    // TODO: TO REMOVE
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 
     public String getLanguage() {
         return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public ApplicationTheme getTheme() {
