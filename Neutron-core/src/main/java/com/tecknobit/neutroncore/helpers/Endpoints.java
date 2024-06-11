@@ -37,6 +37,11 @@ public class Endpoints {
      */
     public static final String CHANGE_LANGUAGE_ENDPOINT = "/changeLanguage";
 
+    /**
+     * {@code CHANGE_CURRENCY_ENDPOINT} the endpoint to execute the change of the user currency
+     */
+    public static final String CHANGE_CURRENCY_ENDPOINT = "/changeCurrency";
+
     private Endpoints() {}
 
 }

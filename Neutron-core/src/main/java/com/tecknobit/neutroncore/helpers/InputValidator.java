@@ -1,5 +1,6 @@
 package com.tecknobit.neutroncore.helpers;
 
+import com.tecknobit.neutroncore.records.User.NeutronCurrency;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 
@@ -61,6 +62,11 @@ public class InputValidator {
      * {@code WRONG_LANGUAGE_MESSAGE} error message used when the language inserted is not valid
      */
     public static final String WRONG_LANGUAGE_MESSAGE = "Language is not supported";
+
+    /**
+     * {@code WRONG_CURRENCY_MESSAGE} error message used when the currency inserted is not valid
+     */
+    public static final String WRONG_CURRENCY_MESSAGE = "Currency is not supported";
 
     /**
      * {@code DEFAULT_LANGUAGE} default language used
@@ -173,6 +179,24 @@ public class InputValidator {
      */
     public static boolean isLanguageValid(String language) {
         return language != null && (LANGUAGES_SUPPORTED.containsKey(language) || LANGUAGES_SUPPORTED.containsValue(language));
+    }
+
+    /**
+     * Method to validate a currency
+     *
+     * @param currency: currency value to check the validity
+     *
+     * @return whether the currency is valid or not as {@code boolean}
+     */
+    public static boolean isCurrencyValid(String currency) {
+        if(currency == null)
+            return false;
+        try {
+            NeutronCurrency.valueOf(currency);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     /**

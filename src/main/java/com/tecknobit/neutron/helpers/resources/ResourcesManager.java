@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public interface ResourcesManager {
 
-    String RESOURCES_PATH = "resources";
+    String RESOURCES_PATH = "resources/";
 
     String PROFILES_DIRECTORY = "profiles";
 

@@ -9,8 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.PATCH;
-import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.POST;
+import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
 import static com.tecknobit.apimanager.apis.ServerProtector.SERVER_SECRET_KEY;
 import static com.tecknobit.neutron.Launcher.serverProtector;
 import static com.tecknobit.neutroncore.helpers.Endpoints.*;
@@ -118,7 +117,6 @@ public class UsersController extends NeutronController {
                                     language
                             );
                         } catch (Exception e) {
-                            e.printStackTrace();
                             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
                         }
                     } else {
@@ -131,6 +129,7 @@ public class UsersController extends NeutronController {
                                 response.put(NAME_KEY, user.getName());
                                 response.put(SURNAME_KEY, user.getSurname());
                                 response.put(LANGUAGE_KEY, user.getLanguage());
+                                response.put(CURRENCY_KEY, user.getCurrency());
                             } else
                                 return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
                         } catch (Exception e) {
@@ -315,6 +314,60 @@ public class UsersController extends NeutronController {
                 }
             } else
                 return failedResponse(WRONG_LANGUAGE_MESSAGE);
+        } else
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
+
+    @PatchMapping(
+            path = USERS_KEY + "/{" + IDENTIFIER_KEY + "}" + CHANGE_CURRENCY_ENDPOINT,
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/changeCurrency", method = PATCH)
+    public String changeCurrency(
+            @PathVariable(IDENTIFIER_KEY) String id,
+            @RequestHeader(TOKEN_KEY) String token,
+            @RequestBody Map<String, String> payload
+    ) {
+        if(isMe(id, token)) {
+            loadJsonHelper(payload);
+            String currency = jsonHelper.getString(CURRENCY_KEY);
+            if(isCurrencyValid(currency)) {
+                try {
+                    usersHelper.changeCurrency(currency, id);
+                    return successResponse();
+                } catch (Exception e) {
+                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+                }
+            } else
+                return failedResponse(WRONG_CURRENCY_MESSAGE);
+        } else
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
+
+    /**
+     * Method to delete the account of the user
+     *
+     * @param id: the identifier of the user
+     * @param token: the token of the user
+     *
+     * @return the result of the request as {@link String}
+     */
+    @DeleteMapping(
+            path = USERS_KEY + "/{" + IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}", method = DELETE)
+    public String deleteAccount(
+            @PathVariable(IDENTIFIER_KEY) String id,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if(isMe(id, token)) {
+            usersHelper.deleteUser(id);
+            return successResponse();
         } else
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }

@@ -102,4 +102,22 @@ public interface UsersRepository extends JpaRepository<User, String> {
             @Param(IDENTIFIER_KEY) String id
     );
 
+    /**
+     * Method to execute the query to change the currency of the {@link User}
+     *
+     * @param newCurrency: the new currency of the user
+     * @param id: the identifier of the user
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + USERS_KEY + " SET " + CURRENCY_KEY + "=:" + CURRENCY_KEY + " WHERE "
+                    + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void changeCurrency(
+            @Param(CURRENCY_KEY) String newCurrency,
+            @Param(IDENTIFIER_KEY) String id
+    );
+
 }

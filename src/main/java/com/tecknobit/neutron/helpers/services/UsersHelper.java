@@ -37,7 +37,6 @@ public class UsersHelper implements ResourcesManager {
      */
     public void signUpUser(String id, String token, String name, String surname, String email, String password,
                            String language) throws NoSuchAlgorithmException {
-        System.out.println(token.length());
         usersRepository.save(new User(
                 id,
                 token,
@@ -106,6 +105,16 @@ public class UsersHelper implements ResourcesManager {
      */
     public void changeLanguage(String newLanguage, String userId) {
         usersRepository.changeLanguage(newLanguage, userId);
+    }
+
+    /**
+     * Method to change the currency of the {@link User}
+     *
+     * @param newCurrency: the new currency of the user
+     * @param userId: the identifier of the user
+     */
+    public void changeCurrency(String newCurrency, String userId) {
+        usersRepository.changeCurrency(newCurrency, userId);
     }
 
     /**

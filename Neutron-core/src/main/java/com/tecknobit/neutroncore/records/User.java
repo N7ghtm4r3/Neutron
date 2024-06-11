@@ -34,13 +34,11 @@ public class User extends NeutronItem {
     public static final String PROFILE_PIC_KEY = "profile_pic";
 
     //TODO: SET THE REAL DEFAULT PROFILE PIC
-    public static final String DEFAULT_PROFILE_PIC = "realPathToDefProfilePic.png";
+    public static final String DEFAULT_PROFILE_PIC = "defProfilePic.jpg";
 
     public static final String LANGUAGE_KEY = "language";
 
     public static final String CURRENCY_KEY = "currency";
-
-    public static final String APPLICATION_THEME_KEY = "theme";
 
     public enum ApplicationTheme {
 
@@ -95,6 +93,7 @@ public class User extends NeutronItem {
         public String getSymbol() {
             return symbol;
         }
+
 
     }
 
@@ -161,8 +160,7 @@ public class User extends NeutronItem {
     // TODO: CHECK TO SET AS FINAL
     private NeutronCurrency currency;
 
-    @Enumerated(value = STRING)
-    @Column(name = APPLICATION_THEME_KEY)
+    @Transient
     // TODO: CHECK TO SET AS FINAL
     private ApplicationTheme theme;
 
