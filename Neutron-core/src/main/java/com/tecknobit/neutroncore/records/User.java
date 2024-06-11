@@ -1,10 +1,46 @@
 package com.tecknobit.neutroncore.records;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 
+import static com.tecknobit.neutroncore.records.User.ApplicationTheme.*;
+import static com.tecknobit.neutroncore.records.User.NeutronCurrency.DOLLAR;
+import static com.tecknobit.neutroncore.records.User.USERS_KEY;
+import static com.tecknobit.neutroncore.records.User.UserStorage.Online;
+import static jakarta.persistence.EnumType.STRING;
+
+@Entity
+@Table(name = USERS_KEY)
 public class User extends NeutronItem {
+
+    //TODO: CHECK TO MOVE
+    public static final String USERS_KEY = "users";
+
+    public static final String TOKEN_KEY = "token";
+
+    public static final String NAME_KEY = "name";
+
+    public static final String SURNAME_KEY = "surname";
+
+    public static final String EMAIL_KEY = "email";
+
+    public static final String PASSWORD_KEY = "password";
+
+    public static final String PROFILE_PIC_KEY = "profile_pic";
+
+    //TODO: SET THE REAL DEFAULT PROFILE PIC
+    public static final String DEFAULT_PROFILE_PIC = "realPathToDefProfilePic.png";
+
+    public static final String LANGUAGE_KEY = "language";
+
+    public static final String CURRENCY_KEY = "currency";
+
+    public static final String APPLICATION_THEME_KEY = "theme";
 
     public enum ApplicationTheme {
 
@@ -22,15 +58,6 @@ public class User extends NeutronItem {
 
         Online
 
-    }
-
-    public static final HashMap<String, String> LANGUAGES_SUPPORTED = new HashMap<>();
-
-    static {
-        LANGUAGES_SUPPORTED.put("it", "Italiano");
-        LANGUAGES_SUPPORTED.put("en", "English");
-        LANGUAGES_SUPPORTED.put("fr", "Francais");
-        LANGUAGES_SUPPORTED.put("es", "Espanol");
     }
 
     public enum NeutronCurrency {
@@ -71,6 +98,7 @@ public class User extends NeutronItem {
 
     }
 
+    @Transient
     public static final HashMap<String, String> CURRENCIES_SUPPORTED = new HashMap<>();
 
     static {
@@ -80,39 +108,83 @@ public class User extends NeutronItem {
         CURRENCIES_SUPPORTED.put("es", "Espanol");
     }
 
+    @Column(
+            name = TOKEN_KEY,
+            columnDefinition = "VARCHAR(32) NOT NULL",
+            unique = true
+    )
+    private final String token;
+
+    @Column(
+            name = NAME_KEY,
+            columnDefinition = "VARCHAR(20) NOT NULL"
+    )
     private final String name;
 
+    @Column(
+            name = SURNAME_KEY,
+            columnDefinition = "VARCHAR(30) NOT NULL"
+    )
     private final String surname;
 
+    @Column(
+            name = EMAIL_KEY,
+            columnDefinition = "VARCHAR(75) NOT NULL",
+            unique = true
+    )
     private String email;
 
+    @Column(
+            name = PASSWORD_KEY,
+            nullable = false
+    )
+    @JsonIgnore
     private String password;
 
+    @Column(
+            name = PROFILE_PIC_KEY,
+            columnDefinition = "TEXT DEFAULT '" + DEFAULT_PROFILE_PIC + "'",
+            insertable = false
+    )
     // TODO: CHECK TO SET AS FINAL
     private String profilePic;
 
+    @Column(
+            name = LANGUAGE_KEY,
+            columnDefinition = "VARCHAR(2) NOT NULL"
+    )
     // TODO: CHECK TO SET AS FINAL
     private String language;
 
+    @Enumerated(value = STRING)
+    @Column(name = CURRENCY_KEY)
     // TODO: CHECK TO SET AS FINAL
     private NeutronCurrency currency;
 
+    @Enumerated(value = STRING)
+    @Column(name = APPLICATION_THEME_KEY)
     // TODO: CHECK TO SET AS FINAL
     private ApplicationTheme theme;
 
+    @Transient
     // TODO: CHECK TO SET AS FINAL
     private UserStorage storage;
 
     // TODO: TO REMOVE
     public User() {
-        this("id", "User", "Name", "user.name@gmail.com", "password",
+        this("token", "id", "User", "Name", "user.name@gmail.com", "password",
                 "https://res.cloudinary.com/momentum-media-group-pty-ltd/image/upload/v1686795211/Space%20Connect/space-exploration-sc_fm1ysf.jpg",
-                "it", NeutronCurrency.EURO, ApplicationTheme.Auto, UserStorage.Online);
+                "it", NeutronCurrency.EURO, Auto, Online);
     }
 
-    public User(String id, String name, String surname, String email, String password, String profilePic, String language,
-                NeutronCurrency currency, ApplicationTheme theme, UserStorage storage) {
+    public User(String id, String token, String name, String surname, String email, String password, String language) {
+        this(id, token, name, surname, email, password, DEFAULT_PROFILE_PIC, language, DOLLAR, Auto, null);
+    }
+
+    public User(String id, String token, String name, String surname, String email, String password, String profilePic,
+                String language, NeutronCurrency currency, ApplicationTheme theme, UserStorage storage) {
         super(id);
+        this.token = token;
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -124,6 +196,10 @@ public class User extends NeutronItem {
         this.storage = storage;
     }
 
+    public String getToken() {
+        return token;
+    }
+
     public String getName() {
         return name;
     }
@@ -132,6 +208,7 @@ public class User extends NeutronItem {
         return surname;
     }
 
+    @JsonIgnore
     public String getCompleteName() {
         return name + " " + surname;
     }
@@ -152,6 +229,7 @@ public class User extends NeutronItem {
         this.password = password;
     }
 
+    @JsonProperty(PROFILE_PIC_KEY)
     public String getProfilePic() {
         return profilePic;
     }
