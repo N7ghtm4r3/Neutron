@@ -33,6 +33,8 @@ public class User extends NeutronItem {
 
     public static final String PROFILE_PIC_KEY = "profile_pic";
 
+    public static final String OWNER_KEY = "owner";
+
     //TODO: SET THE REAL DEFAULT PROFILE PIC
     public static final String DEFAULT_PROFILE_PIC = "defProfilePic.jpg";
 

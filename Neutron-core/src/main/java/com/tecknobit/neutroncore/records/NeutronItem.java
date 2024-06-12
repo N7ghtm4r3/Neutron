@@ -6,9 +6,8 @@ import com.tecknobit.apimanager.formatters.TimeFormatter;
 import jakarta.persistence.*;
 import org.json.JSONObject;
 
-@Entity
 @Structure
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@MappedSuperclass
 public abstract class NeutronItem {
 
     public static final String IDENTIFIER_KEY = "id";
