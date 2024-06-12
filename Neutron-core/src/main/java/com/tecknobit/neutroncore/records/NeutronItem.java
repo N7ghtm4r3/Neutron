@@ -20,7 +20,7 @@ public abstract class NeutronItem {
     private final String id;
 
     @Transient
-    private final JsonHelper hItem;
+    protected final JsonHelper hItem;
 
     public NeutronItem(String id) {
         this.id = id;

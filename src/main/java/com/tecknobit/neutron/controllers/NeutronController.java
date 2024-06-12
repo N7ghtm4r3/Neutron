@@ -56,10 +56,6 @@ abstract public class NeutronController {
      */
     protected User me;
 
-    protected String generateIdentifier() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
-
     /**
      * Method to load the {@link #jsonHelper}
      *
@@ -154,6 +150,10 @@ abstract public class NeutronController {
         return new JSONObject()
                 .put(RESPONSE_STATUS_KEY, responseCode)
                 .put(RESPONSE_MESSAGE_KEY, message).toString();
+    }
+
+    public static String generateIdentifier() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
 }

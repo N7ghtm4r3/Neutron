@@ -69,6 +69,16 @@ public class InputValidator {
     public static final String WRONG_CURRENCY_MESSAGE = "Currency is not supported";
 
     /**
+     * {@code REVENUE_TITLE_MAX_LENGTH} the max valid length for the revenue title
+     */
+    public static final int REVENUE_TITLE_MAX_LENGTH = 30;
+
+    /**
+     * {@code REVENUE_DESCRIPTION_MAX_LENGTH} the max valid length for the revenue description
+     */
+    public static final int REVENUE_DESCRIPTION_MAX_LENGTH = 500;
+
+    /**
      * {@code DEFAULT_LANGUAGE} default language used
      */
     public static final String DEFAULT_LANGUAGE = "en";
@@ -197,6 +207,18 @@ public class InputValidator {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public static boolean isRevenueValueValid(double revenueValue) {
+        return revenueValue >=0;
+    }
+
+    public static boolean isRevenueTitleValid(String revenueTitle) {
+        return isInputValid(revenueTitle) && revenueTitle.length() <= REVENUE_TITLE_MAX_LENGTH;
+    }
+
+    public static boolean isRevenueDescriptionValid(String revenueDescription) {
+        return isInputValid(revenueDescription) && revenueDescription.length() <= REVENUE_DESCRIPTION_MAX_LENGTH;
     }
 
     /**

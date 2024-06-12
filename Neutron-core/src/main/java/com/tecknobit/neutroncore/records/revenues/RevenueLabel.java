@@ -3,6 +3,7 @@ package com.tecknobit.neutroncore.records.revenues;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.NeutronItem;
 import jakarta.persistence.*;
+import org.json.JSONObject;
 
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_SOURCE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.Revenue.REVENUE_KEY;
@@ -48,6 +49,13 @@ public class RevenueLabel extends NeutronItem {
         this.text = text;
         this.color = color;
         this.source = source;
+    }
+
+    public RevenueLabel(JSONObject jRevenueLabel) {
+        super(jRevenueLabel);
+        text = hItem.getString(REVENUE_LABEL_TEXT_KEY);
+        color = hItem.getString(REVENUE_LABEL_COLOR_KEY);
+        source = null;
     }
 
     public String getText() {

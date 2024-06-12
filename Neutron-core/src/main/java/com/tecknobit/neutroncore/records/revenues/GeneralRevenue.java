@@ -42,6 +42,11 @@ public class GeneralRevenue extends Revenue {
     }
 
     public GeneralRevenue(String id, String title, double value, long revenueDate, List<RevenueLabel> labels,
+                          String description) {
+        this(id, title, value, revenueDate, labels, description, null);
+    }
+
+    public GeneralRevenue(String id, String title, double value, long revenueDate, List<RevenueLabel> labels,
                           String description, User owner) {
         super(id, title, value, revenueDate, owner);
         this.labels = labels;

@@ -17,6 +17,7 @@ import static com.tecknobit.neutroncore.records.User.OWNER_KEY;
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.GENERAL_REVENUES_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUES_KEY;
 import static com.tecknobit.neutroncore.records.revenues.Revenue.REVENUE_DATE_KEY;
+import static com.tecknobit.neutroncore.records.revenues.Revenue.REVENUE_TITLE_KEY;
 
 @Service
 @Repository
@@ -38,6 +39,28 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     )
     List<ProjectRevenue> getProjectRevenues(
             @Param(IDENTIFIER_KEY) String userId
+    );
+
+    @Query(
+            value = "SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE "
+                    + OWNER_KEY + "=:" + IDENTIFIER_KEY + " AND "
+                    + REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY,
+            nativeQuery = true
+    )
+    ProjectRevenue projectRevenueExists(
+            @Param(IDENTIFIER_KEY) String userId,
+            @Param(REVENUE_TITLE_KEY) String revenueTitle
+    );
+
+    @Query(
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE "
+                    + OWNER_KEY + "=:" + IDENTIFIER_KEY + " AND "
+                    + REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY,
+            nativeQuery = true
+    )
+    GeneralRevenue generalRevenueExists(
+            @Param(IDENTIFIER_KEY) String userId,
+            @Param(REVENUE_TITLE_KEY) String revenueTitle
     );
 
 }

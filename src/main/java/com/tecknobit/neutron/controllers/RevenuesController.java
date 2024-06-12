@@ -3,14 +3,24 @@ package com.tecknobit.neutron.controllers;
 
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.neutron.helpers.services.RevenuesHelper;
+import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
+import org.json.JSONArray;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
+import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.POST;
 import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
+import static com.tecknobit.neutroncore.helpers.InputValidator.*;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.TOKEN_KEY;
 import static com.tecknobit.neutroncore.records.User.USERS_KEY;
-import static com.tecknobit.neutroncore.records.revenues.Revenue.REVENUES_KEY;
+import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_DESCRIPTION_KEY;
+import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_LABELS_KEY;
+import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.IS_PROJECT_REVENUE_KEY;
+import static com.tecknobit.neutroncore.records.revenues.Revenue.*;
 
 @RestController
 @RequestMapping(BASE_ENDPOINT + USERS_KEY + "/{" + IDENTIFIER_KEY + "}/" + REVENUES_KEY)
@@ -36,6 +46,52 @@ public class RevenuesController extends NeutronController {
             return (T) successResponse(revenuesHelper.getRevenues(userId));
         else
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
+
+    @PostMapping(
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues", method = POST)
+    public String createRevenue(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @RequestHeader(TOKEN_KEY) String token,
+            @RequestBody Map<String, String> payload
+    ) {
+        if(isMe(userId, token)) {
+            loadJsonHelper(payload);
+            double revenueValue = jsonHelper.getDouble(REVENUE_VALUE_KEY, 0);
+            String revenueTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
+            long insertionDate = jsonHelper.getLong(REVENUE_DATE_KEY);
+            if(!isRevenueValueValid(revenueValue) || !isRevenueTitleValid(revenueTitle))
+                return failedResponse(WRONG_PROCEDURE_MESSAGE);
+            String identifier = generateIdentifier();
+            if(jsonHelper.getBoolean(IS_PROJECT_REVENUE_KEY)) {
+                if(revenuesHelper.projectRevenueNotExists(userId, revenueTitle)) {
+                    revenuesHelper.createProjectRevenue(identifier, revenueValue, revenueTitle, insertionDate);
+                    return successResponse();
+                } else
+                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+            } else {
+                String revenueDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
+                if(!isRevenueDescriptionValid(revenueDescription) ||
+                       !revenuesHelper.generalRevenueNotExists(userId, revenueTitle))
+                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+                ArrayList<RevenueLabel> labels = new ArrayList<>();
+                try {
+                    JSONArray jLabels = jsonHelper.getJSONArray(REVENUE_LABELS_KEY, new JSONArray());
+                    for(int j = 0; j < jLabels.length(); j++)
+                        labels.add(new RevenueLabel(jLabels.getJSONObject(j)));
+                    revenuesHelper.createGeneralRevenue(identifier, revenueValue, revenueTitle, insertionDate,
+                            revenueDescription, labels);
+                    return successResponse();
+                } catch (IllegalArgumentException e) {
+                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+                }
+            }
+        } else
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
 

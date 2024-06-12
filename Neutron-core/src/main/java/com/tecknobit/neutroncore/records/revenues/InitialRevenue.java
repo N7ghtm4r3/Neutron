@@ -33,6 +33,10 @@ public class InitialRevenue extends Revenue {
         this(null, 0, -1, null, null);
     }
 
+    public InitialRevenue(String id, double value, long revenueDate) {
+        this(id, value, revenueDate, null, null);
+    }
+
     public InitialRevenue(String id, double value, long revenueDate, User owner) {
         this(id, value, revenueDate, owner, null);
     }

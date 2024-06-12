@@ -15,6 +15,8 @@ import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.*;
 @Table(name = PROJECT_REVENUES_KEY)
 public class ProjectRevenue extends Revenue {
 
+    public static final String IS_PROJECT_REVENUE_KEY = "is_project_revenue";
+
     public static final String PROJECT_REVENUES_KEY = "project_revenues";
 
     public static final String PROJECT_LABEL_COLOR = "#a68cef";
@@ -48,6 +50,10 @@ public class ProjectRevenue extends Revenue {
 
     public ProjectRevenue() {
         this(null, null, -1, null, new ArrayList<>());
+    }
+
+    public ProjectRevenue(String id, String title, long revenueDate, InitialRevenue initialRevenue) {
+        this(id, title, revenueDate, initialRevenue, List.of(), null);
     }
 
     public ProjectRevenue(String id, String title, long revenueDate, InitialRevenue initialRevenue,
