@@ -1,19 +1,25 @@
 package com.tecknobit.neutroncore.records.revenues;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUES_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUE_KEY;
+import static com.tecknobit.neutroncore.records.revenues.Revenue.REVENUE_TITLE_KEY;
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Table(name = INITIAL_REVENUES_KEY)
+@AttributeOverride(
+        name = REVENUE_TITLE_KEY,
+        column = @Column(
+                columnDefinition = "TEXT DEFAULT NULL",
+                insertable = false
+        )
+)
 public class InitialRevenue extends Revenue {
 
     public static final String INITIAL_REVENUES_KEY = "initial_revenues";
@@ -49,4 +55,9 @@ public class InitialRevenue extends Revenue {
         this.projectRevenue = projectRevenue;
     }
 
+    @Override
+    @JsonIgnore
+    public String getTitle() {
+        return super.getTitle();
+    }
 }

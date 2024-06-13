@@ -22,6 +22,8 @@ import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.*;
 )
 public class ProjectRevenue extends Revenue {
 
+    public static final String PROJECTS_KEY = "/projects/";
+
     public static final String IS_PROJECT_REVENUE_KEY = "is_project_revenue";
 
     public static final String PROJECT_REVENUES_KEY = "project_revenues";

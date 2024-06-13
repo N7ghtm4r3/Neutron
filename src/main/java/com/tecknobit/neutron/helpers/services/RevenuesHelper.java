@@ -2,6 +2,7 @@ package com.tecknobit.neutron.helpers.services;
 
 import com.tecknobit.neutron.helpers.services.repositories.revenues.RevenueLabelsRepository;
 import com.tecknobit.neutron.helpers.services.repositories.revenues.RevenuesRepository;
+import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
 import com.tecknobit.neutroncore.records.revenues.Revenue;
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,6 @@ public class RevenuesHelper {
                                      String revenueDescription, ArrayList<RevenueLabel> labels, String userId) {
         revenuesRepository.insertGeneralRevenue(
                 revenueId,
-                revenueTitle,
                 insertionDate,
                 revenueValue,
                 revenueDescription,
@@ -81,8 +81,12 @@ public class RevenuesHelper {
         }
     }
 
+    public ProjectRevenue getProjectRevenue(String userId, String revenueId) {
+        return revenuesRepository.projectRevenueExistsById(userId, revenueId);
+    }
+
     public boolean deleteRevenue(String userId, String revenueId) {
-        if(revenuesRepository.projectRevenueExistsById(userId, revenueId) != null) {
+        if(getProjectRevenue(userId, revenueId) != null) {
             revenuesRepository.deleteProjectRevenue(revenueId, userId);
             return true;
         } else if(revenuesRepository.generalRevenueExistsById(userId, revenueId) != null) {

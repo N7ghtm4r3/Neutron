@@ -3,6 +3,7 @@ package com.tecknobit.neutron.controllers;
 
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.neutron.helpers.services.RevenuesHelper;
+import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
 import org.json.JSONArray;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import static com.tecknobit.neutroncore.records.User.USERS_KEY;
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_DESCRIPTION_KEY;
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_LABELS_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.IS_PROJECT_REVENUE_KEY;
+import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECTS_KEY;
 import static com.tecknobit.neutroncore.records.revenues.Revenue.*;
 
 @RestController
@@ -89,6 +91,29 @@ public class RevenuesController extends NeutronController {
         } else
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
+
+    @GetMapping(
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}", method = GET)
+    public <T> T getProjectRevenue(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if(isMe(userId, token)) {
+            ProjectRevenue projectRevenue = revenuesHelper.getProjectRevenue(userId, revenueId);
+            if(projectRevenue != null)
+                return (T) successResponse(projectRevenue);
+            else
+                return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
+        } else
+            return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
+
 
     @DeleteMapping(
             path = "/{" + REVENUE_IDENTIFIER_KEY + "}",

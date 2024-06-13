@@ -151,7 +151,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             value = "INSERT INTO " + GENERAL_REVENUES_KEY + " (" +
                         "dType" + "," +
                         IDENTIFIER_KEY + "," +
-                        REVENUE_TITLE_KEY + "," +
                         REVENUE_DATE_KEY + "," +
                         REVENUE_VALUE_KEY + "," +
                         REVENUE_DESCRIPTION_KEY + "," +
@@ -160,7 +159,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     "VALUES (" +
                         "'general'" + "," +
                         ":" + IDENTIFIER_KEY + "," +
-                        ":" + REVENUE_TITLE_KEY + "," +
                         ":" + REVENUE_DATE_KEY + "," +
                         ":" + REVENUE_VALUE_KEY + "," +
                         ":" + REVENUE_DESCRIPTION_KEY + "," +
@@ -170,7 +168,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     )
     void insertGeneralRevenue(
             @Param(IDENTIFIER_KEY) String revenueId,
-            @Param(REVENUE_TITLE_KEY) String revenueTitle,
             @Param(REVENUE_DATE_KEY) long insertionDate,
             @Param(REVENUE_VALUE_KEY) double value,
             @Param(REVENUE_DESCRIPTION_KEY) String revenueDescription,
