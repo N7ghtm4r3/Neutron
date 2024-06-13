@@ -13,6 +13,7 @@ import java.util.Map;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
 import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
+import static com.tecknobit.neutroncore.helpers.Endpoints.CREATE_TICKET_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.InputValidator.*;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.TOKEN_KEY;
@@ -22,6 +23,7 @@ import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.IS_PROJECT_REVENUE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECTS_KEY;
 import static com.tecknobit.neutroncore.records.revenues.Revenue.*;
+import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY;
 
 @RestController
 @RequestMapping(BASE_ENDPOINT + USERS_KEY + "/{" + IDENTIFIER_KEY + "}/" + REVENUES_KEY)
@@ -114,6 +116,40 @@ public class RevenuesController extends NeutronController {
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    @PostMapping(
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + CREATE_TICKET_ENDPOINT,
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/createTicket", method = POST)
+    public <T> String addTicketToProjectRevenue(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @RequestHeader(TOKEN_KEY) String token,
+            @RequestBody Map<String, T> payload
+    ) {
+        if (isMe(userId, token)) {
+            ProjectRevenue projectRevenue = revenuesHelper.getProjectRevenue(userId, revenueId);
+            if (projectRevenue != null) {
+                loadJsonHelper(payload);
+                double ticketRevenue = jsonHelper.getDouble(REVENUE_VALUE_KEY);
+                String ticketTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
+                String ticketDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
+                long openingTime = jsonHelper.getLong(REVENUE_DATE_KEY);
+                long closingTime = jsonHelper.getLong(CLOSING_DATE_KEY, -1);
+                if (!isRevenueValueValid(ticketRevenue) || !isRevenueTitleValid(ticketTitle)
+                        || !isRevenueDescriptionValid(ticketDescription) || projectRevenue.hasTicket(ticketTitle)) {
+                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+                }
+                revenuesHelper.addTicketToProjectRevenue(generateIdentifier(), ticketRevenue, ticketTitle,
+                        ticketDescription, openingTime, closingTime, revenueId, userId);
+                return successResponse();
+            } else
+                return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        } else
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
 
     @DeleteMapping(
             path = "/{" + REVENUE_IDENTIFIER_KEY + "}",

@@ -97,4 +97,10 @@ public class TicketRevenue extends GeneralRevenue {
         return closingDate != -1;
     }
 
+    @Override
+    @JsonIgnore
+    public List<RevenueLabel> getLabels() {
+        return super.getLabels();
+    }
+
 }

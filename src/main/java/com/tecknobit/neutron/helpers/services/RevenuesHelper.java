@@ -66,6 +66,7 @@ public class RevenuesHelper {
                                      String revenueDescription, ArrayList<RevenueLabel> labels, String userId) {
         revenuesRepository.insertGeneralRevenue(
                 revenueId,
+                revenueTitle,
                 insertionDate,
                 revenueValue,
                 revenueDescription,
@@ -83,6 +84,20 @@ public class RevenuesHelper {
 
     public ProjectRevenue getProjectRevenue(String userId, String revenueId) {
         return revenuesRepository.projectRevenueExistsById(userId, revenueId);
+    }
+
+    public void addTicketToProjectRevenue(String ticketId, double ticketRevenue, String ticketTitle, String ticketDescription,
+                                          long openingTime, long closingTime, String projectRevenueId, String userId) {
+        revenuesRepository.addTicketToProjectRevenue(
+                ticketId,
+                ticketRevenue,
+                ticketTitle,
+                ticketDescription,
+                openingTime,
+                closingTime,
+                projectRevenueId,
+                userId
+        );
     }
 
     public boolean deleteRevenue(String userId, String revenueId) {

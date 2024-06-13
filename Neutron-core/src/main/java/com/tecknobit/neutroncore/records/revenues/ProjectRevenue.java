@@ -1,6 +1,7 @@
 package com.tecknobit.neutroncore.records.revenues;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
@@ -9,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUE_KEY;
-import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.*;
+import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUES_KEY;
+import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.REVENUE_VALUE_KEY;
 
 @Entity
 @Table(name = PROJECT_REVENUES_KEY)
@@ -78,6 +80,7 @@ public class ProjectRevenue extends Revenue {
     }
 
     @Override
+    @JsonIgnore
     public double getValue() {
         double totalValue = initialRevenue.getValue();
         for (TicketRevenue ticket : tickets)
@@ -92,6 +95,13 @@ public class ProjectRevenue extends Revenue {
 
     public List<TicketRevenue> getTickets() {
         return tickets;
+    }
+
+    public boolean hasTicket(String ticketTitle) {
+        for (TicketRevenue ticket : tickets)
+            if (ticket.getTitle().equals(ticketTitle))
+                return true;
+        return false;
     }
 
 }

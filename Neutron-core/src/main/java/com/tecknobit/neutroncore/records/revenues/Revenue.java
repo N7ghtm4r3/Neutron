@@ -1,6 +1,7 @@
 package com.tecknobit.neutroncore.records.revenues;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.annotations.Structure;
 import com.tecknobit.neutroncore.records.NeutronItem;
@@ -76,7 +77,7 @@ public abstract class Revenue extends NeutronItem {
         return revenueDate;
     }
 
-    @Transient
+    @JsonIgnore
     public String getRevenueDate() {
         return timeFormatter.formatAsString(revenueDate);
     }

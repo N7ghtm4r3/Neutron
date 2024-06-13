@@ -22,6 +22,7 @@ import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUES_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.Revenue.*;
+import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY;
 
 @Service
 @Repository
@@ -29,6 +30,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
 
     @Query(
             value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
+                    + " AND dtype='general'"
                     + " ORDER BY " + REVENUE_DATE_KEY + " DESC",
             nativeQuery = true
     )
@@ -151,6 +153,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             value = "INSERT INTO " + GENERAL_REVENUES_KEY + " (" +
                         "dType" + "," +
                         IDENTIFIER_KEY + "," +
+                    REVENUE_TITLE_KEY + "," +
                         REVENUE_DATE_KEY + "," +
                         REVENUE_VALUE_KEY + "," +
                         REVENUE_DESCRIPTION_KEY + "," +
@@ -159,6 +162,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     "VALUES (" +
                         "'general'" + "," +
                         ":" + IDENTIFIER_KEY + "," +
+                    ":" + REVENUE_TITLE_KEY + "," +
                         ":" + REVENUE_DATE_KEY + "," +
                         ":" + REVENUE_VALUE_KEY + "," +
                         ":" + REVENUE_DESCRIPTION_KEY + "," +
@@ -168,6 +172,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     )
     void insertGeneralRevenue(
             @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_TITLE_KEY) String revenueTitle,
             @Param(REVENUE_DATE_KEY) long insertionDate,
             @Param(REVENUE_VALUE_KEY) double value,
             @Param(REVENUE_DESCRIPTION_KEY) String revenueDescription,
@@ -183,6 +188,44 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     ProjectRevenue projectRevenueExistsById(
             @Param(OWNER_KEY) String userId,
             @Param(IDENTIFIER_KEY) String revenueId
+    );
+
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "INSERT INTO " + GENERAL_REVENUES_KEY + " (" +
+                    "dType" + "," +
+                    IDENTIFIER_KEY + "," +
+                    REVENUE_VALUE_KEY + "," +
+                    REVENUE_TITLE_KEY + "," +
+                    REVENUE_DESCRIPTION_KEY + "," +
+                    REVENUE_DATE_KEY + "," +
+                    CLOSING_DATE_KEY + "," +
+                    PROJECT_REVENUE_KEY + "," +
+                    OWNER_KEY +
+                    ") " +
+                    "VALUES (" +
+                    "'ticket'" + "," +
+                    ":" + IDENTIFIER_KEY + "," +
+                    ":" + REVENUE_VALUE_KEY + "," +
+                    ":" + REVENUE_TITLE_KEY + "," +
+                    ":" + REVENUE_DESCRIPTION_KEY + "," +
+                    ":" + REVENUE_DATE_KEY + "," +
+                    ":" + CLOSING_DATE_KEY + "," +
+                    ":" + PROJECT_REVENUE_KEY + "," +
+                    ":" + OWNER_KEY +
+                    ");",
+            nativeQuery = true
+    )
+    void addTicketToProjectRevenue(
+            @Param(IDENTIFIER_KEY) String ticketId,
+            @Param(REVENUE_VALUE_KEY) double ticketRevenue,
+            @Param(REVENUE_TITLE_KEY) String ticketTitle,
+            @Param(REVENUE_DESCRIPTION_KEY) String ticketDescription,
+            @Param(REVENUE_DATE_KEY) long openingTime,
+            @Param(CLOSING_DATE_KEY) long closingTime,
+            @Param(PROJECT_REVENUE_KEY) String projectRevenueId,
+            @Param(OWNER_KEY) String ownerId
     );
 
     @Modifying(clearAutomatically = true)
