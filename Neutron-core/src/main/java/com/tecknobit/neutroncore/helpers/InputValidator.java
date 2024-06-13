@@ -79,6 +79,11 @@ public class InputValidator {
     public static final int REVENUE_DESCRIPTION_MAX_LENGTH = 500;
 
     /**
+     * {@code MAX_REVENUE_LABELS_NUMBER_LENGTH} the max valid number of labels for revenue
+     */
+    public static final int MAX_REVENUE_LABELS_NUMBER = 5;
+
+    /**
      * {@code DEFAULT_LANGUAGE} default language used
      */
     public static final String DEFAULT_LANGUAGE = "en";

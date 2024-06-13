@@ -6,9 +6,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.OnDelete;
 
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUES_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUE_KEY;
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Table(name = INITIAL_REVENUES_KEY)
@@ -27,6 +29,7 @@ public class InitialRevenue extends Revenue {
             "hibernateLazyInitializer",
             "handler"
     })
+    @OnDelete(action = CASCADE)
     private final ProjectRevenue projectRevenue;
 
     public InitialRevenue() {

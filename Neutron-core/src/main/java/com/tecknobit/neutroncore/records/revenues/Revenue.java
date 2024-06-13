@@ -6,6 +6,8 @@ import com.tecknobit.apimanager.annotations.Structure;
 import com.tecknobit.neutroncore.records.NeutronItem;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import static com.tecknobit.neutroncore.records.User.OWNER_KEY;
 
@@ -16,6 +18,8 @@ public abstract class Revenue extends NeutronItem {
     public static final String REVENUES_KEY = "revenues";
 
     public static final String REVENUE_KEY = "revenue";
+
+    public static final String REVENUE_IDENTIFIER_KEY = "revenue_id";
 
     public static final String REVENUE_TITLE_KEY = "title";
 
@@ -44,6 +48,7 @@ public abstract class Revenue extends NeutronItem {
             "hibernateLazyInitializer",
             "handler"
     })
+    @OnDelete(action = OnDeleteAction.CASCADE)
     protected final User owner;
 
     public Revenue() {

@@ -3,6 +3,8 @@ package com.tecknobit.neutroncore.records.revenues;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.NeutronItem;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.json.JSONObject;
 
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_SOURCE_KEY;
@@ -34,6 +36,7 @@ public class RevenueLabel extends NeutronItem {
             "hibernateLazyInitializer",
             "handler"
     })
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private final GeneralRevenue source;
 
     public RevenueLabel() {

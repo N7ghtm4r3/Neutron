@@ -13,6 +13,13 @@ import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.*;
 
 @Entity
 @Table(name = PROJECT_REVENUES_KEY)
+@AttributeOverride(
+        name = REVENUE_VALUE_KEY,
+        column = @Column(
+                columnDefinition = "REAL DEFAULT 0",
+                insertable = false
+        )
+)
 public class ProjectRevenue extends Revenue {
 
     public static final String IS_PROJECT_REVENUE_KEY = "is_project_revenue";

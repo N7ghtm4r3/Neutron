@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
-import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.POST;
+import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
 import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.InputValidator.*;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
@@ -54,37 +53,34 @@ public class RevenuesController extends NeutronController {
             }
     )
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = POST)
-    public String createRevenue(
+    public <T> String createRevenue(
             @PathVariable(IDENTIFIER_KEY) String userId,
             @RequestHeader(TOKEN_KEY) String token,
-            @RequestBody Map<String, String> payload
+            @RequestBody Map<String, T> payload
     ) {
         if(isMe(userId, token)) {
             loadJsonHelper(payload);
             double revenueValue = jsonHelper.getDouble(REVENUE_VALUE_KEY, 0);
             String revenueTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
-            long insertionDate = jsonHelper.getLong(REVENUE_DATE_KEY);
-            if(!isRevenueValueValid(revenueValue) || !isRevenueTitleValid(revenueTitle))
+            long insertionDate = jsonHelper.getLong(REVENUE_DATE_KEY, 0);
+            if(!isRevenueValueValid(revenueValue) || !isRevenueTitleValid(revenueTitle)
+                    || revenuesHelper.revenueExists(userId, revenueTitle))
                 return failedResponse(WRONG_PROCEDURE_MESSAGE);
             String identifier = generateIdentifier();
             if(jsonHelper.getBoolean(IS_PROJECT_REVENUE_KEY)) {
-                if(revenuesHelper.projectRevenueNotExists(userId, revenueTitle)) {
-                    revenuesHelper.createProjectRevenue(identifier, revenueValue, revenueTitle, insertionDate);
-                    return successResponse();
-                } else
-                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+                revenuesHelper.createProjectRevenue(identifier, revenueValue, revenueTitle, insertionDate, userId);
+                return successResponse();
             } else {
                 String revenueDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
-                if(!isRevenueDescriptionValid(revenueDescription) ||
-                       !revenuesHelper.generalRevenueNotExists(userId, revenueTitle))
+                if(!isRevenueDescriptionValid(revenueDescription))
                     return failedResponse(WRONG_PROCEDURE_MESSAGE);
                 ArrayList<RevenueLabel> labels = new ArrayList<>();
                 try {
                     JSONArray jLabels = jsonHelper.getJSONArray(REVENUE_LABELS_KEY, new JSONArray());
-                    for(int j = 0; j < jLabels.length(); j++)
+                    for(int j = 0; j < jLabels.length() && j < MAX_REVENUE_LABELS_NUMBER; j++)
                         labels.add(new RevenueLabel(jLabels.getJSONObject(j)));
                     revenuesHelper.createGeneralRevenue(identifier, revenueValue, revenueTitle, insertionDate,
-                            revenueDescription, labels);
+                            revenueDescription, labels, userId);
                     return successResponse();
                 } catch (IllegalArgumentException e) {
                     return failedResponse(WRONG_PROCEDURE_MESSAGE);
@@ -94,5 +90,25 @@ public class RevenuesController extends NeutronController {
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    @DeleteMapping(
+            path = "/{" + REVENUE_IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/{revenue_id}", method = DELETE)
+    public String deleteRevenue(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if(isMe(userId, token)) {
+            if(revenuesHelper.deleteRevenue(userId, revenueId))
+                return successResponse();
+            else
+                return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        } else
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
 
 }

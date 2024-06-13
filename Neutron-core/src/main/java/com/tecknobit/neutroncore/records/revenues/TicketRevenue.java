@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
 
 import java.util.List;
 
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.TICKETS_KEY;
 import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.TICKET_REVENUES_KEY;
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Table(name = TICKET_REVENUES_KEY)
@@ -46,6 +48,7 @@ public class TicketRevenue extends GeneralRevenue {
             "hibernateLazyInitializer",
             "handler"
     })
+    @OnDelete(action = CASCADE)
     private final ProjectRevenue projectRevenue;
 
     @Column(name = CLOSING_DATE_KEY)

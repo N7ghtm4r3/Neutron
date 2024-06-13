@@ -48,6 +48,7 @@ public class UsersController extends NeutronController {
     @RequestPath(path = "/api/v1/users/signUp", method = POST)
     public String signUp(@RequestBody Map<String, String> payload) {
         loadJsonHelper(payload);
+        System.out.println(payload);
         if(serverProtector.serverSecretMatches(jsonHelper.getString(SERVER_SECRET_KEY))) {
             String name = jsonHelper.getString(NAME_KEY);
             String surname = jsonHelper.getString(SURNAME_KEY);

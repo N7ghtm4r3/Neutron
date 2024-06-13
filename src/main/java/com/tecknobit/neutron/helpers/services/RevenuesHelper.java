@@ -1,7 +1,9 @@
 package com.tecknobit.neutron.helpers.services;
 
-import com.tecknobit.neutron.helpers.services.repositories.RevenuesRepository;
-import com.tecknobit.neutroncore.records.revenues.*;
+import com.tecknobit.neutron.helpers.services.repositories.revenues.RevenueLabelsRepository;
+import com.tecknobit.neutron.helpers.services.repositories.revenues.RevenuesRepository;
+import com.tecknobit.neutroncore.records.revenues.Revenue;
+import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +18,12 @@ public class RevenuesHelper {
     @Autowired
     private final RevenuesRepository revenuesRepository;
 
-    public RevenuesHelper(RevenuesRepository revenuesRepository) {
+    @Autowired
+    private final RevenueLabelsRepository labelsRepository;
+
+    public RevenuesHelper(RevenuesRepository revenuesRepository, RevenueLabelsRepository labelsRepository) {
         this.revenuesRepository = revenuesRepository;
+        this.labelsRepository = labelsRepository;
     }
 
     public List<Revenue> getRevenues(String userId) {
@@ -27,41 +33,63 @@ public class RevenuesHelper {
         return revenues;
     }
 
-    public boolean projectRevenueNotExists(String userId, String revenueTitle) {
-        return revenuesRepository.projectRevenueExists(userId, revenueTitle) == null;
+    public boolean revenueExists(String userId, String revenueTitle) {
+        return revenuesRepository.projectRevenueExists(userId, revenueTitle) != null ||
+                revenuesRepository.generalRevenueExists(userId, revenueTitle) != null;
     }
 
-    public boolean generalRevenueNotExists(String userId, String revenueTitle) {
-        return revenuesRepository.generalRevenueExists(userId, revenueTitle) == null;
+    public boolean revenueExistsById(String userId, String revenueId) {
+        return revenuesRepository.projectRevenueExistsById(userId, revenueId) != null ||
+                revenuesRepository.generalRevenueExistsById(userId, revenueId) != null;
     }
 
-    public void createProjectRevenue(String id, double revenueValue, String revenueTitle, long insertionDate) {
-        revenuesRepository.save(
-            new ProjectRevenue(
-                id,
+    public void createProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle, long insertionDate,
+                                     String userId) {
+        revenuesRepository.insertProjectRevenue(
+                projectRevenueId,
                 revenueTitle,
                 insertionDate,
-                new InitialRevenue(
-                        generateIdentifier(),
-                        revenueValue,
-                        insertionDate
-                )
-            )
+                userId
         );
-    }
-
-    public void createGeneralRevenue(String id, double revenueValue, String revenueTitle, long insertionDate,
-                                     String revenueDescription, ArrayList<RevenueLabel> labels) {
-        revenuesRepository.save(
-            new GeneralRevenue(
-                id,
+        revenuesRepository.insertInitialRevenue(
+                generateIdentifier(),
+                insertionDate,
                 revenueTitle,
                 revenueValue,
-                insertionDate,
-                labels,
-                revenueDescription
-            )
+                userId,
+                projectRevenueId
         );
+    }
+
+    public void createGeneralRevenue(String revenueId, double revenueValue, String revenueTitle, long insertionDate,
+                                     String revenueDescription, ArrayList<RevenueLabel> labels, String userId) {
+        revenuesRepository.insertGeneralRevenue(
+                revenueId,
+                revenueTitle,
+                insertionDate,
+                revenueValue,
+                revenueDescription,
+                userId
+        );
+        for (RevenueLabel label : labels) {
+            labelsRepository.insertRevenueLabel(
+                generateIdentifier(),
+                label.getColor(),
+                label.getText(),
+                revenueId
+            );
+        }
+    }
+
+    public boolean deleteRevenue(String userId, String revenueId) {
+        if(revenuesRepository.projectRevenueExistsById(userId, revenueId) != null) {
+            revenuesRepository.deleteProjectRevenue(revenueId, userId);
+            return true;
+        } else if(revenuesRepository.generalRevenueExistsById(userId, revenueId) != null) {
+            revenuesRepository.deleteGeneralRevenue(revenueId, userId);
+            return true;
+        }
+        return false;
     }
 
 }
