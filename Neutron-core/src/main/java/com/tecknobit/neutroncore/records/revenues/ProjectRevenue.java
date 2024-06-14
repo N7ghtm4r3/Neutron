@@ -5,13 +5,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUE_KEY;
+import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.returnInitialRevenue;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUES_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.REVENUE_VALUE_KEY;
+import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.returnTickets;
 
 @Entity
 @Table(name = PROJECT_REVENUES_KEY)
@@ -78,6 +81,12 @@ public class ProjectRevenue extends Revenue {
         super(id, title, -1, revenueDate, owner);
         this.initialRevenue = initialRevenue;
         this.tickets = tickets;
+    }
+
+    public ProjectRevenue(JSONObject jProjectRevenue) {
+        super(jProjectRevenue);
+        initialRevenue = returnInitialRevenue(hItem.getJSONObject(INITIAL_REVENUE_KEY));
+        tickets = returnTickets(hItem.getJSONArray(TICKETS_KEY));
     }
 
     @Override

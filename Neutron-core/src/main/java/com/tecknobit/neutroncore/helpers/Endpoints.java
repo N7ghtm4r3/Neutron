@@ -47,6 +47,16 @@ public class Endpoints {
      */
     public static final String TICKETS_ENDPOINT = "/tickets";
 
+    /**
+     * {@code TRANSFER_IN_ENDPOINT} the endpoint to execute the migration to the current machine of an account data
+     */
+    public static final String TRANSFER_IN_ENDPOINT = "transferIn";
+
+    /**
+     * {@code TRANSFER_OUT_ENDPOINT} the endpoint to execute the migration from the current machine of an account data
+     */
+    public static final String TRANSFER_OUT_ENDPOINT = "transferOut";
+
     private Endpoints() {}
 
 }

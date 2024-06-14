@@ -3,10 +3,14 @@ package com.tecknobit.neutroncore.records.revenues;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tecknobit.apimanager.annotations.Returner;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUE_KEY;
@@ -79,6 +83,12 @@ public class TicketRevenue extends GeneralRevenue {
         this.projectRevenue = null;
     }
 
+    public TicketRevenue(JSONObject jTicketRevenue) {
+        super(jTicketRevenue);
+        closingDate = hItem.getLong(CLOSING_DATE_KEY, -1);
+        projectRevenue = null;
+    }
+
     @JsonIgnore
     public long getDuration() {
         return closingDate - revenueDate;
@@ -103,6 +113,16 @@ public class TicketRevenue extends GeneralRevenue {
     @JsonIgnore
     public List<RevenueLabel> getLabels() {
         return super.getLabels();
+    }
+
+    @Returner
+    public static ArrayList<TicketRevenue> returnTickets(JSONArray jTickets) {
+        ArrayList<TicketRevenue> tickets = new ArrayList<>();
+        if (jTickets == null)
+            return tickets;
+        for (int j = 0; j < jTickets.length(); j++)
+            tickets.add(new TicketRevenue(jTickets.getJSONObject(j)));
+        return tickets;
     }
 
 }

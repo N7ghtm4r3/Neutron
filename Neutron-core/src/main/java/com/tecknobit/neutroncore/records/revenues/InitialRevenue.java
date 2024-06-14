@@ -2,9 +2,11 @@ package com.tecknobit.neutroncore.records.revenues;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tecknobit.apimanager.annotations.Returner;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
+import org.json.JSONObject;
 
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUES_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUE_KEY;
@@ -55,9 +57,22 @@ public class InitialRevenue extends Revenue {
         this.projectRevenue = projectRevenue;
     }
 
+    public InitialRevenue(JSONObject jInitialRevenue) {
+        super(jInitialRevenue);
+        this.projectRevenue = null;
+    }
+
     @Override
     @JsonIgnore
     public String getTitle() {
         return super.getTitle();
     }
+
+    @Returner
+    public static InitialRevenue returnInitialRevenue(JSONObject jInitialRevenue) {
+        if (jInitialRevenue == null)
+            return null;
+        return new InitialRevenue(jInitialRevenue);
+    }
+
 }

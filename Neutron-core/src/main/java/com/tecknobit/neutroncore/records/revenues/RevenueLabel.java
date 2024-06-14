@@ -1,11 +1,15 @@
 package com.tecknobit.neutroncore.records.revenues;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tecknobit.apimanager.annotations.Returner;
 import com.tecknobit.neutroncore.records.NeutronItem;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_SOURCE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.Revenue.REVENUE_KEY;
@@ -67,6 +71,16 @@ public class RevenueLabel extends NeutronItem {
 
     public String getColor() {
         return color;
+    }
+
+    @Returner
+    public static ArrayList<RevenueLabel> returnLabels(JSONArray jLabels) {
+        ArrayList<RevenueLabel> labels = new ArrayList<>();
+        if (jLabels == null)
+            return labels;
+        for (int j = 0; j < jLabels.length(); j++)
+            labels.add(new RevenueLabel(jLabels.getJSONObject(j)));
+        return labels;
     }
 
 }

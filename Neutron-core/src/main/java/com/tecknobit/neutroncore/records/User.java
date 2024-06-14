@@ -3,12 +3,13 @@ package com.tecknobit.neutroncore.records;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.json.JSONObject;
 
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 
-import static com.tecknobit.neutroncore.records.User.ApplicationTheme.*;
+import static com.tecknobit.neutroncore.records.User.ApplicationTheme.Auto;
 import static com.tecknobit.neutroncore.records.User.NeutronCurrency.DOLLAR;
 import static com.tecknobit.neutroncore.records.User.USERS_KEY;
 import static com.tecknobit.neutroncore.records.User.UserStorage.Online;
@@ -196,6 +197,20 @@ public class User extends NeutronItem {
         this.storage = storage;
     }
 
+    public User(JSONObject jUser) {
+        super(jUser);
+        token = hItem.getString(TOKEN_KEY);
+        name = hItem.getString(NAME_KEY);
+        surname = hItem.getString(SURNAME_KEY);
+        email = hItem.getString(EMAIL_KEY);
+        password = hItem.getString(PASSWORD_KEY);
+        profilePic = hItem.getString(PROFILE_PIC_KEY);
+        currency = NeutronCurrency.valueOf(hItem.getString(CURRENCY_KEY));
+        language = hItem.getString(LANGUAGE_KEY);
+        theme = Auto;
+        storage = Online;
+    }
+
     public String getToken() {
         return token;
     }
@@ -272,6 +287,12 @@ public class User extends NeutronItem {
     // TODO: TO REMOVE
     public void setStorage(UserStorage storage) {
         this.storage = storage;
+    }
+
+    public static User getInstance(JSONObject jUser) {
+        if (jUser != null)
+            return new User(jUser);
+        return null;
     }
 
 }

@@ -3,11 +3,13 @@ package com.tecknobit.neutroncore.records.revenues;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.GENERAL_REVENUES_KEY;
+import static com.tecknobit.neutroncore.records.revenues.RevenueLabel.returnLabels;
 
 @Entity
 @Table(name = GENERAL_REVENUES_KEY)
@@ -51,6 +53,12 @@ public class GeneralRevenue extends Revenue {
         super(id, title, value, revenueDate, owner);
         this.labels = labels;
         this.description = description;
+    }
+
+    public GeneralRevenue(JSONObject jGeneralRevenue) {
+        super(jGeneralRevenue);
+        labels = returnLabels(hItem.getJSONArray(REVENUE_LABELS_KEY));
+        description = hItem.getString(REVENUE_DESCRIPTION_KEY);
     }
 
     public List<RevenueLabel> getLabels() {
