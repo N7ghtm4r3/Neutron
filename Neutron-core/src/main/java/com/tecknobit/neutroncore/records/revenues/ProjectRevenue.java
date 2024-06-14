@@ -57,6 +57,7 @@ public class ProjectRevenue extends Revenue {
             "hibernateLazyInitializer",
             "handler"
     })
+    @OrderBy(REVENUE_DATE_KEY + " DESC")
     private final List<TicketRevenue> tickets;
 
     public ProjectRevenue() {

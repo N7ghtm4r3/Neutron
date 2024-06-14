@@ -5,6 +5,7 @@ import com.tecknobit.neutron.helpers.services.repositories.revenues.RevenuesRepo
 import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
 import com.tecknobit.neutroncore.records.revenues.Revenue;
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
+import com.tecknobit.neutroncore.records.revenues.TicketRevenue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -97,6 +98,25 @@ public class RevenuesHelper {
                 closingTime,
                 projectRevenueId,
                 userId
+        );
+    }
+
+    public TicketRevenue getTicketRevenue(String ticketId, String userId, String projectRevenueId) {
+        return revenuesRepository.getTicketRevenue(ticketId, userId, projectRevenueId);
+    }
+
+    public void closeTicketRevenue(String ticketId, String userId, String projectRevenueId) {
+        revenuesRepository.closeTicketRevenue(
+                ticketId,
+                userId,
+                projectRevenueId,
+                System.currentTimeMillis()
+        );
+    }
+
+    public void deleteTicketRevenue(String ticketId) {
+        revenuesRepository.deleteTicketRevenue(
+                ticketId
         );
     }
 

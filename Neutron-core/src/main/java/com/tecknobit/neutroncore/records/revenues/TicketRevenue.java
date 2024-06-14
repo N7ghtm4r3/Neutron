@@ -19,6 +19,8 @@ import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 @DiscriminatorValue("ticket")
 public class TicketRevenue extends GeneralRevenue {
 
+    public static final String TICKET_IDENTIFIER_KEY = "ticket_id";
+
     public static final String TICKET_REVENUES_KEY = "ticket_revenues";
 
     public static final String PENDING_TICKET_LABEL_COLOR = "#B5A422";

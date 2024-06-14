@@ -4,6 +4,7 @@ package com.tecknobit.neutron.helpers.services.repositories.revenues;
 import com.tecknobit.neutroncore.records.revenues.GeneralRevenue;
 import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
 import com.tecknobit.neutroncore.records.revenues.Revenue;
+import com.tecknobit.neutroncore.records.revenues.TicketRevenue;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -226,6 +227,49 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(CLOSING_DATE_KEY) long closingTime,
             @Param(PROJECT_REVENUE_KEY) String projectRevenueId,
             @Param(OWNER_KEY) String ownerId
+    );
+
+    @Query(
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE "
+                    + "dtype='ticket' AND "
+                    + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
+                    + OWNER_KEY + "=:" + OWNER_KEY + " AND "
+                    + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY,
+            nativeQuery = true
+    )
+    TicketRevenue getTicketRevenue(
+            @Param(IDENTIFIER_KEY) String ticketId,
+            @Param(OWNER_KEY) String ownerId,
+            @Param(PROJECT_REVENUE_KEY) String revenueId
+    );
+
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + GENERAL_REVENUES_KEY
+                    + " SET " + CLOSING_DATE_KEY + "=:" + CLOSING_DATE_KEY
+                    + " WHERE " + "dtype='ticket' AND "
+                    + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
+                    + OWNER_KEY + "=:" + OWNER_KEY + " AND "
+                    + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY,
+            nativeQuery = true
+    )
+    void closeTicketRevenue(
+            @Param(IDENTIFIER_KEY) String ticketId,
+            @Param(OWNER_KEY) String ownerId,
+            @Param(PROJECT_REVENUE_KEY) String revenueId,
+            @Param(CLOSING_DATE_KEY) long closingDate
+    );
+
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "DELETE FROM " + GENERAL_REVENUES_KEY + " WHERE " + "dtype='ticket' AND "
+                    + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void deleteTicketRevenue(
+            @Param(IDENTIFIER_KEY) String ticketId
     );
 
     @Modifying(clearAutomatically = true)

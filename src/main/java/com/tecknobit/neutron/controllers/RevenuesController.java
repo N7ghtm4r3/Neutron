@@ -5,6 +5,7 @@ import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.neutron.helpers.services.RevenuesHelper;
 import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
+import com.tecknobit.neutroncore.records.revenues.TicketRevenue;
 import org.json.JSONArray;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +13,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
-import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
-import static com.tecknobit.neutroncore.helpers.Endpoints.CREATE_TICKET_ENDPOINT;
+import static com.tecknobit.neutroncore.helpers.Endpoints.*;
 import static com.tecknobit.neutroncore.helpers.InputValidator.*;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.TOKEN_KEY;
@@ -24,6 +24,7 @@ import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.IS_PROJE
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECTS_KEY;
 import static com.tecknobit.neutroncore.records.revenues.Revenue.*;
 import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY;
+import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.TICKET_IDENTIFIER_KEY;
 
 @RestController
 @RequestMapping(BASE_ENDPOINT + USERS_KEY + "/{" + IDENTIFIER_KEY + "}/" + REVENUES_KEY)
@@ -117,12 +118,12 @@ public class RevenuesController extends NeutronController {
     }
 
     @PostMapping(
-            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + CREATE_TICKET_ENDPOINT,
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT,
             headers = {
                     TOKEN_KEY
             }
     )
-    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/createTicket", method = POST)
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
     public <T> String addTicketToProjectRevenue(
             @PathVariable(IDENTIFIER_KEY) String userId,
             @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
@@ -144,6 +145,56 @@ public class RevenuesController extends NeutronController {
                 }
                 revenuesHelper.addTicketToProjectRevenue(generateIdentifier(), ticketRevenue, ticketTitle,
                         ticketDescription, openingTime, closingTime, revenueId, userId);
+                return successResponse();
+            } else
+                return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        } else
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
+
+    @PatchMapping(
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT
+                    + "/{" + TICKET_IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PATCH)
+    public String closeProjectRevenueTicket(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(TICKET_IDENTIFIER_KEY) String ticketId,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if (isMe(userId, token)) {
+            TicketRevenue ticketRevenue = revenuesHelper.getTicketRevenue(ticketId, userId, revenueId);
+            if(ticketRevenue != null && !ticketRevenue.isClosed()) {
+                revenuesHelper.closeTicketRevenue(ticketId, userId, revenueId);
+                return successResponse();
+            } else
+                return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        } else
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+    }
+
+    @DeleteMapping(
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT
+                    + "/{" + TICKET_IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = DELETE)
+    public String deleteProjectRevenueTicket(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(TICKET_IDENTIFIER_KEY) String ticketId,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if (isMe(userId, token)) {
+            TicketRevenue ticketRevenue = revenuesHelper.getTicketRevenue(ticketId, userId, revenueId);
+            if(ticketRevenue != null) {
+                revenuesHelper.deleteTicketRevenue(ticketId);
                 return successResponse();
             } else
                 return failedResponse(WRONG_PROCEDURE_MESSAGE);

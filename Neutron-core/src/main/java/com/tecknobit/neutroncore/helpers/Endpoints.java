@@ -43,9 +43,9 @@ public class Endpoints {
     public static final String CHANGE_CURRENCY_ENDPOINT = "/changeCurrency";
 
     /**
-     * {@code CREATE_TICKET_ENDPOINT} the endpoint to execute the creation of a new ticket
+     * {@code TICKETS_ENDPOINT} the endpoint to execute the all the ticket's operation
      */
-    public static final String CREATE_TICKET_ENDPOINT = "/createTicket";
+    public static final String TICKETS_ENDPOINT = "/tickets";
 
     private Endpoints() {}
 
