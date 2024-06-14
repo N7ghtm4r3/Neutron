@@ -64,7 +64,7 @@ public class RevenuesHelper {
     }
 
     public void createGeneralRevenue(String revenueId, double revenueValue, String revenueTitle, long insertionDate,
-                                     String revenueDescription, ArrayList<RevenueLabel> labels, String userId) {
+                                     String revenueDescription, List<RevenueLabel> labels, String userId) {
         revenuesRepository.insertGeneralRevenue(
                 revenueId,
                 revenueTitle,
@@ -74,8 +74,11 @@ public class RevenuesHelper {
                 userId
         );
         for (RevenueLabel label : labels) {
+            String id = label.getId();
+            if(id == null)
+                id = generateIdentifier();
             labelsRepository.insertRevenueLabel(
-                generateIdentifier(),
+                id,
                 label.getColor(),
                 label.getText(),
                 revenueId

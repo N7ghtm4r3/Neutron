@@ -97,6 +97,17 @@ public class User extends NeutronItem {
             return symbol;
         }
 
+        public static NeutronCurrency getInstance(String currencyName) {
+            if(currencyName == null)
+                return DOLLAR;
+            return switch (currencyName) {
+                case "EURO" -> EURO;
+                case "POUND_STERLING" -> POUND_STERLING;
+                case "JAPANESE_YEN" -> JAPANESE_YEN;
+                case "CHINESE_YEN" -> CHINESE_YEN;
+                default -> DOLLAR;
+            };
+        }
 
     }
 
@@ -205,7 +216,7 @@ public class User extends NeutronItem {
         email = hItem.getString(EMAIL_KEY);
         password = hItem.getString(PASSWORD_KEY);
         profilePic = hItem.getString(PROFILE_PIC_KEY);
-        currency = NeutronCurrency.valueOf(hItem.getString(CURRENCY_KEY));
+        currency = NeutronCurrency.getInstance(hItem.getString(CURRENCY_KEY));
         language = hItem.getString(LANGUAGE_KEY);
         theme = Auto;
         storage = Online;

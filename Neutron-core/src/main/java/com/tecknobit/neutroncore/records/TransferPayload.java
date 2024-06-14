@@ -1,6 +1,8 @@
 package com.tecknobit.neutroncore.records;
 
 import com.tecknobit.apimanager.formatters.JsonHelper;
+import com.tecknobit.neutroncore.records.revenues.GeneralRevenue;
+import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
 import com.tecknobit.neutroncore.records.revenues.Revenue;
 import org.json.JSONObject;
 
@@ -23,6 +25,10 @@ public class TransferPayload {
 
     private final ArrayList<Revenue> revenues;
 
+    private final ArrayList<GeneralRevenue> generalRevenues;
+
+    private final ArrayList<ProjectRevenue> projectRevenues;
+
     public <T> TransferPayload(Map<String, T> payload) {
         this(new JSONObject(payload));
     }
@@ -31,24 +37,25 @@ public class TransferPayload {
         JsonHelper hPayload = new JsonHelper(jPayload);
         JSONObject jUserDetails = hPayload.getJSONObject(USER_DETAILS_KEY, new JSONObject());
         userDetails = new User(jUserDetails);
-        serverSecret = jUserDetails.getString(SERVER_SECRET_KEY);
+        serverSecret = hPayload.getString(SERVER_SECRET_KEY);
         revenues = returnRevenues(hPayload.getJSONArray(REVENUES_KEY));
+        generalRevenues = new ArrayList<>();
+        projectRevenues = new ArrayList<>();
+        initSpecificRevenues();
+    }
+
+    private void initSpecificRevenues() {
+        for (Revenue revenue : revenues) {
+            if(revenue instanceof GeneralRevenue)
+                generalRevenues.add((GeneralRevenue) revenue);
+            else
+                projectRevenues.add((ProjectRevenue) revenue);
+        }
     }
 
     public User getUserDetails() {
         return userDetails;
     }
-
-    /**
-     * {
-     * "server_secret": "c2d4dbdcab5a4c598ff90ad43963f7f4",
-     * "name": "{{$randomFirstName}}",
-     * "surname": "{{$randomLastName}}",
-     * "email": "{{$randomEmail}}",
-     * "password": "{{$randomPassword}}",
-     * "language": "it"
-     * }
-     */
 
     public Map<String, String> getSignUpPayload() {
         HashMap<String, String> payload = new HashMap<>();
@@ -61,12 +68,26 @@ public class TransferPayload {
         return payload;
     }
 
+    public Map<String, String> getChangeCurrencyPayload() {
+        HashMap<String, String> payload = new HashMap<>();
+        payload.put(CURRENCY_KEY, userDetails.getCurrency().name());
+        return payload;
+    }
+
     public String getServerSecret() {
         return serverSecret;
     }
 
     public ArrayList<Revenue> getRevenues() {
         return revenues;
+    }
+
+    public ArrayList<GeneralRevenue> getGeneralRevenues() {
+        return generalRevenues;
+    }
+
+    public ArrayList<ProjectRevenue> getProjectRevenues() {
+        return projectRevenues;
     }
 
 }
