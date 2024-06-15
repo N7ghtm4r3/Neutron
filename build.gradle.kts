@@ -10,6 +10,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven("https://jitpack.io")
+    maven("https://repo.clojars.org")
 }
 
 dependencies {
@@ -20,6 +21,7 @@ dependencies {
     implementation("com.mysql:mysql-connector-j:8.3.0")
     implementation("com.github.N7ghtm4r3:APIManager:2.2.3")
     implementation("com.github.N7ghtm4r3:Equinox:1.0.0")
+    implementation("com.github.N7ghtm4r3:Mantis:1.0.0")
     implementation("com.tecknobit.neutroncore:Neutron-core:1.0.0")
     implementation("org.json:json:20231013")
 }

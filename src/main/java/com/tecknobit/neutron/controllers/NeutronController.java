@@ -2,6 +2,7 @@ package com.tecknobit.neutron.controllers;
 
 import com.tecknobit.apimanager.apis.sockets.SocketManager.StandardResponseCode;
 import com.tecknobit.apimanager.formatters.JsonHelper;
+import com.tecknobit.mantis.Mantis;
 import com.tecknobit.neutron.helpers.services.repositories.UsersRepository;
 import com.tecknobit.neutroncore.records.User;
 import org.json.JSONObject;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,26 +21,37 @@ import static com.tecknobit.apimanager.apis.sockets.SocketManager.StandardRespon
 import static com.tecknobit.equinox.Requester.RESPONSE_MESSAGE_KEY;
 import static com.tecknobit.equinox.Requester.RESPONSE_STATUS_KEY;
 import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
+import static com.tecknobit.neutroncore.helpers.InputValidator.DEFAULT_LANGUAGE;
 
 @RestController
 @RequestMapping(BASE_ENDPOINT)
 abstract public class NeutronController {
 
+    protected static final Mantis mantis;
+
+    static {
+        try {
+            mantis = new Mantis(DEFAULT_LANGUAGE);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * {@code WRONG_PROCEDURE_MESSAGE} message to use when the procedure is wrong
      */
-    public static final String WRONG_PROCEDURE_MESSAGE = "Wrong procedure";
+    public static final String WRONG_PROCEDURE_MESSAGE = "wrong_procedure_key";
 
     /**
      * {@code NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE} message to use when the request is by a not authorized user or
      * tried to fetch wrong details
      */
-    public static final String NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE = "Not authorized or wrong details";
+    public static final String NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE = "not_authorized_key";
 
     /**
      * {@code RESPONSE_SUCCESSFUL_MESSAGE} message to use when the request has been successful
      */
-    public static final String RESPONSE_SUCCESSFUL_MESSAGE = "Operation executed successfully";
+    public static final String RESPONSE_SUCCESSFUL_MESSAGE = "operation_executed_successfully_key";
 
     /**
      * {@code usersRepository} instance for the user repository
@@ -87,8 +100,11 @@ abstract public class NeutronController {
         Optional<User> query = usersRepository.findById(id);
         me = query.orElse(null);
         boolean isMe = me != null && me.getToken().equals(token);
-        if(!isMe)
+        if(!isMe) {
             me = null;
+            mantis.changeCurrentLocale(DEFAULT_LANGUAGE);
+        } else
+            mantis.changeCurrentLocale(me.getLanguage());
         return isMe;
     }
 
@@ -99,7 +115,7 @@ abstract public class NeutronController {
      * @return the payload for a successful response as {@link String}
      */
     protected String successResponse() {
-        return plainResponse(SUCCESSFUL, RESPONSE_SUCCESSFUL_MESSAGE);
+        return plainResponse(SUCCESSFUL, mantis.getResource(RESPONSE_SUCCESSFUL_MESSAGE));
     }
 
     /**
@@ -135,7 +151,7 @@ abstract public class NeutronController {
      * @return the payload for a failed response as {@link String}
      */
     protected String failedResponse(String error) {
-        return plainResponse(FAILED, error);
+        return plainResponse(FAILED, mantis.getResource(error));
     }
 
     /**

@@ -16,7 +16,7 @@ public class InputValidator {
     /**
      * {@code WRONG_NAME_MESSAGE} error message used when the name inserted is not valid
      */
-    public static final String WRONG_NAME_MESSAGE = "Name is not valid";
+    public static final String WRONG_NAME_MESSAGE = "wrong_name_key";
 
     /**
      * {@code NAME_MAX_LENGTH} the max valid length for the username
@@ -26,7 +26,7 @@ public class InputValidator {
     /**
      * {@code WRONG_SURNAME_MESSAGE} error message used when the surname inserted is not valid
      */
-    public static final String WRONG_SURNAME_MESSAGE = "Surname is not valid";
+    public static final String WRONG_SURNAME_MESSAGE = "wrong_surname_key";
 
     /**
      * {@code SURNAME_MAX_LENGTH} the max valid length for the surname
@@ -36,7 +36,7 @@ public class InputValidator {
     /**
      * {@code WRONG_EMAIL_MESSAGE} error message used when the email inserted is not valid
      */
-    public static final String WRONG_EMAIL_MESSAGE = "Email is not valid";
+    public static final String WRONG_EMAIL_MESSAGE = "wrong_email_key";
 
     /**
      * {@code EMAIL_MAX_LENGTH} the max valid length for the email
@@ -46,7 +46,7 @@ public class InputValidator {
     /**
      * {@code WRONG_PASSWORD_MESSAGE} error message used when the password inserted is not valid
      */
-    public static final String WRONG_PASSWORD_MESSAGE = "Password is not valid";
+    public static final String WRONG_PASSWORD_MESSAGE = "wrong_password_key";
 
     /**
      * {@code PASSWORD_MIN_LENGTH} the min valid length for the password
@@ -61,12 +61,12 @@ public class InputValidator {
     /**
      * {@code WRONG_LANGUAGE_MESSAGE} error message used when the language inserted is not valid
      */
-    public static final String WRONG_LANGUAGE_MESSAGE = "Language is not supported";
+    public static final String WRONG_LANGUAGE_MESSAGE = "wrong_language_key";
 
     /**
      * {@code WRONG_CURRENCY_MESSAGE} error message used when the currency inserted is not valid
      */
-    public static final String WRONG_CURRENCY_MESSAGE = "Currency is not supported";
+    public static final String WRONG_CURRENCY_MESSAGE = "wrong_currency_key";
 
     /**
      * {@code REVENUE_TITLE_MAX_LENGTH} the max valid length for the revenue title

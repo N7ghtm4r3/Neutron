@@ -48,6 +48,7 @@ public class UsersController extends NeutronController {
     @RequestPath(path = "/api/v1/users/signUp", method = POST)
     public String signUp(@RequestBody Map<String, String> payload) {
         loadJsonHelper(payload);
+        mantis.changeCurrentLocale(jsonHelper.getString(LANGUAGE_KEY, DEFAULT_LANGUAGE));
         if(serverProtector.serverSecretMatches(jsonHelper.getString(SERVER_SECRET_KEY))) {
             String name = jsonHelper.getString(NAME_KEY);
             String surname = jsonHelper.getString(SURNAME_KEY);
@@ -95,6 +96,7 @@ public class UsersController extends NeutronController {
         String email = jsonHelper.getString(EMAIL_KEY);
         String password = jsonHelper.getString(PASSWORD_KEY);
         String language = jsonHelper.getString(LANGUAGE_KEY, DEFAULT_LANGUAGE);
+        mantis.changeCurrentLocale(language);
         if(isEmailValid(email)) {
             if(isPasswordValid(password)) {
                 if(isLanguageValid(language)) {
@@ -136,6 +138,7 @@ public class UsersController extends NeutronController {
                             return failedResponse(WRONG_PROCEDURE_MESSAGE);
                         }
                     }
+                    mantis.changeCurrentLocale(DEFAULT_LANGUAGE);
                     return successResponse(response
                             .put(IDENTIFIER_KEY, id)
                             .put(TOKEN_KEY, token)
