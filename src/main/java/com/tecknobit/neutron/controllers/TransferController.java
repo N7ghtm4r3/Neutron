@@ -7,17 +7,16 @@ import com.tecknobit.neutron.helpers.services.TransferHelper;
 import com.tecknobit.neutroncore.records.TransferPayload;
 import com.tecknobit.neutroncore.records.User;
 import org.json.JSONObject;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
+import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.POST;
 import static com.tecknobit.apimanager.apis.sockets.SocketManager.StandardResponseCode.SUCCESSFUL;
 import static com.tecknobit.neutroncore.helpers.Endpoints.TRANSFER_IN_ENDPOINT;
+import static com.tecknobit.neutroncore.helpers.Endpoints.TRANSFER_OUT_ENDPOINT;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.*;
 
@@ -26,12 +25,16 @@ public class TransferController extends NeutronController implements ResourcesMa
 
     private final UsersController usersController;
 
+    private final RevenuesController revenuesController;
+
     private final StepModel stepModel;
 
     private final TransferHelper transferHelper;
 
-    public TransferController(UsersController usersController, TransferHelper transferHelper) {
+    public TransferController(UsersController usersController, RevenuesController revenuesController,
+                              TransferHelper transferHelper) {
         this.usersController = usersController;
+        this.revenuesController = revenuesController;
         this.transferHelper = transferHelper;
         stepModel = new StepModel();
     }
@@ -88,6 +91,27 @@ public class TransferController extends NeutronController implements ResourcesMa
                 transferPayload.getChangeCurrencyPayload()
         );
         return !stepFailed(stepResponse);
+    }
+
+    @GetMapping(
+            path = TRANSFER_OUT_ENDPOINT + "/{" + IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/transferOut/{id}", method = GET)
+    public <T> T transferOut(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @RequestHeader(TOKEN_KEY) String userToken
+    ) {
+        if (isMe(userId, userToken)) {
+            T stepResponse = revenuesController.list(userId, userToken);
+            if(stepFailed(stepResponse.toString()))
+                return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
+            transferHelper.deleteAfterTransferred(userId);
+            return stepResponse;
+        } else
+            return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
     private boolean stepFailed(String response) {

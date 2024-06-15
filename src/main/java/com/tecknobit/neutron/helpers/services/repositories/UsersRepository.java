@@ -120,4 +120,19 @@ public interface UsersRepository extends JpaRepository<User, String> {
             @Param(IDENTIFIER_KEY) String id
     );
 
+    /**
+     * Method to execute the query to delete the {@link User} who requested a transfer from the current server
+     *
+     * @param id: the identifier of the user
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "DELETE FROM " + USERS_KEY + " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void deleteAfterTransferred(
+            @Param(IDENTIFIER_KEY) String id
+    );
+
 }

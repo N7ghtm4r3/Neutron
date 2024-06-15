@@ -1,8 +1,6 @@
 package com.tecknobit.neutroncore.records.revenues;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import com.tecknobit.apimanager.annotations.Returner;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
