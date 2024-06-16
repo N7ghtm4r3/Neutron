@@ -68,6 +68,14 @@ public class InitialRevenue extends Revenue {
         return super.getTitle();
     }
 
+    @Override
+    public JSONObject toTransferTarget() {
+        return new JSONObject()
+                .put(IDENTIFIER_KEY, id)
+                .put(REVENUE_VALUE_KEY, value)
+                .put(REVENUE_DATE_KEY, revenueDate);
+    }
+
     @Returner
     public static InitialRevenue returnInitialRevenue(JSONObject jInitialRevenue) {
         if (jInitialRevenue == null)

@@ -17,7 +17,7 @@ import static jakarta.persistence.EnumType.STRING;
 
 @Entity
 @Table(name = USERS_KEY)
-public class User extends NeutronItem {
+public class User extends NeutronItem implements Transferable {
 
     //TODO: CHECK TO MOVE
     public static final String USERS_KEY = "users";
@@ -304,6 +304,16 @@ public class User extends NeutronItem {
         if (jUser != null)
             return new User(jUser);
         return null;
+    }
+
+    @Override
+    public JSONObject toTransferTarget() {
+        return new JSONObject()
+                .put(NAME_KEY, name)
+                .put(SURNAME_KEY, surname)
+                .put(EMAIL_KEY, email)
+                .put(PASSWORD_KEY, password)
+                .put(LANGUAGE_KEY, language);
     }
 
 }

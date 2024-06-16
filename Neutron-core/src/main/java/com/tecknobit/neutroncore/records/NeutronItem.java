@@ -17,7 +17,7 @@ public abstract class NeutronItem {
 
     @Id
     @Column(name = IDENTIFIER_KEY)
-    private final String id;
+    protected final String id;
 
     @Transient
     protected final JsonHelper hItem;
@@ -34,6 +34,11 @@ public abstract class NeutronItem {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return new JSONObject(this).toString();
     }
 
 }

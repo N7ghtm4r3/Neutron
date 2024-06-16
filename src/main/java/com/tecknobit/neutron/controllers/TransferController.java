@@ -8,7 +8,6 @@ import com.tecknobit.neutroncore.records.TransferPayload;
 import com.tecknobit.neutroncore.records.User;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -42,13 +41,10 @@ public class TransferController extends NeutronController implements ResourcesMa
     @PostMapping(path = TRANSFER_IN_ENDPOINT)
     @RequestPath(path = "/api/v1/transferIn", method = POST)
     public <T> String transferIn(
-            @RequestBody Map<String, T> payload,
-            @RequestParam(value = PROFILE_PIC_KEY, required = false) MultipartFile profilePic
+            @RequestBody Map<String, T> payload
     ) {
         TransferPayload transferPayload = new TransferPayload(payload);
         if(!executeSignUp(transferPayload))
-            return failedResponse(WRONG_PROCEDURE_MESSAGE);
-        if(!setProfilePic(profilePic))
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
         if (!executeChangeCurrency(transferPayload))
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
@@ -66,21 +62,6 @@ public class TransferController extends NeutronController implements ResourcesMa
         User user = transferPayload.getUserDetails();
         stepModel.setUserId(stepHelper.getString(IDENTIFIER_KEY));
         stepModel.setUserToken(stepHelper.getString(TOKEN_KEY));
-        return true;
-    }
-
-    private boolean setProfilePic(MultipartFile profilePic) {
-        if(profilePic != null && !profilePic.isEmpty()) {
-            String stepResponse = usersController.changeProfilePic(
-                    stepModel.getUserId(),
-                    stepModel.getUserToken(),
-                    profilePic
-            );
-            if(stepFailed(stepResponse))
-                return false;
-            JsonHelper stepHelper = new JsonHelper(stepResponse);
-            stepModel.setProfilePic(jsonHelper.getString(PROFILE_PIC_KEY));
-        }
         return true;
     }
 

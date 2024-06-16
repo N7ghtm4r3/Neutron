@@ -83,9 +83,4 @@ public class RevenueLabel extends NeutronItem {
         return labels;
     }
 
-    @Override
-    public String toString() {
-        return new JSONObject(this).toString(4);
-    }
-
 }

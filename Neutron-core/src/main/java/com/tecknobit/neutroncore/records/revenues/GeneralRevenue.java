@@ -69,4 +69,15 @@ public class GeneralRevenue extends Revenue {
         return description;
     }
 
+    @Override
+    public JSONObject toTransferTarget() {
+        return new JSONObject()
+                .put(IDENTIFIER_KEY, id)
+                .put(REVENUE_TITLE_KEY, title)
+                .put(REVENUE_VALUE_KEY, value)
+                .put(REVENUE_LABELS_KEY, labels)
+                .put(REVENUE_DESCRIPTION_KEY, description)
+                .put(REVENUE_DATE_KEY, revenueDate);
+    }
+
 }
