@@ -12,9 +12,13 @@ import com.tecknobit.neutroncore.helpers.InputValidator.isLanguageValid
 import com.tecknobit.neutroncore.records.User.*
 import com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_DESCRIPTION_KEY
 import com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_LABELS_KEY
+import com.tecknobit.neutroncore.records.revenues.ProjectRevenue
 import com.tecknobit.neutroncore.records.revenues.ProjectRevenue.*
+import com.tecknobit.neutroncore.records.revenues.Revenue
 import com.tecknobit.neutroncore.records.revenues.Revenue.REVENUES_KEY
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel
+import com.tecknobit.neutroncore.records.revenues.TicketRevenue
+import com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY
 import org.json.JSONObject
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
@@ -255,7 +259,8 @@ class NeutronRequester(
         return createRevenue(
             title = title,
             value = value,
-            revenueDate = revenueDate
+            revenueDate = revenueDate,
+            payload = payload
         )
     }
 
@@ -282,6 +287,140 @@ class NeutronRequester(
         )
     }
 
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}", method = GET)
+    fun getProjectRevenue(
+        revenue: Revenue
+    ): JSONObject {
+        return getProjectRevenue(
+            revenueId = revenue.id
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}", method = GET)
+    fun getProjectRevenue(
+        revenueId: String
+    ): JSONObject {
+        return execGet(
+            endpoint = assembleRevenuesEndpointPath(
+                revenueId = revenueId,
+                isProjectPath = true
+            )
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
+    fun addTicketToProjectRevenue(
+        projectRevenue: ProjectRevenue,
+        ticketRevenue: TicketRevenue
+    ): JSONObject {
+        return addTicketToProjectRevenue(
+            projectRevenueId = projectRevenue.id,
+            ticketTitle = ticketRevenue.title,
+            ticketValue = ticketRevenue.value,
+            ticketDescription = ticketRevenue.description,
+            openingDate = ticketRevenue.revenueTimestamp,
+            closingDate = ticketRevenue.closingTimestamp
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
+    fun addTicketToProjectRevenue(
+        projectRevenueId: String,
+        ticketTitle: String,
+        ticketValue: Double,
+        ticketDescription: String,
+        openingDate: Long,
+        closingDate: Long = -1L
+    ): JSONObject {
+        val payload = Params()
+        payload.addParam(REVENUE_TITLE_KEY, ticketTitle)
+        payload.addParam(REVENUE_VALUE_KEY, ticketValue)
+        payload.addParam(REVENUE_DESCRIPTION_KEY, ticketDescription)
+        payload.addParam(REVENUE_DATE_KEY, openingDate)
+        payload.addParam(CLOSING_DATE_KEY, closingDate)
+        return execPost(
+            endpoint = assembleRevenuesEndpointPath(
+                revenueId = projectRevenueId,
+                isProjectPath = true,
+                extraPath = TICKETS_ENDPOINT
+            ),
+            payload = payload
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PATCH)
+    fun closeProjectRevenueTicket(
+        projectRevenue: ProjectRevenue,
+        ticket: TicketRevenue
+    ): JSONObject {
+        return closeProjectRevenueTicket(
+            projectRevenueId = projectRevenue.id,
+            ticketId = ticket.id
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PATCH)
+    fun closeProjectRevenueTicket(
+        projectRevenueId: String,
+        ticketId: String
+    ): JSONObject {
+        return execPatch(
+            endpoint = assembleRevenuesEndpointPath(
+                revenueId = projectRevenueId,
+                isProjectPath = true,
+                extraPath = TICKETS_ENDPOINT,
+                extraId = "/$ticketId"
+            ),
+            payload = Params()
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = DELETE)
+    fun deleteProjectRevenueTicket(
+        projectRevenue: ProjectRevenue,
+        ticket: TicketRevenue
+    ): JSONObject {
+        return deleteProjectRevenueTicket(
+            projectRevenueId = projectRevenue.id,
+            ticketId = ticket.id
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = DELETE)
+    fun deleteProjectRevenueTicket(
+        projectRevenueId: String,
+        ticketId: String
+    ): JSONObject {
+        return execDelete(
+            endpoint = assembleRevenuesEndpointPath(
+                revenueId = projectRevenueId,
+                isProjectPath = true,
+                extraPath = TICKETS_ENDPOINT,
+                extraId = "/$ticketId"
+            )
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/{revenue_id}", method = DELETE)
+    fun deleteRevenue(
+        revenue: Revenue
+    ): JSONObject {
+        return deleteRevenue(
+            revenueId = revenue.id
+        )
+    }
+
+    @RequestPath(path = "/api/v1/users/{id}/revenues/{revenue_id}", method = DELETE)
+    fun deleteRevenue(
+        revenueId: String
+    ): JSONObject {
+        return execDelete(
+            endpoint = assembleRevenuesEndpointPath(
+                revenueId = revenueId
+            )
+        )
+    }
+
     /**
      * Function to assemble the endpoint to make the request to the users controller
      *
@@ -290,9 +429,18 @@ class NeutronRequester(
      * @return an endpoint to make the request as [String]
      */
     protected fun assembleRevenuesEndpointPath(
-        endpoint: String = ""
+        endpoint: String = "",
+        isProjectPath: Boolean = false,
+        revenueId: String? = null,
+        extraPath: String = "",
+        extraId: String = ""
     ): String {
-        return "${assembleUsersEndpointPath(endpoint)}/$REVENUES_KEY"
+        var baseEndpoint = "${assembleUsersEndpointPath(endpoint)}/$REVENUES_KEY"
+        if(isProjectPath)
+            baseEndpoint = "$baseEndpoint$PROJECTS_KEY$revenueId$extraPath$extraId"
+        else if (revenueId != null)
+            baseEndpoint = "$baseEndpoint/$revenueId"
+        return baseEndpoint
     }
 
     /**
