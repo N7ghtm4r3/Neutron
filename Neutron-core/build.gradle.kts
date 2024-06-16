@@ -10,6 +10,7 @@ version = "1.0.0"
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
+    mavenLocal()
 }
 
 dependencies {
@@ -18,7 +19,9 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.4")
     implementation("com.github.N7ghtm4r3:APIManager:2.2.3")
     implementation("org.json:json:20231013")
-    implementation("com.github.N7ghtm4r3:Equinox:1.0.0")
+    //implementation("com.github.N7ghtm4r3:Equinox:1.0.0")
+
+    implementation("com.tecknobit.equinox:Equinox:1.0.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation("commons-validator:commons-validator:1.7")
 }
