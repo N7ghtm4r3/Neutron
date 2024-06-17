@@ -36,7 +36,7 @@ class NeutronRequester(
     userId: String? = null,
     userToken: String? = null,
 ) : Requester(
-    host = host,
+    host = host + BASE_ENDPOINT,
     userId = userId,
     userToken = userToken,
     connectionErrorMessage = "Server is temporarily unavailable",
