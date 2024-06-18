@@ -13,6 +13,8 @@ import java.util.HashMap;
  */
 public class InputValidator {
 
+    public static final String HOST_ADDRESS_KEY = "host_address";
+
     /**
      * {@code WRONG_NAME_MESSAGE} error message used when the name inserted is not valid
      */

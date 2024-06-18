@@ -37,7 +37,7 @@ public class User extends NeutronItem implements Transferable {
     public static final String OWNER_KEY = "owner";
 
     //TODO: SET THE REAL DEFAULT PROFILE PIC
-    public static final String DEFAULT_PROFILE_PIC = "defProfilePic.jpg";
+    public static final String DEFAULT_PROFILE_PIC = "profiles/defProfilePic.jpg";
 
     public static final String LANGUAGE_KEY = "language";
 
