@@ -36,8 +36,6 @@ public class User extends NeutronItem implements Transferable {
 
     public static final String OWNER_KEY = "owner";
 
-    public static final String USER_STORAGE_KEY = "user_storage";
-
     //TODO: SET THE REAL DEFAULT PROFILE PIC
     public static final String DEFAULT_PROFILE_PIC = "profiles/defProfilePic.jpg";
 
@@ -45,13 +43,27 @@ public class User extends NeutronItem implements Transferable {
 
     public static final String CURRENCY_KEY = "currency";
 
+    public static final String THEME_KEY = "theme";
+
+    public static final String USER_STORAGE_KEY = "user_storage";
+
     public enum ApplicationTheme {
 
         Dark,
 
         Light,
 
-        Auto
+        Auto;
+
+        public static ApplicationTheme getInstance(String theme) {
+            if(theme == null)
+                return Auto;
+            return switch (theme) {
+                case "Dark" -> Dark;
+                case "Light" -> Light;
+                default -> Auto;
+            };
+        }
 
     }
 

@@ -1,13 +1,13 @@
 package com.tecknobit.neutroncore.helpers;
 
 import com.tecknobit.apimanager.formatters.JsonHelper;
-import com.tecknobit.neutroncore.records.User.UserStorage;
 
 import static com.tecknobit.neutroncore.helpers.InputValidator.HOST_ADDRESS_KEY;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.*;
+import static com.tecknobit.neutroncore.records.User.ApplicationTheme.Auto;
+import static com.tecknobit.neutroncore.records.User.NeutronCurrency.DOLLAR;
 import static com.tecknobit.neutroncore.records.User.UserStorage.*;
-import static com.tecknobit.neutroncore.records.User.UserStorage.Local;
 
 public abstract class LocalUser {
 
@@ -21,6 +21,14 @@ public abstract class LocalUser {
 
     protected String profilePic;
 
+    protected String email;
+
+    protected String language;
+
+    protected NeutronCurrency currency;
+
+    protected ApplicationTheme theme;
+
     protected UserStorage storage;
 
     protected void initLocalUser() {
@@ -28,6 +36,10 @@ public abstract class LocalUser {
         userId = getPreference(IDENTIFIER_KEY);
         userToken = getPreference(TOKEN_KEY);
         profilePic = getPreference(PROFILE_PIC_KEY);
+        email = getPreference(EMAIL_KEY);
+        language = getPreference(LANGUAGE_KEY);
+        currency = NeutronCurrency.getInstance(getPreference(CURRENCY_KEY));
+        theme = ApplicationTheme.getInstance(getPreference(THEME_KEY));
         String userStorage = getPreference(USER_STORAGE_KEY);
         if(userStorage != null)
             storage = valueOf(userStorage);
@@ -35,11 +47,15 @@ public abstract class LocalUser {
             storage = Local;
     }
 
-    public void insertNewUser(String hostAddress, JsonHelper hResponse) {
+    public void insertNewUser(String hostAddress, String email, String language, JsonHelper hResponse) {
         setHostAddress(hostAddress);
         setUserId(hResponse.getString(IDENTIFIER_KEY));
         setUserToken(hResponse.getString(TOKEN_KEY));
         setProfilePic(hResponse.getString(PROFILE_PIC_KEY));
+        setEmail(email);
+        setLanguage(language);
+        setCurrency(DOLLAR);
+        setTheme(Auto);
         UserStorage storage;
         if(hostAddress != null)
             storage = Online;
@@ -89,6 +105,42 @@ public abstract class LocalUser {
         return profilePic;
     }
 
+    public void setEmail(String email) {
+        setPreference(EMAIL_KEY, email);
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setLanguage(String language) {
+        setPreference(LANGUAGE_KEY, language);
+        this.language = language;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setCurrency(NeutronCurrency currency) {
+        setPreference(CURRENCY_KEY, currency.name());
+        this.currency = currency;
+    }
+
+    public NeutronCurrency getCurrency() {
+        return currency;
+    }
+
+    public void setTheme(ApplicationTheme theme) {
+        setPreference(THEME_KEY, theme.name());
+        this.theme = theme;
+    }
+
+    public ApplicationTheme getTheme() {
+        return theme;
+    }
+
     public void setStorage(UserStorage storage) {
         setPreference(USER_STORAGE_KEY, storage.name());
         this.storage = storage;
@@ -105,5 +157,7 @@ public abstract class LocalUser {
     public boolean isAuthenticated() {
         return userId != null;
     }
+
+    public abstract void clear();
 
 }

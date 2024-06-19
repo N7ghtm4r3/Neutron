@@ -226,6 +226,21 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to delete the account of the user
+     *
+     * No-any params required
+     *
+     * @return the result of the request as [JSONObject]
+     */
+    @RequestPath(path = "/api/v1/users/{id}", method = DELETE)
+    fun deleteAccount(): JSONObject {
+        println(assembleUsersEndpointPath())
+        return execDelete(
+            endpoint = assembleUsersEndpointPath()
+        )
+    }
+
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = GET)
     fun listRevenues(): JSONObject {
         return execGet(
