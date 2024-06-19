@@ -1,11 +1,13 @@
 package com.tecknobit.neutroncore.helpers;
 
 import com.tecknobit.apimanager.formatters.JsonHelper;
+import com.tecknobit.neutroncore.records.User.UserStorage;
 
 import static com.tecknobit.neutroncore.helpers.InputValidator.HOST_ADDRESS_KEY;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
-import static com.tecknobit.neutroncore.records.User.PROFILE_PIC_KEY;
-import static com.tecknobit.neutroncore.records.User.TOKEN_KEY;
+import static com.tecknobit.neutroncore.records.User.*;
+import static com.tecknobit.neutroncore.records.User.UserStorage.*;
+import static com.tecknobit.neutroncore.records.User.UserStorage.Local;
 
 public abstract class LocalUser {
 
@@ -19,11 +21,18 @@ public abstract class LocalUser {
 
     protected String profilePic;
 
+    protected UserStorage storage;
+
     protected void initLocalUser() {
         hostAddress = getHostAddress();
         userId = getPreference(IDENTIFIER_KEY);
         userToken = getPreference(TOKEN_KEY);
         profilePic = getPreference(PROFILE_PIC_KEY);
+        String userStorage = getPreference(USER_STORAGE_KEY);
+        if(userStorage != null)
+            storage = valueOf(userStorage);
+        else
+            storage = Local;
     }
 
     public void insertNewUser(String hostAddress, JsonHelper hResponse) {
@@ -31,6 +40,12 @@ public abstract class LocalUser {
         setUserId(hResponse.getString(IDENTIFIER_KEY));
         setUserToken(hResponse.getString(TOKEN_KEY));
         setProfilePic(hResponse.getString(PROFILE_PIC_KEY));
+        UserStorage storage;
+        if(hostAddress != null)
+            storage = Online;
+        else
+            storage = Local;
+        setStorage(storage);
         initLocalUser();
     }
 
@@ -72,6 +87,15 @@ public abstract class LocalUser {
 
     public String getProfilePic() {
         return profilePic;
+    }
+
+    public void setStorage(UserStorage storage) {
+        setPreference(USER_STORAGE_KEY, storage.name());
+        this.storage = storage;
+    }
+
+    public UserStorage getStorage() {
+        return storage;
     }
 
     protected abstract void setPreference(String key, String value);

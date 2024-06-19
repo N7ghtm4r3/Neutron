@@ -31,7 +31,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.io.File
 
-class NeutronRequester(
+open class NeutronRequester(
     host: String,
     userId: String? = null,
     userToken: String? = null,
@@ -484,5 +484,5 @@ class NeutronRequester(
             endpoint = "$TRANSFER_OUT_ENDPOINT/$userId"
         )
     }
-    
+
 }
