@@ -21,6 +21,10 @@ public abstract class LocalUser {
 
     protected String profilePic;
 
+    protected String name;
+
+    protected String surname;
+
     protected String email;
 
     protected String language;
@@ -36,6 +40,8 @@ public abstract class LocalUser {
         userId = getPreference(IDENTIFIER_KEY);
         userToken = getPreference(TOKEN_KEY);
         profilePic = getPreference(PROFILE_PIC_KEY);
+        name = getPreference(NAME_KEY);
+        surname = getPreference(SURNAME_KEY);
         email = getPreference(EMAIL_KEY);
         language = getPreference(LANGUAGE_KEY);
         currency = NeutronCurrency.getInstance(getPreference(CURRENCY_KEY));
@@ -47,11 +53,14 @@ public abstract class LocalUser {
             storage = Local;
     }
 
-    public void insertNewUser(String hostAddress, String email, String language, JsonHelper hResponse) {
+    public void insertNewUser(String hostAddress, String name, String surname, String email, String language,
+                              JsonHelper hResponse) {
         setHostAddress(hostAddress);
         setUserId(hResponse.getString(IDENTIFIER_KEY));
         setUserToken(hResponse.getString(TOKEN_KEY));
         setProfilePic(hResponse.getString(PROFILE_PIC_KEY));
+        setName(name);
+        setSurname(surname);
         setEmail(email);
         setLanguage(language);
         setCurrency(DOLLAR);
@@ -103,6 +112,28 @@ public abstract class LocalUser {
 
     public String getProfilePic() {
         return profilePic;
+    }
+
+    public void setName(String name) {
+        setPreference(NAME_KEY, name);
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setSurname(String surname) {
+        setPreference(SURNAME_KEY, surname);
+        this.surname = surname;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getCompleteName() {
+        return name + " " + surname;
     }
 
     public void setEmail(String email) {
