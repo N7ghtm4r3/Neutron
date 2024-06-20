@@ -19,6 +19,8 @@ import com.tecknobit.neutroncore.records.revenues.ProjectRevenue.*
 import com.tecknobit.neutroncore.records.revenues.Revenue
 import com.tecknobit.neutroncore.records.revenues.Revenue.REVENUES_KEY
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel
+import com.tecknobit.neutroncore.records.revenues.RevenueLabel.REVENUE_LABEL_COLOR_KEY
+import com.tecknobit.neutroncore.records.revenues.RevenueLabel.REVENUE_LABEL_TEXT_KEY
 import com.tecknobit.neutroncore.records.revenues.TicketRevenue
 import com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY
 import org.json.JSONArray
@@ -273,7 +275,14 @@ open class NeutronRequester(
     ): JSONObject {
         val payload = Params()
         payload.addParam(REVENUE_DESCRIPTION_KEY, description)
-        payload.addParam(REVENUE_LABELS_KEY, labels)
+        val jLabels = JSONArray()
+        labels.forEach { label ->
+            jLabels.put(JSONObject()
+                .put(REVENUE_LABEL_TEXT_KEY, label.text)
+                .put(REVENUE_LABEL_COLOR_KEY, label.color)
+            )
+        }
+        payload.addParam(REVENUE_LABELS_KEY, jLabels)
         return createRevenue(
             title = title,
             value = value,

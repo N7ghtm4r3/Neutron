@@ -78,7 +78,7 @@ public class InputValidator {
     /**
      * {@code REVENUE_DESCRIPTION_MAX_LENGTH} the max valid length for the revenue description
      */
-    public static final int REVENUE_DESCRIPTION_MAX_LENGTH = 500;
+    public static final int REVENUE_DESCRIPTION_MAX_LENGTH = 250;
 
     /**
      * {@code MAX_REVENUE_LABELS_NUMBER_LENGTH} the max valid number of labels for revenue

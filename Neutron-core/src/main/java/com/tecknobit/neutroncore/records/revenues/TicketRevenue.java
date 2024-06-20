@@ -56,7 +56,7 @@ public class TicketRevenue extends GeneralRevenue {
     private final ProjectRevenue projectRevenue;
 
     @Column(name = CLOSING_DATE_KEY)
-    private final long closingDate;
+    private long closingDate;
 
     public TicketRevenue() {
         this(null, null, 0, -1, null, -1, null, null);
@@ -97,6 +97,10 @@ public class TicketRevenue extends GeneralRevenue {
         return closingDate;
     }
 
+    public void setClosingDate(long closingDate) {
+        this.closingDate = closingDate;
+    }
+
     @JsonIgnore
     public String getClosingDate() {
         return timeFormatter.formatAsString(closingDate);
@@ -129,6 +133,13 @@ public class TicketRevenue extends GeneralRevenue {
         for (int j = 0; j < jTickets.length(); j++)
             tickets.add(new TicketRevenue(jTickets.getJSONObject(j)));
         return tickets;
+    }
+
+    public RevenueLabel getCurrentLabel() {
+        if(isClosed())
+            return CLOSED_TICKET_LABEL;
+        else
+            return PENDING_TICKET_LABEL;
     }
 
 }
