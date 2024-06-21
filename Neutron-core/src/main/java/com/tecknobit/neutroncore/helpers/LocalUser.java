@@ -1,6 +1,7 @@
 package com.tecknobit.neutroncore.helpers;
 
 import com.tecknobit.apimanager.formatters.JsonHelper;
+import com.tecknobit.neutroncore.records.User;
 
 import static com.tecknobit.neutroncore.helpers.InputValidator.HOST_ADDRESS_KEY;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
@@ -13,6 +14,8 @@ public abstract class LocalUser {
 
     protected static final String PREFERENCES_FILE = "Neutron";
 
+    protected static final String LOCAL_PROFILE_PIC_PATH = "local_profile_pic_path";
+
     protected String hostAddress;
 
     protected String userId;
@@ -21,11 +24,15 @@ public abstract class LocalUser {
 
     protected String profilePic;
 
+    protected String localProfilePicPath;
+
     protected String name;
 
     protected String surname;
 
     protected String email;
+
+    protected String password;
 
     protected String language;
 
@@ -43,6 +50,7 @@ public abstract class LocalUser {
         name = getPreference(NAME_KEY);
         surname = getPreference(SURNAME_KEY);
         email = getPreference(EMAIL_KEY);
+        password = getPreference(PASSWORD_KEY);
         language = getPreference(LANGUAGE_KEY);
         currency = NeutronCurrency.getInstance(getPreference(CURRENCY_KEY));
         theme = ApplicationTheme.getInstance(getPreference(THEME_KEY));
@@ -53,8 +61,8 @@ public abstract class LocalUser {
             storage = Local;
     }
 
-    public void insertNewUser(String hostAddress, String name, String surname, String email, String language,
-                              JsonHelper hResponse) {
+    public void insertNewUser(String hostAddress, String name, String surname, String email, String password,
+                              String language, JsonHelper hResponse) {
         setHostAddress(hostAddress);
         setUserId(hResponse.getString(IDENTIFIER_KEY));
         setUserToken(hResponse.getString(TOKEN_KEY));
@@ -62,6 +70,7 @@ public abstract class LocalUser {
         setName(name);
         setSurname(surname);
         setEmail(email);
+        setPassword(password);
         setLanguage(language);
         setCurrency(DOLLAR);
         setTheme(Auto);
@@ -105,9 +114,19 @@ public abstract class LocalUser {
     }
 
     public void setProfilePic(String profilePic) {
-        profilePic = hostAddress + "/" +  profilePic;
-        setPreference(PROFILE_PIC_KEY, profilePic);
-        this.profilePic = profilePic;
+        if (profilePic == null) {
+            this.profilePic = localProfilePicPath;
+            setPreference(PROFILE_PIC_KEY, localProfilePicPath);
+        } else {
+            profilePic = hostAddress + "/" + profilePic;
+            setPreference(PROFILE_PIC_KEY, profilePic);
+            this.profilePic = profilePic;
+        }
+    }
+
+    public void setLocalProfilePicPath(String localProfilePicPath) {
+        setPreference(LOCAL_PROFILE_PIC_PATH, localProfilePicPath);
+        this.localProfilePicPath = localProfilePicPath;
     }
 
     public String getProfilePic() {
@@ -143,6 +162,15 @@ public abstract class LocalUser {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setPassword(String password) {
+        setPreference(PASSWORD_KEY, password);
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setLanguage(String language) {
@@ -190,5 +218,21 @@ public abstract class LocalUser {
     }
 
     public abstract void clear();
+
+    public User toUser() {
+        return new User(
+                userId,
+                userToken,
+                name,
+                surname,
+                email,
+                password,
+                profilePic,
+                language,
+                currency,
+                theme,
+                storage
+        );
+    }
 
 }

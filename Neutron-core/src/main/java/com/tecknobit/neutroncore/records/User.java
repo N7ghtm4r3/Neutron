@@ -196,11 +196,8 @@ public class User extends NeutronItem implements Transferable {
     // TODO: CHECK TO SET AS FINAL
     private UserStorage storage;
 
-    // TODO: TO REMOVE
     public User() {
-        this("token", "id", "User", "Name", "user.name@gmail.com", "password",
-                "https://res.cloudinary.com/momentum-media-group-pty-ltd/image/upload/v1686795211/Space%20Connect/space-exploration-sc_fm1ysf.jpg",
-                "it", NeutronCurrency.EURO, Auto, Online);
+        this(null, null, null, null, null, null, null);
     }
 
     public User(String id, String token, String name, String surname, String email, String password, String language) {
