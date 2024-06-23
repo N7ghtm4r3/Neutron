@@ -129,7 +129,7 @@ public class User extends NeutronItem implements Transferable {
     public static final HashMap<String, String> CURRENCIES_SUPPORTED = new HashMap<>();
 
     static {
-        CURRENCIES_SUPPORTED.put("EUR", "Italiano");
+        CURRENCIES_SUPPORTED.put("it", "Italiano");
         CURRENCIES_SUPPORTED.put("en", "English");
         CURRENCIES_SUPPORTED.put("fr", "Francais");
         CURRENCIES_SUPPORTED.put("es", "Espanol");

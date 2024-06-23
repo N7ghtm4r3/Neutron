@@ -114,7 +114,7 @@ public abstract class LocalUser {
     }
 
     public void setProfilePic(String profilePic) {
-        if(!this.profilePic.equals(profilePic)) {
+        if (this.profilePic == null || !this.profilePic.equals(profilePic)) {
             if (profilePic == null) {
                 this.profilePic = localProfilePicPath;
                 setPreference(PROFILE_PIC_KEY, localProfilePicPath);
