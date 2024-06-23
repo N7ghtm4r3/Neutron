@@ -4,20 +4,23 @@ package com.tecknobit.neutron.controllers;
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.neutron.helpers.services.RevenuesHelper;
 import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
+import com.tecknobit.neutroncore.records.revenues.Revenue;
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
 import com.tecknobit.neutroncore.records.revenues.TicketRevenue;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
-import static com.tecknobit.neutroncore.helpers.Endpoints.*;
+import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
+import static com.tecknobit.neutroncore.helpers.Endpoints.TICKETS_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.InputValidator.*;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
-import static com.tecknobit.neutroncore.records.User.TOKEN_KEY;
-import static com.tecknobit.neutroncore.records.User.USERS_KEY;
+import static com.tecknobit.neutroncore.records.User.*;
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_DESCRIPTION_KEY;
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_LABELS_KEY;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.IS_PROJECT_REVENUE_KEY;
@@ -46,9 +49,14 @@ public class RevenuesController extends NeutronController {
             @PathVariable(IDENTIFIER_KEY) String userId,
             @RequestHeader(TOKEN_KEY) String token
     ) {
-        if(isMe(userId, token))
-            return (T) successResponse(revenuesHelper.getRevenues(userId));
-        else
+        if(isMe(userId, token)) {
+            List<Revenue> revenues = revenuesHelper.getRevenues(userId);
+            JSONObject response = new JSONObject();
+            response.put(REVENUES_KEY, revenues);
+            response.put(CURRENCY_KEY, me.getCurrency().name());
+            response.put(PROFILE_PIC_KEY, me.getProfilePic());
+            return (T) successResponse(response);
+        } else
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 

@@ -114,13 +114,15 @@ public abstract class LocalUser {
     }
 
     public void setProfilePic(String profilePic) {
-        if (profilePic == null) {
-            this.profilePic = localProfilePicPath;
-            setPreference(PROFILE_PIC_KEY, localProfilePicPath);
-        } else {
-            profilePic = hostAddress + "/" + profilePic;
-            setPreference(PROFILE_PIC_KEY, profilePic);
-            this.profilePic = profilePic;
+        if(!this.profilePic.equals(profilePic)) {
+            if (profilePic == null) {
+                this.profilePic = localProfilePicPath;
+                setPreference(PROFILE_PIC_KEY, localProfilePicPath);
+            } else {
+                profilePic = hostAddress + "/" + profilePic;
+                setPreference(PROFILE_PIC_KEY, profilePic);
+                this.profilePic = profilePic;
+            }
         }
     }
 
@@ -183,8 +185,10 @@ public abstract class LocalUser {
     }
 
     public void setCurrency(NeutronCurrency currency) {
-        setPreference(CURRENCY_KEY, currency.name());
-        this.currency = currency;
+        if(!this.currency.name().equals(currency.name())) {
+            setPreference(CURRENCY_KEY, currency.name());
+            this.currency = currency;
+        }
     }
 
     public NeutronCurrency getCurrency() {
