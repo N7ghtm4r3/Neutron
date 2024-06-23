@@ -4,12 +4,15 @@ import com.tecknobit.apimanager.apis.APIRequest;
 import com.tecknobit.neutron.helpers.resources.ResourcesManager;
 import com.tecknobit.neutron.helpers.services.repositories.UsersRepository;
 import com.tecknobit.neutroncore.records.User;
+import com.tecknobit.neutroncore.records.User.NeutronCurrency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.tecknobit.apimanager.apis.APIRequest.SHA256_ALGORITHM;
 import static java.lang.System.currentTimeMillis;
@@ -20,8 +23,11 @@ public class UsersHelper implements ResourcesManager {
     @Autowired
     private final UsersRepository usersRepository;
 
-    public UsersHelper(UsersRepository usersRepository) {
+    private final RevenuesHelper revenuesHelper;
+
+    public UsersHelper(UsersRepository usersRepository, RevenuesHelper revenuesHelper) {
         this.usersRepository = usersRepository;
+        this.revenuesHelper = revenuesHelper;
     }
 
     /**
@@ -113,8 +119,13 @@ public class UsersHelper implements ResourcesManager {
      * @param newCurrency: the new currency of the user
      * @param userId: the identifier of the user
      */
-    public void changeCurrency(String newCurrency, String userId) {
-        usersRepository.changeCurrency(newCurrency, userId);
+    public void changeCurrency(String newCurrency, NeutronCurrency oldCurrency, String userId) {
+        NeutronCurrency newCurrencyValue = NeutronCurrency.valueOf(newCurrency);
+        if(newCurrencyValue != oldCurrency) {
+            usersRepository.changeCurrency(newCurrency, userId);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> revenuesHelper.convertRevenues(userId, oldCurrency, newCurrencyValue));
+        }
     }
 
     /**

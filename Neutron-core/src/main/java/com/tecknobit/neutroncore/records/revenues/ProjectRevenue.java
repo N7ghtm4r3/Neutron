@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.returnInitialRevenue;
 import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUES_KEY;
@@ -53,7 +54,7 @@ public class ProjectRevenue extends Revenue {
     private final InitialRevenue initialRevenue;
 
     @OneToMany(
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             mappedBy = PROJECT_REVENUE
     )
     @JsonIgnoreProperties({
@@ -96,7 +97,7 @@ public class ProjectRevenue extends Revenue {
         double totalValue = initialRevenue.getValue();
         for (TicketRevenue ticket : tickets)
             totalValue += ticket.getValue();
-        return totalValue;
+        return roundValue(totalValue, 2);
     }
 
     @JsonGetter(INITIAL_REVENUE_KEY)

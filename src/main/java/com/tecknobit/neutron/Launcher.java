@@ -22,6 +22,7 @@ import java.util.List;
 
 import static com.tecknobit.equinox.ResourcesProvider.CUSTOM_CONFIGURATION_FILE_PATH;
 import static com.tecknobit.equinox.ResourcesProvider.DEFAULT_CONFIGURATION_FILE_PATH;
+import static com.tecknobit.neutron.helpers.services.RevenuesHelper.refreshCurrencyRates;
 
 @EnableAutoConfiguration
 @SpringBootApplication
@@ -42,6 +43,7 @@ public class Launcher {
         ResourcesProvider resourcesProvider = new ResourcesProvider("resources", List.of("profiles"));
         resourcesProvider.createContainerDirectory();
         resourcesProvider.createSubDirectories();
+        refreshCurrencyRates();
         serverProtector.launch(args);
         SpringApplication.run(Launcher.class, args);
     }

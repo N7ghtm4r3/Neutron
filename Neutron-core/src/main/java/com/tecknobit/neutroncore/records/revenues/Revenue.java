@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
 import static com.tecknobit.neutroncore.records.User.OWNER_KEY;
 import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUE_KEY;
 
@@ -84,7 +85,7 @@ public abstract class Revenue extends NeutronItem implements Transferable {
     }
 
     public double getValue() {
-        return value;
+        return roundValue(value, 2);
     }
 
     @JsonGetter(REVENUE_DATE_KEY)

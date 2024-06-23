@@ -74,6 +74,19 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(OWNER_KEY) String ownerId
     );
 
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + GENERAL_REVENUES_KEY
+                    + " SET " + REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY
+                    + " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void convertGeneralRevenue(
+            @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_VALUE_KEY) double value
+    );
+
     @Query(
             value = "SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
                     + " ORDER BY " + REVENUE_DATE_KEY + " DESC",
@@ -283,6 +296,19 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     void deleteProjectRevenue(
             @Param(IDENTIFIER_KEY) String revenueId,
             @Param(OWNER_KEY) String ownerId
+    );
+
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + INITIAL_REVENUES_KEY
+                    + " SET " + REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY
+                    + " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void convertInitialRevenue(
+            @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_VALUE_KEY) double value
     );
 
 }

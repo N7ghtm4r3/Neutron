@@ -338,7 +338,7 @@ public class UsersController extends NeutronController {
             String currency = jsonHelper.getString(CURRENCY_KEY);
             if(isCurrencyValid(currency)) {
                 try {
-                    usersHelper.changeCurrency(currency, id);
+                    usersHelper.changeCurrency(currency, me.getCurrency(), id);
                     return successResponse();
                 } catch (Exception e) {
                     return failedResponse(WRONG_PROCEDURE_MESSAGE);
