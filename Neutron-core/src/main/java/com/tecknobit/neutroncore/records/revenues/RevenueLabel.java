@@ -19,7 +19,7 @@ import static com.tecknobit.neutroncore.records.revenues.RevenueLabel.REVENUE_LA
 @Table(name = REVENUE_LABELS_KEY)
 public class RevenueLabel extends NeutronItem {
 
-    public static final String REVENUE_LABELS_KEY = "revenues_label";
+    public static final String REVENUE_LABELS_KEY = "revenue_labels";
 
     public static final String REVENUE_LABEL_TEXT_KEY = "text";
 
