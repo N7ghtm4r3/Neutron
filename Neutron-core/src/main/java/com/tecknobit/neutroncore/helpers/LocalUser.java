@@ -223,6 +223,10 @@ public abstract class LocalUser {
         return userId != null;
     }
 
+    public boolean hasLocalStorageSet() {
+        return storage == Local;
+    }
+
     public abstract void clear();
 
     public User toUser() {

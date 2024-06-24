@@ -1,261 +1,372 @@
-package com.tecknobit.neutroncore.l;
+package com.tecknobit.neutroncore.helpers.local
 
-import com.tecknobit.apimanager.annotations.Structure;
-import com.tecknobit.neutroncore.records.revenues.GeneralRevenue;
-import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
-import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
-import com.tecknobit.neutroncore.records.revenues.TicketRevenue;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY
+import com.tecknobit.neutroncore.records.User.OWNER_KEY
+import com.tecknobit.neutroncore.records.User.USERS_KEY
+import com.tecknobit.neutroncore.records.revenues.*
+import com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUES_KEY
+import com.tecknobit.neutroncore.records.revenues.RevenueLabel.REVENUE_LABEL_COLOR_KEY
+import com.tecknobit.neutroncore.records.revenues.RevenueLabel.REVENUE_LABEL_TEXT_KEY
+import com.tecknobit.neutroncore.records.revenues.TicketRevenue.*
+import org.json.JSONArray
+import org.json.JSONObject
 
-import java.util.List;
+interface LRevenuesController : LNeutronController {
+    
+    companion object {
 
-import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
-import static com.tecknobit.neutroncore.records.User.*;
-import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.*;
-import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_REVENUES_KEY;
-import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUES_KEY;
-import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECT_REVENUE_KEY;
-import static com.tecknobit.neutroncore.records.revenues.RevenueLabel.REVENUE_LABELS_KEY;
-import static com.tecknobit.neutroncore.records.revenues.RevenueLabel.*;
-import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY;
-import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.TICKET_REVENUES_KEY;
-import static java.lang.String.format;
+        protected const val CREATE_PROJECT_REVENUES_TABLE: String = (
+                "CREATE TABLE IF NOT EXISTS " + PROJECT_REVENUES_KEY +
+                    " (\n" +
+                        IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
+                        REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
+                        REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
+                        OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE"
+                    + ");"
+                )
 
-@Structure
-public abstract class LRevenuesController extends LServerController {
+        protected const val CREATE_INITIAL_REVENUES_TABLE: String = (
+                "CREATE TABLE IF NOT EXISTS " + InitialRevenue.INITIAL_REVENUES_KEY +
+                    " (\n" +
+                        IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
+                        REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
+                        REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
+                        REVENUE_VALUE_KEY + " REAL NOT NULL" + ",\n" +
+                        OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE" +
+                        ProjectRevenue.PROJECT_REVENUE_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        " FOREIGN KEY (" + ProjectRevenue.PROJECT_REVENUE_KEY + ") REFERENCES " + PROJECT_REVENUES_KEY + "(" + IDENTIFIER_KEY + ") " +
+                        "ON DELETE CASCADE"
+                    + ");"
+                )
 
-    protected static final String CREATE_PROJECT_REVENUES_TABLE = "CREATE TABLE IF NOT EXISTS " + PROJECT_REVENUES_KEY +
-            " (\n" +
-                IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
-                REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
-                REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
-                OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE"
-            + ");";
+        protected const val CREATE_TICKET_REVENUES_TABLE: String = (
+                "CREATE TABLE IF NOT EXISTS " + TICKET_REVENUES_KEY +
+                    " (\n" +
+                        IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
+                        REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
+                        REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
+                        REVENUE_VALUE_KEY + " REAL NOT NULL" + ",\n" +
+                        REVENUE_DESCRIPTION_KEY + " VARCHAR(255) NOT NULL" + ",\n" +
+                        CLOSING_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
+                        OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE" +
+                        ProjectRevenue.PROJECT_REVENUE_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        " FOREIGN KEY (" + ProjectRevenue.PROJECT_REVENUE_KEY + ") REFERENCES " + PROJECT_REVENUES_KEY + "(" + IDENTIFIER_KEY + ") " +
+                        "ON DELETE CASCADE"
+                    + ");"
+                )
 
-    protected static final String CREATE_INITIAL_REVENUES_TABLE = "CREATE TABLE IF NOT EXISTS " + INITIAL_REVENUES_KEY +
-            " (\n" +
-                IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
-                REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
-                REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
-                REVENUE_VALUE_KEY + " REAL NOT NULL" + ",\n" +
-                OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE" +
-                PROJECT_REVENUE_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                " FOREIGN KEY (" + PROJECT_REVENUE_KEY + ") REFERENCES " + PROJECT_REVENUES_KEY + "(" + IDENTIFIER_KEY + ") " +
-                "ON DELETE CASCADE"
-            + ");";
+        protected const val CREATE_GENERAL_REVENUES_TABLE: String = (
+                "CREATE TABLE IF NOT EXISTS " + GENERAL_REVENUES_KEY +
+                    " (\n" +
+                        IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
+                        REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
+                        REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
+                        REVENUE_VALUE_KEY + " REAL NOT NULL" + ",\n" +
+                        REVENUE_DESCRIPTION_KEY + " VARCHAR(255) NOT NULL" + ",\n" +
+                        OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE"
+                    + ");"
+                )
 
-    protected static final String CREATE_TICKET_REVENUES_TABLE = "CREATE TABLE IF NOT EXISTS " + TICKET_REVENUES_KEY +
-            " (\n" +
-                IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
-                REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
-                REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
-                REVENUE_VALUE_KEY + " REAL NOT NULL" + ",\n" +
-                REVENUE_DESCRIPTION_KEY + " VARCHAR(255) NOT NULL" + ",\n" +
-                CLOSING_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
-                OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE" +
-                PROJECT_REVENUE_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                " FOREIGN KEY (" + PROJECT_REVENUE_KEY + ") REFERENCES " + PROJECT_REVENUES_KEY + "(" + IDENTIFIER_KEY + ") " +
-                "ON DELETE CASCADE"
-            + ");";
+        protected const val CREATE_REVENUE_LABELS_TABLE: String = ("CREATE TABLE IF NOT EXISTS " + RevenueLabel.REVENUE_LABELS_KEY +
+                    " (\n" +
+                        IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
+                        REVENUE_LABEL_COLOR_KEY + " VARCHAR(7) NOT NULL" + ",\n" +
+                        REVENUE_LABEL_TEXT_KEY + " TEXT NOT NULL" + ",\n" +
+                        REVENUE_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        " FOREIGN KEY (" + REVENUE_KEY + ") REFERENCES " + GENERAL_REVENUES_KEY + "(" + IDENTIFIER_KEY + ") " +
+                        "ON DELETE CASCADE"
+                    + ");"
+                )
 
-    protected static final String CREATE_GENERAL_REVENUES_TABLE = "CREATE TABLE IF NOT EXISTS " + GENERAL_REVENUES_KEY +
-            " (\n" +
-                IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
-                REVENUE_DATE_KEY + " BIGINT NOT NULL" + ",\n" +
-                REVENUE_TITLE_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
-                REVENUE_VALUE_KEY + " REAL NOT NULL" + ",\n" +
-                REVENUE_DESCRIPTION_KEY + " VARCHAR(255) NOT NULL" + ",\n" +
-                OWNER_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                " FOREIGN KEY (" + OWNER_KEY + ") REFERENCES " + USERS_KEY + "(" + IDENTIFIER_KEY + ") ON DELETE CASCADE"
-            + ");";
+        private const val LIST_REVENUES_QUERY = "SELECT * FROM %s WHERE $OWNER_KEY='?'"
 
-    protected static final String CREATE_REVENUE_LABELS_TABLE = "CREATE TABLE IF NOT EXISTS " + REVENUE_LABELS_KEY +
-            " (\n" +
-                IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
-                REVENUE_LABEL_COLOR_KEY + " VARCHAR(7) NOT NULL" + ",\n" +
-                REVENUE_LABEL_TEXT_KEY + " TEXT NOT NULL" + ",\n" +
-                REVENUE_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                " FOREIGN KEY (" + REVENUE_KEY + ") REFERENCES " + GENERAL_REVENUES_KEY + "(" + IDENTIFIER_KEY + ") " +
-                "ON DELETE CASCADE"
-            + ");";
+        protected val LIST_PROJECT_REVENUES_QUERY: String = String.format(LIST_REVENUES_QUERY, PROJECT_REVENUES_KEY)
 
-    private static final String LIST_REVENUES_QUERY = "SELECT * FROM %s" + " WHERE " + OWNER_KEY + "='?'";
+        protected val LIST_GENERAL_REVENUES_QUERY: String = String.format(LIST_REVENUES_QUERY, GENERAL_REVENUES_KEY)
 
-    protected static final String LIST_PROJECT_REVENUES_QUERY = format(LIST_REVENUES_QUERY, PROJECT_REVENUES_KEY);
+        protected const val GET_REVENUE_LABELS_QUERY: String = "SELECT * FROM " + RevenueLabel.REVENUE_LABELS_KEY +
+                " WHERE " + REVENUE_KEY + "='?'"
 
-    protected static final String LIST_GENERAL_REVENUES_QUERY = format(LIST_REVENUES_QUERY, GENERAL_REVENUES_KEY);
+        protected const val CREATE_PROJECT_REVENUE_QUERY: String = ("INSERT INTO " + PROJECT_REVENUES_KEY +
+                    " (" +
+                        IDENTIFIER_KEY + "," +
+                        REVENUE_DATE_KEY + "," +
+                        REVENUE_TITLE_KEY + "," +
+                        OWNER_KEY +
+                    " ) VALUES (" +
+                        "?" + "," +
+                        "?" + "," +
+                        "?" + "," +
+                        "?"
+                    + ")"
+                )
 
-    protected static final String GET_REVENUE_LABELS_QUERY = "SELECT * FROM " + REVENUE_LABELS_KEY +
-            " WHERE " + REVENUE_KEY + "='?'";
+        protected const val ATTACH_INITIAL_REVENUE_QUERY: String = (
+                "INSERT INTO " + InitialRevenue.INITIAL_REVENUES_KEY +
+                    " (" +
+                        IDENTIFIER_KEY + "," +
+                        REVENUE_DATE_KEY + "," +
+                        REVENUE_VALUE_KEY + "," +
+                        OWNER_KEY + "," +
+                    ProjectRevenue.PROJECT_REVENUE_KEY +
+                    " ) VALUES (" +
+                        "?" + "," +
+                        "?" + "," +
+                        "?" + "," +
+                        "?" + "," +
+                        "?"
+                    + ")"
+                )
 
-    protected static final String CREATE_PROJECT_REVENUE_QUERY = "INSERT INTO " + PROJECT_REVENUES_KEY +
-            " (" +
-                IDENTIFIER_KEY + "," +
-                REVENUE_DATE_KEY + "," +
-                REVENUE_TITLE_KEY + "," +
-                OWNER_KEY +
-            " ) VALUES (" +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?"
-            + ")";
+        protected const val CREATE_GENERAL_REVENUE_QUERY: String = (
+                "INSERT INTO " + GENERAL_REVENUES_KEY +
+                    " (" +
+                        IDENTIFIER_KEY + "," +
+                        REVENUE_DATE_KEY + "," +
+                        REVENUE_TITLE_KEY + "," +
+                        REVENUE_VALUE_KEY + "," +
+                        REVENUE_DESCRIPTION_KEY + "," +
+                        OWNER_KEY + "," +
+                    " ) VALUES (" +
+                        "?" + "," +
+                        "?" + "," +
+                        "?" + "," +
+                        "?" + "," +
+                        "?" + "," +
+                        "?"
+                    + ")"
+                )
 
-    protected static final String ATTACH_INITIAL_REVENUE_QUERY = "INSERT INTO " + INITIAL_REVENUES_KEY +
-            " (" +
-                IDENTIFIER_KEY + "," +
-                REVENUE_DATE_KEY + "," +
-                REVENUE_VALUE_KEY + "," +
-                OWNER_KEY + "," +
-                PROJECT_REVENUE_KEY +
-            " ) VALUES (" +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?"
-            + ")";
+        protected const val ATTACH_LABEL_TO_REVENUE_QUERY: String = (
+                "INSERT INTO " + RevenueLabel.REVENUE_LABELS_KEY +
+                    " (" +
+                        IDENTIFIER_KEY + "," +
+                        REVENUE_LABEL_COLOR_KEY + "," +
+                        REVENUE_LABEL_TEXT_KEY + "," +
+                        REVENUE_KEY +
+                    " ) VALUES (" +
+                        "?" + "," +
+                        "?" + "," +
+                        "?" + "," +
+                        "?"
+                    + ")"
+                )
 
-    protected static final String CREATE_GENERAL_REVENUE_QUERY = "INSERT INTO " + GENERAL_REVENUES_KEY +
-            " (" +
-                IDENTIFIER_KEY + "," +
-                REVENUE_DATE_KEY + "," +
-                REVENUE_TITLE_KEY + "," +
-                REVENUE_VALUE_KEY + "," +
-                REVENUE_DESCRIPTION_KEY + "," +
-                OWNER_KEY + "," +
-            " ) VALUES (" +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?"
-            + ")";
+        protected const val GET_PROJECT_REVENUE_QUERY: String =
+            ("SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE "
+                    + IDENTIFIER_KEY + "='?'" + " AND " + OWNER_KEY + "='?'")
 
-    protected static final String ATTACH_LABEL_TO_REVENUE_QUERY = "INSERT INTO " + REVENUE_LABELS_KEY +
-            " (" +
-                IDENTIFIER_KEY + "," +
-                REVENUE_LABEL_COLOR_KEY + "," +
-                REVENUE_LABEL_TEXT_KEY + "," +
-                REVENUE_KEY +
-            " ) VALUES (" +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?"
-            + ")";
+        private const val GET_PROJECT_REVENUE_EXTRA_INFO_QUERY = ("SELECT * FROM %s" + " WHERE " + ProjectRevenue.PROJECT_REVENUE_KEY + "='?'")
 
-    protected static final String GET_PROJECT_REVENUE_QUERY = "SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE "
-            + IDENTIFIER_KEY + "='?'" + " AND " + OWNER_KEY + "='?'";
+        protected val GET_INITIAL_REVENUE_QUERY: String = String.format(GET_PROJECT_REVENUE_EXTRA_INFO_QUERY, InitialRevenue.INITIAL_REVENUES_KEY)
 
-    private static final String GET_PROJECT_REVENUE_EXTRA_INFO_QUERY = "SELECT * FROM %s" + " WHERE "
-            + PROJECT_REVENUE_KEY + "='?'";
+        protected val GET_TICKETS_QUERY: String = String.format(GET_PROJECT_REVENUE_EXTRA_INFO_QUERY, TICKET_REVENUES_KEY)
 
-    protected static final String GET_INITIAL_REVENUE_QUERY = format(GET_PROJECT_REVENUE_EXTRA_INFO_QUERY, INITIAL_REVENUES_KEY);
+        protected const val ATTACH_TICKET_TO_PROJECT_QUERY: String = (
+                "INSERT INTO " + TICKET_REVENUES_KEY +
+                        " (" +
+                            IDENTIFIER_KEY + "," +
+                            REVENUE_DATE_KEY + "," +
+                            REVENUE_TITLE_KEY + "," +
+                            REVENUE_VALUE_KEY + "," +
+                            REVENUE_DESCRIPTION_KEY + "," +
+                            CLOSING_DATE_KEY + "," +
+                            OWNER_KEY + "," +
+                        ProjectRevenue.PROJECT_REVENUE_KEY +
+                            " ) VALUES (" +
+                            "?" + "," +
+                            "?" + "," +
+                            "?" + "," +
+                            "?" + "," +
+                            "?" + "," +
+                            "?" + "," +
+                            "?" + "," +
+                            "?"
+                        + ")"
+                )
 
-    protected static final String GET_TICKETS_QUERY = format(GET_PROJECT_REVENUE_EXTRA_INFO_QUERY, TICKET_REVENUES_KEY);
-
-    protected static final String ATTACH_TICKET_TO_PROJECT_QUERY = "INSERT INTO " + TICKET_REVENUES_KEY +
-            " (" +
-                IDENTIFIER_KEY + "," +
-                REVENUE_DATE_KEY + "," +
-                REVENUE_TITLE_KEY + "," +
-                REVENUE_VALUE_KEY + "," +
-                REVENUE_DESCRIPTION_KEY + "," +
-                CLOSING_DATE_KEY + "," +
-                OWNER_KEY + "," +
-                PROJECT_REVENUE_KEY +
-            " ) VALUES (" +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?" + "," +
-                "?"
-            + ")";
-
-    protected static final String DELETE_REVENUE_QUERY = "DELETE FROM %s" + " WHERE " + IDENTIFIER_KEY + "='?'";
-
-    public LRevenuesController(String userId, String userToken) {
-        super(userId, userToken);
-    }
-
-    public abstract JSONArray list(String userId, String userToken);
-
-    public abstract void createProjectRevenue(String title, double value, long revenueDate);
-
-    public abstract void createGeneralRevenue(String title, String description, double value, long revenueDate,
-                                              List<RevenueLabel> labels);
-
-    public ProjectRevenue getProjectRevenue(ProjectRevenue revenue) {
-        return new ProjectRevenue(getProjectRevenue(revenue.getId()));
-    }
-
-    public abstract JSONObject getProjectRevenue(String revenueId);
-
-    public void addTicketToProjectRevenue(ProjectRevenue revenue, String ticketTitle, double ticketValue,
-                                          String ticketDescription, long openingDate) {
-        addTicketToProjectRevenue(revenue.getId(), ticketTitle, ticketValue, ticketDescription, openingDate);
+        protected const val DELETE_REVENUE_QUERY: String = "DELETE FROM %s WHERE $IDENTIFIER_KEY='?'"
+        
     }
     
-    public void addTicketToProjectRevenue(String revenueId, String ticketTitle, double ticketValue,
-                                          String ticketDescription, long openingDate) {
-        addTicketToProjectRevenue(revenueId, ticketTitle, ticketValue, ticketDescription, openingDate, -1);
+    fun list(
+        userId: String,
+        userToken: String,
+    ): JSONArray?
+
+    fun createProjectRevenue(
+        title: String,
+        value: Double,
+        revenueDate: Long,
+    )
+
+    fun createGeneralRevenue(
+        title: String,
+        description: String,
+        value: Double,
+        revenueDate: Long,
+        labels: List<RevenueLabel?>,
+    )
+
+    fun getProjectRevenue(
+        revenue: ProjectRevenue
+    ): ProjectRevenue {
+        return ProjectRevenue(getProjectRevenue(revenue.id))
     }
 
-    public void addTicketToProjectRevenue(ProjectRevenue revenue, String ticketTitle, double ticketValue,
-                                          String ticketDescription, long openingDate, long closingDate) {
-        addTicketToProjectRevenue(revenue.getId(), ticketTitle, ticketValue, ticketDescription, openingDate, closingDate);
+    fun getProjectRevenue(
+        revenueId: String
+    ): JSONObject
+
+    fun addTicketToProjectRevenue(
+        revenue: ProjectRevenue,
+        ticketTitle: String,
+        ticketValue: Double,
+        ticketDescription: String,
+        openingDate: Long
+    ) {
+        addTicketToProjectRevenue(
+            revenueId = revenue.id,
+            ticketTitle = ticketTitle,
+            ticketValue = ticketValue,
+            ticketDescription = ticketDescription,
+            openingDate = openingDate
+        )
     }
 
-    public abstract void addTicketToProjectRevenue(String revenueId, String ticketTitle,
-                                                   double ticketValue, String ticketDescription, long openingDate,
-                                                   long closingDate);
-
-    public void closeProjectRevenueTicket(ProjectRevenue revenue, TicketRevenue ticket) {
-        closeProjectRevenueTicket(revenue.getId(), ticket.getId());
+    fun addTicketToProjectRevenue(
+        revenueId: String,
+        ticketTitle: String,
+        ticketValue: Double,
+        ticketDescription: String,
+        openingDate: Long
+    ) {
+        addTicketToProjectRevenue(
+            revenueId = revenueId,
+            ticketTitle = ticketTitle,
+            ticketValue = ticketValue,
+            ticketDescription = ticketDescription,
+            openingDate = openingDate,
+            closingDate = -1
+        )
     }
 
-    public abstract void closeProjectRevenueTicket(String revenueId, String ticketId);
-
-    public void deleteProjectRevenueTicket(ProjectRevenue revenue, TicketRevenue ticket) {
-        deleteProjectRevenueTicket(revenue.getId(), ticket.getId());
+    fun addTicketToProjectRevenue(
+        revenue: ProjectRevenue,
+        ticketTitle: String,
+        ticketValue: Double,
+        ticketDescription: String,
+        openingDate: Long,
+        closingDate: Long
+    ) {
+        addTicketToProjectRevenue(
+            revenueId = revenue.id,
+            ticketTitle = ticketTitle,
+            ticketValue = ticketValue,
+            ticketDescription = ticketDescription,
+            openingDate = openingDate,
+            closingDate = closingDate
+        )
     }
 
-    public abstract void deleteProjectRevenueTicket(String revenueId, String ticketId);
+    fun addTicketToProjectRevenue(
+        revenueId: String,
+        ticketTitle: String,
+        ticketValue: Double,
+        ticketDescription: String,
+        openingDate: Long,
+        closingDate: Long
+    )
 
-    public void deleteProjectRevenue(ProjectRevenue revenue) {
-        deleteProjectRevenue(revenue.getId());
+    fun closeProjectRevenueTicket(
+        revenue: ProjectRevenue,
+        ticket: TicketRevenue
+    ) {
+        closeProjectRevenueTicket(
+            revenueId = revenue.id,
+            ticketId = ticket.id
+        )
     }
 
-    public void deleteProjectRevenue(String revenueId) {
-        deleteRevenue(PROJECT_REVENUES_KEY, revenueId);
+    fun closeProjectRevenueTicket(
+        revenueId: String,
+        ticketId: String
+    )
+
+    fun deleteProjectRevenueTicket(
+        revenue: ProjectRevenue,
+        ticket: TicketRevenue
+    ) {
+        deleteProjectRevenueTicket(
+            revenueId = revenue.id,
+            ticketId = ticket.id
+        )
     }
 
-    public void deleteGeneralRevenue(GeneralRevenue revenue) {
-        deleteGeneralRevenue(revenue.getId());
+    fun deleteProjectRevenueTicket(
+        revenueId: String,
+        ticketId: String
+    )
+
+    fun deleteProjectRevenue(
+        revenue: ProjectRevenue
+    ) {
+        deleteProjectRevenue(
+            revenueId = revenue.id
+        )
     }
 
-    public void deleteGeneralRevenue(String revenueId) {
-        deleteRevenue(GENERAL_REVENUES_KEY, revenueId);
+    fun deleteProjectRevenue(
+        revenueId: String
+    ) {
+        deleteRevenue(
+            table = PROJECT_REVENUES_KEY,
+            revenueId = revenueId
+        )
     }
 
-    public void deleteTicket(TicketRevenue ticket) {
-        deleteTicket(ticket.getId());
+    fun deleteGeneralRevenue(
+        revenue: GeneralRevenue
+    ) {
+        deleteGeneralRevenue(
+            revenueId = revenue.id
+        )
     }
 
-    public void deleteTicket(String revenueId) {
-        deleteRevenue(TICKET_REVENUES_KEY, revenueId);
+    fun deleteGeneralRevenue(
+        revenueId: String
+    ) {
+        deleteRevenue(
+            table = GENERAL_REVENUES_KEY,
+            revenueId = revenueId
+        )
+    }
+
+    fun deleteTicket(
+        ticket: TicketRevenue
+    ) {
+        deleteTicket(
+            revenueId = ticket.id
+        )
+    }
+
+    fun deleteTicket(
+        revenueId: String
+    ) {
+        deleteRevenue(
+            table = TICKET_REVENUES_KEY,
+            revenueId = revenueId
+        )
     }
 
     //String.format("Ciao %s a", "c")
-    protected abstract void deleteRevenue(String table, String revenueId);
+    fun deleteRevenue(
+        table: String,
+        revenueId: String
+    )
     
 }
