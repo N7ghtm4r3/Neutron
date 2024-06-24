@@ -1,5 +1,6 @@
 package com.tecknobit.neutroncore.helpers;
 
+import com.tecknobit.apimanager.annotations.Structure;
 import com.tecknobit.apimanager.formatters.JsonHelper;
 import com.tecknobit.neutroncore.records.User;
 
@@ -10,6 +11,7 @@ import static com.tecknobit.neutroncore.records.User.ApplicationTheme.Auto;
 import static com.tecknobit.neutroncore.records.User.NeutronCurrency.DOLLAR;
 import static com.tecknobit.neutroncore.records.User.UserStorage.*;
 
+@Structure
 public abstract class LocalUser {
 
     protected static final String PREFERENCES_FILE = "Neutron";

@@ -1,6 +1,7 @@
 package com.tecknobit.neutroncore.helpers
 
 import com.tecknobit.apimanager.annotations.RequestPath
+import com.tecknobit.apimanager.annotations.Structure
 import com.tecknobit.apimanager.annotations.Wrapper
 import com.tecknobit.apimanager.apis.APIRequest.Params
 import com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*
@@ -33,6 +34,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.io.File
 
+@Structure
 open class NeutronRequester(
     host: String,
     userId: String? = null,
