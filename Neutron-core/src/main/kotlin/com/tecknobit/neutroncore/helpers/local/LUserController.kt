@@ -9,25 +9,26 @@ interface LUserController : LNeutronController {
 
     companion object {
 
-        const val CREATE_USERS_TABLE: String = ("CREATE TABLE IF NOT EXISTS " + USERS_KEY +
-                " (\n" +
-                    IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
-                    CURRENCY_KEY + " TEXT CHECK (" + CURRENCY_KEY +
-                        " IN (" +
-                            "'EURO', " +
-                            "'DOLLAR', " +
-                            "'POUND_STERLING', " +
-                            "'JAPANESE_YEN', " +
-                            "'CHINESE_YEN'" +
-                        ")" +
-                    ")" + " DEFAULT 'DOLLAR'" + ",\n" +
-                    EMAIL_KEY + " VARCHAR(75) UNIQUE NOT NULL" + ",\n" +
-                    LANGUAGE_KEY + " VARCHAR(2) DEFAULT 'en'" + ",\n" +
-                    NAME_KEY + " VARCHAR(20) NOT NULL" + ",\n" +
-                    PASSWORD_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
-                    PROFILE_PIC_KEY + " TEXT NOT NULL" + ",\n" +
-                    SURNAME_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
-                    TOKEN_KEY + " VARCHAR(32) UNIQUE NOT NULL"
+        const val CREATE_USERS_TABLE: String = (
+                "CREATE TABLE IF NOT EXISTS " + USERS_KEY +
+                    " (\n" +
+                        IDENTIFIER_KEY + " VARCHAR(32) PRIMARY KEY" + ",\n" +
+                        CURRENCY_KEY + " TEXT CHECK (" + CURRENCY_KEY +
+                            " IN (" +
+                                "'EURO', " +
+                                "'DOLLAR', " +
+                                "'POUND_STERLING', " +
+                                "'JAPANESE_YEN', " +
+                                "'CHINESE_YEN'" +
+                            ")" +
+                        ")" + " DEFAULT 'DOLLAR'" + ",\n" +
+                        EMAIL_KEY + " VARCHAR(75) UNIQUE NOT NULL" + ",\n" +
+                        LANGUAGE_KEY + " VARCHAR(2) DEFAULT 'en'" + ",\n" +
+                        NAME_KEY + " VARCHAR(20) NOT NULL" + ",\n" +
+                        PASSWORD_KEY + " VARCHAR(32) NOT NULL" + ",\n" +
+                        PROFILE_PIC_KEY + " TEXT NOT NULL" + ",\n" +
+                        SURNAME_KEY + " VARCHAR(30) NOT NULL" + ",\n" +
+                        TOKEN_KEY + " VARCHAR(32) UNIQUE NOT NULL"
                 + ");")
 
         const val SIGN_UP_QUERY: String = ("INSERT INTO " + USERS_KEY +
@@ -69,20 +70,20 @@ interface LUserController : LNeutronController {
         password: String,
         language: String,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     )
 
     fun signIn(
         email: String,
         password: String,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     )
 
     fun changeProfilePic(
         newProfilePic: String,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     ) {
         changeUserInfo(
             key = PROFILE_PIC_KEY,
@@ -95,7 +96,7 @@ interface LUserController : LNeutronController {
     fun changeEmail(
         newEmail: String,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     ) {
         changeUserInfo(
             key = EMAIL_KEY,
@@ -108,7 +109,7 @@ interface LUserController : LNeutronController {
     fun changePassword(
         newPassword: String,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     ) {
         changeUserInfo(
             key = PASSWORD_KEY,
@@ -121,7 +122,7 @@ interface LUserController : LNeutronController {
     fun changeLanguage(
         newLanguage: String,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     ) {
         changeUserInfo(
             key = LANGUAGE_KEY,
@@ -134,7 +135,7 @@ interface LUserController : LNeutronController {
     fun changeCurrency(
         newCurrency: NeutronCurrency,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     ) {
         changeUserInfo(
             key = CURRENCY_KEY,
@@ -148,12 +149,12 @@ interface LUserController : LNeutronController {
         key: String,
         newInfo: String,
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     )
 
     fun deleteAccount(
         onSuccess: (JsonHelper) -> Unit = {},
-        onFailure: (JsonHelper) -> Unit = {},
+        onFailure: (JsonHelper) -> Unit = {}
     )
 
     fun hash(
