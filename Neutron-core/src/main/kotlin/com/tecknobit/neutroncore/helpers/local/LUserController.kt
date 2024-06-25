@@ -1,8 +1,9 @@
 package com.tecknobit.neutroncore.helpers.local
 
+import com.tecknobit.apimanager.apis.APIRequest.SHA256_ALGORITHM
+import com.tecknobit.apimanager.apis.APIRequest.base64Digest
 import com.tecknobit.apimanager.formatters.JsonHelper
 import com.tecknobit.neutroncore.records.User.*
-import java.io.File
 
 interface LUserController : LNeutronController {
 
@@ -51,13 +52,13 @@ interface LUserController : LNeutronController {
                 + ")")
 
         const val SIGN_IN_QUERY: String = "SELECT * FROM " + USERS_KEY +
-                " WHERE " + IDENTIFIER_KEY + "='?'" + " AND " + TOKEN_KEY + "='?'"
+                " WHERE " + EMAIL_KEY + "=?" + " AND " + PASSWORD_KEY + "=?"
 
         const val CHANGE_USER_INFO_QUERY: String = "UPDATE " + USERS_KEY +
-                " SET %s = '?' WHERE " + IDENTIFIER_KEY + "='?'" + " AND " + TOKEN_KEY + "='?'"
+                " SET %s = ? WHERE " + IDENTIFIER_KEY + "=?" + " AND " + TOKEN_KEY + "=?"
 
         const val DELETE_USER: String = "DELETE FROM " + USERS_KEY +
-                " WHERE " + IDENTIFIER_KEY + "='?'" + " AND " + TOKEN_KEY + "='?'"
+                " WHERE " + IDENTIFIER_KEY + "=?" + " AND " + TOKEN_KEY + "=?"
 
     }
 
@@ -79,10 +80,17 @@ interface LUserController : LNeutronController {
     )
 
     fun changeProfilePic(
-        newProfilePic: File?,
+        newProfilePic: String,
         onSuccess: (JsonHelper) -> Unit = {},
         onFailure: (JsonHelper) -> Unit = {},
-    )
+    ) {
+        changeUserInfo(
+            key = PROFILE_PIC_KEY,
+            newInfo = newProfilePic,
+            onSuccess = onSuccess,
+            onFailure = onFailure
+        )
+    }
 
     fun changeEmail(
         newEmail: String,
@@ -104,7 +112,7 @@ interface LUserController : LNeutronController {
     ) {
         changeUserInfo(
             key = PASSWORD_KEY,
-            newInfo = newPassword,
+            newInfo = hash(newPassword),
             onSuccess = onSuccess,
             onFailure = onFailure
         )
@@ -136,7 +144,6 @@ interface LUserController : LNeutronController {
         )
     }
 
-    //String.format("Ciao %s a", "c")
     fun changeUserInfo(
         key: String,
         newInfo: String,
@@ -148,5 +155,11 @@ interface LUserController : LNeutronController {
         onSuccess: (JsonHelper) -> Unit = {},
         onFailure: (JsonHelper) -> Unit = {},
     )
+
+    fun hash(
+        value: String
+    ) : String {
+        return base64Digest(value, SHA256_ALGORITHM)
+    }
 
 }

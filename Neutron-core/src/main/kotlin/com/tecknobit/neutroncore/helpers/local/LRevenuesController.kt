@@ -82,14 +82,14 @@ interface LRevenuesController : LNeutronController {
                     + ");"
                 )
 
-        private const val LIST_REVENUES_QUERY = "SELECT * FROM %s WHERE $OWNER_KEY='?'"
+        private const val LIST_REVENUES_QUERY = "SELECT * FROM %s WHERE $OWNER_KEY=?"
 
         protected val LIST_PROJECT_REVENUES_QUERY: String = String.format(LIST_REVENUES_QUERY, PROJECT_REVENUES_KEY)
 
         protected val LIST_GENERAL_REVENUES_QUERY: String = String.format(LIST_REVENUES_QUERY, GENERAL_REVENUES_KEY)
 
         protected const val GET_REVENUE_LABELS_QUERY: String = "SELECT * FROM " + RevenueLabel.REVENUE_LABELS_KEY +
-                " WHERE " + REVENUE_KEY + "='?'"
+                " WHERE " + REVENUE_KEY + "=?"
 
         protected const val CREATE_PROJECT_REVENUE_QUERY: String = ("INSERT INTO " + PROJECT_REVENUES_KEY +
                     " (" +
@@ -158,9 +158,9 @@ interface LRevenuesController : LNeutronController {
 
         protected const val GET_PROJECT_REVENUE_QUERY: String =
             ("SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE "
-                    + IDENTIFIER_KEY + "='?'" + " AND " + OWNER_KEY + "='?'")
+                    + IDENTIFIER_KEY + "=?" + " AND " + OWNER_KEY + "=?")
 
-        private const val GET_PROJECT_REVENUE_EXTRA_INFO_QUERY = ("SELECT * FROM %s" + " WHERE " + ProjectRevenue.PROJECT_REVENUE_KEY + "='?'")
+        private const val GET_PROJECT_REVENUE_EXTRA_INFO_QUERY = ("SELECT * FROM %s" + " WHERE " + ProjectRevenue.PROJECT_REVENUE_KEY + "=?")
 
         protected val GET_INITIAL_REVENUE_QUERY: String = String.format(GET_PROJECT_REVENUE_EXTRA_INFO_QUERY, InitialRevenue.INITIAL_REVENUES_KEY)
 
@@ -189,7 +189,7 @@ interface LRevenuesController : LNeutronController {
                         + ")"
                 )
 
-        protected const val DELETE_REVENUE_QUERY: String = "DELETE FROM %s WHERE $IDENTIFIER_KEY='?'"
+        protected const val DELETE_REVENUE_QUERY: String = "DELETE FROM %s WHERE $IDENTIFIER_KEY=?"
         
     }
     

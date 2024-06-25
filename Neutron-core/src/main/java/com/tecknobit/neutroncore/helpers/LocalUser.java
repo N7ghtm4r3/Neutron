@@ -74,7 +74,7 @@ public abstract class LocalUser {
         setEmail(email);
         setPassword(password);
         setLanguage(language);
-        setCurrency(DOLLAR);
+        setCurrency(NeutronCurrency.valueOf(hResponse.getString(CURRENCY_KEY, DOLLAR.name())));
         setTheme(Auto);
         UserStorage storage;
         if(hostAddress != null)
@@ -121,7 +121,8 @@ public abstract class LocalUser {
                 this.profilePic = localProfilePicPath;
                 setPreference(PROFILE_PIC_KEY, localProfilePicPath);
             } else {
-                profilePic = hostAddress + "/" + profilePic;
+                if(!hasLocalStorageSet())
+                    profilePic = hostAddress + "/" + profilePic;
                 setPreference(PROFILE_PIC_KEY, profilePic);
                 this.profilePic = profilePic;
             }
