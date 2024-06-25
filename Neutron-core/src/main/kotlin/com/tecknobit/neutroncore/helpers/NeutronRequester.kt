@@ -10,8 +10,6 @@ import com.tecknobit.equinox.Requester
 import com.tecknobit.neutroncore.helpers.Endpoints.*
 import com.tecknobit.neutroncore.helpers.InputValidator.DEFAULT_LANGUAGE
 import com.tecknobit.neutroncore.helpers.InputValidator.isLanguageValid
-import com.tecknobit.neutroncore.records.TransferPayload.USER_DETAILS_KEY
-import com.tecknobit.neutroncore.records.User
 import com.tecknobit.neutroncore.records.User.*
 import com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_DESCRIPTION_KEY
 import com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_LABELS_KEY
@@ -482,33 +480,6 @@ open class NeutronRequester(
         endpoint: String = ""
     ): String {
         return "$USERS_KEY/$userId$endpoint"
-    }
-
-    @RequestPath(path = "/api/v1/transferIn", method = POST)
-    fun transferIn(
-        serverSecret: String,
-        user: User,
-        revenues: List<Revenue>
-    ): JSONObject {
-        val payload = Params()
-        payload.addParam(SERVER_SECRET_KEY, serverSecret)
-        payload.addParam(USER_DETAILS_KEY, user.toTransferTarget())
-        val jRevenues = JSONArray()
-        revenues.forEach { revenue ->
-            jRevenues.put(revenue.toTransferTarget())
-        }
-        payload.addParam(REVENUES_KEY, jRevenues)
-        return execPost(
-            endpoint = TRANSFER_IN_ENDPOINT,
-            payload = payload
-        )
-    }
-
-    @RequestPath(path = "/api/v1/transferOut/{id}", method = GET)
-    fun transferOut(): JSONObject {
-        return execGet(
-            endpoint = "$TRANSFER_OUT_ENDPOINT/$userId"
-        )
     }
 
 }

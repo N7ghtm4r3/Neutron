@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -114,20 +113,6 @@ public class ProjectRevenue extends Revenue {
             if (ticket.getTitle().equals(ticketTitle))
                 return true;
         return false;
-    }
-
-    @Override
-    public JSONObject toTransferTarget() {
-        JSONObject transferTarget = new JSONObject()
-                .put(IDENTIFIER_KEY, id)
-                .put(REVENUE_TITLE_KEY, title)
-                .put(REVENUE_DATE_KEY, revenueDate);
-        JSONArray jTickets = new JSONArray();
-        for (TicketRevenue ticket : tickets)
-            jTickets.put(ticket.toTransferTarget());
-        transferTarget.put(TICKETS_KEY, jTickets);
-        transferTarget.put(INITIAL_REVENUE_KEY, initialRevenue.toTransferTarget());
-        return transferTarget;
     }
 
 }

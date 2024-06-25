@@ -12,12 +12,11 @@ import java.util.Locale;
 import static com.tecknobit.neutroncore.records.User.ApplicationTheme.Auto;
 import static com.tecknobit.neutroncore.records.User.NeutronCurrency.DOLLAR;
 import static com.tecknobit.neutroncore.records.User.USERS_KEY;
-import static com.tecknobit.neutroncore.records.User.UserStorage.Online;
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
 @Table(name = USERS_KEY)
-public class User extends NeutronItem implements Transferable {
+public class User extends NeutronItem {
 
     //TODO: CHECK TO MOVE
     public static final String USERS_KEY = "users";
@@ -64,14 +63,6 @@ public class User extends NeutronItem implements Transferable {
                 default -> Auto;
             };
         }
-
-    }
-
-    public enum UserStorage {
-
-        Local,
-
-        Online
 
     }
 
@@ -192,20 +183,16 @@ public class User extends NeutronItem implements Transferable {
     // TODO: CHECK TO SET AS FINAL
     private ApplicationTheme theme;
 
-    @Transient
-    // TODO: CHECK TO SET AS FINAL
-    private UserStorage storage;
-
     public User() {
         this(null, null, null, null, null, null, null);
     }
 
     public User(String id, String token, String name, String surname, String email, String password, String language) {
-        this(id, token, name, surname, email, password, DEFAULT_PROFILE_PIC, language, DOLLAR, Auto, null);
+        this(id, token, name, surname, email, password, DEFAULT_PROFILE_PIC, language, DOLLAR, Auto);
     }
 
     public User(String id, String token, String name, String surname, String email, String password, String profilePic,
-                String language, NeutronCurrency currency, ApplicationTheme theme, UserStorage storage) {
+                String language, NeutronCurrency currency, ApplicationTheme theme) {
         super(id);
         this.token = token;
         this.name = name;
@@ -216,7 +203,6 @@ public class User extends NeutronItem implements Transferable {
         this.currency = currency;
         this.language = language;
         this.theme = theme;
-        this.storage = storage;
     }
 
     public User(JSONObject jUser) {
@@ -230,7 +216,6 @@ public class User extends NeutronItem implements Transferable {
         currency = NeutronCurrency.getInstance(hItem.getString(CURRENCY_KEY));
         language = hItem.getString(LANGUAGE_KEY);
         theme = Auto;
-        storage = Online;
     }
 
     public String getToken() {
@@ -302,29 +287,10 @@ public class User extends NeutronItem implements Transferable {
         this.theme = theme;
     }
 
-    public UserStorage getStorage() {
-        return storage;
-    }
-
-    // TODO: TO REMOVE
-    public void setStorage(UserStorage storage) {
-        this.storage = storage;
-    }
-
     public static User getInstance(JSONObject jUser) {
         if (jUser != null)
             return new User(jUser);
         return null;
-    }
-
-    @Override
-    public JSONObject toTransferTarget() {
-        return new JSONObject()
-                .put(NAME_KEY, name)
-                .put(SURNAME_KEY, surname)
-                .put(EMAIL_KEY, email)
-                .put(PASSWORD_KEY, password)
-                .put(LANGUAGE_KEY, language);
     }
 
 }

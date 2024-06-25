@@ -117,14 +117,6 @@ public class TicketRevenue extends GeneralRevenue {
         return super.getLabels();
     }
 
-    @Override
-    public JSONObject toTransferTarget() {
-        JSONObject transferTarget = super.toTransferTarget();
-        transferTarget.put(CLOSING_DATE_KEY, closingDate);
-        transferTarget.remove(REVENUE_LABELS_KEY);
-        return transferTarget;
-    }
-
     @Returner
     public static ArrayList<TicketRevenue> returnTickets(JSONArray jTickets) {
         ArrayList<TicketRevenue> tickets = new ArrayList<>();

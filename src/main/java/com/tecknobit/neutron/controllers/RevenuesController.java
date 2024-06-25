@@ -4,18 +4,19 @@ package com.tecknobit.neutron.controllers;
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.neutron.helpers.services.RevenuesHelper;
 import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
-import com.tecknobit.neutroncore.records.revenues.Revenue;
 import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
 import com.tecknobit.neutroncore.records.revenues.TicketRevenue;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
+import static com.tecknobit.apimanager.apis.sockets.SocketManager.StandardResponseCode.SUCCESSFUL;
+import static com.tecknobit.equinox.Requester.RESPONSE_MESSAGE_KEY;
+import static com.tecknobit.equinox.Requester.RESPONSE_STATUS_KEY;
 import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.Endpoints.TICKETS_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.InputValidator.*;
@@ -50,12 +51,12 @@ public class RevenuesController extends NeutronController {
             @RequestHeader(TOKEN_KEY) String token
     ) {
         if(isMe(userId, token)) {
-            List<Revenue> revenues = revenuesHelper.getRevenues(userId);
-            JSONObject response = new JSONObject();
-            response.put(REVENUES_KEY, revenues);
-            response.put(CURRENCY_KEY, me.getCurrency().name());
-            response.put(PROFILE_PIC_KEY, me.getProfilePic());
-            return (T) successResponse(response);
+            HashMap<String, T> response = new HashMap<>();
+            response.put(CURRENCY_KEY, (T) me.getCurrency().name());
+            response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
+            response.put(RESPONSE_MESSAGE_KEY, (T) revenuesHelper.getRevenues(userId));
+            response.put(RESPONSE_STATUS_KEY, (T) SUCCESSFUL);
+            return (T) response;
         } else
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }

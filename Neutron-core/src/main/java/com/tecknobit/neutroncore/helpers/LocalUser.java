@@ -9,14 +9,11 @@ import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.*;
 import static com.tecknobit.neutroncore.records.User.ApplicationTheme.Auto;
 import static com.tecknobit.neutroncore.records.User.NeutronCurrency.DOLLAR;
-import static com.tecknobit.neutroncore.records.User.UserStorage.*;
 
 @Structure
 public abstract class LocalUser {
 
     protected static final String PREFERENCES_FILE = "Neutron";
-
-    protected static final String LOCAL_PROFILE_PIC_PATH = "local_profile_pic_path";
 
     protected String hostAddress;
 
@@ -25,8 +22,6 @@ public abstract class LocalUser {
     protected String userToken;
 
     protected String profilePic;
-
-    protected String localProfilePicPath;
 
     protected String name;
 
@@ -42,8 +37,6 @@ public abstract class LocalUser {
 
     protected ApplicationTheme theme;
 
-    protected UserStorage storage;
-
     protected void initLocalUser() {
         hostAddress = getHostAddress();
         userId = getPreference(IDENTIFIER_KEY);
@@ -56,11 +49,6 @@ public abstract class LocalUser {
         language = getPreference(LANGUAGE_KEY);
         currency = NeutronCurrency.getInstance(getPreference(CURRENCY_KEY));
         theme = ApplicationTheme.getInstance(getPreference(THEME_KEY));
-        String userStorage = getPreference(USER_STORAGE_KEY);
-        if(userStorage != null)
-            storage = valueOf(userStorage);
-        else
-            storage = Local;
     }
 
     public void insertNewUser(String hostAddress, String name, String surname, String email, String password,
@@ -76,12 +64,6 @@ public abstract class LocalUser {
         setLanguage(language);
         setCurrency(NeutronCurrency.valueOf(hResponse.getString(CURRENCY_KEY, DOLLAR.name())));
         setTheme(Auto);
-        UserStorage storage;
-        if(hostAddress != null)
-            storage = Online;
-        else
-            storage = Local;
-        setStorage(storage);
         initLocalUser();
     }
 
@@ -117,21 +99,10 @@ public abstract class LocalUser {
 
     public void setProfilePic(String profilePic) {
         if (this.profilePic == null || !this.profilePic.equals(profilePic)) {
-            if (profilePic == null) {
-                this.profilePic = localProfilePicPath;
-                setPreference(PROFILE_PIC_KEY, localProfilePicPath);
-            } else {
-                if(!hasLocalStorageSet())
-                    profilePic = hostAddress + "/" + profilePic;
-                setPreference(PROFILE_PIC_KEY, profilePic);
-                this.profilePic = profilePic;
-            }
+            profilePic = hostAddress + "/" + profilePic;
+            setPreference(PROFILE_PIC_KEY, profilePic);
+            this.profilePic = profilePic;
         }
-    }
-
-    public void setLocalProfilePicPath(String localProfilePicPath) {
-        setPreference(LOCAL_PROFILE_PIC_PATH, localProfilePicPath);
-        this.localProfilePicPath = localProfilePicPath;
     }
 
     public String getProfilePic() {
@@ -207,25 +178,12 @@ public abstract class LocalUser {
         return theme;
     }
 
-    public void setStorage(UserStorage storage) {
-        setPreference(USER_STORAGE_KEY, storage.name());
-        this.storage = storage;
-    }
-
-    public UserStorage getStorage() {
-        return storage;
-    }
-
     protected abstract void setPreference(String key, String value);
 
     protected abstract String getPreference(String key);
 
     public boolean isAuthenticated() {
         return userId != null;
-    }
-
-    public boolean hasLocalStorageSet() {
-        return storage == Local;
     }
 
     public abstract void clear();
@@ -241,8 +199,7 @@ public abstract class LocalUser {
                 profilePic,
                 language,
                 currency,
-                theme,
-                storage
+                theme
         );
     }
 

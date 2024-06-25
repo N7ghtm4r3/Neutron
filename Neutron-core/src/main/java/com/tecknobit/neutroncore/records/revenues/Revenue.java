@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.annotations.Returner;
 import com.tecknobit.apimanager.annotations.Structure;
 import com.tecknobit.neutroncore.records.NeutronItem;
-import com.tecknobit.neutroncore.records.Transferable;
 import com.tecknobit.neutroncore.records.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
@@ -22,7 +21,7 @@ import static com.tecknobit.neutroncore.records.revenues.InitialRevenue.INITIAL_
 
 @Structure
 @MappedSuperclass
-public abstract class Revenue extends NeutronItem implements Transferable {
+public abstract class Revenue extends NeutronItem {
 
     public static final String REVENUES_KEY = "revenues";
 
