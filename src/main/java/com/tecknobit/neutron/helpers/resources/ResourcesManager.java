@@ -16,8 +16,14 @@ import java.util.Objects;
  */
 public interface ResourcesManager {
 
+    /**
+     * {@code RESOURCES_PATH} the folder where the resources will be saved
+     */
     String RESOURCES_PATH = "resources/";
 
+    /**
+     * {@code PROFILES_DIRECTORY} the folder where the profile pics will be saved
+     */
     String PROFILES_DIRECTORY = "profiles";
 
     /**

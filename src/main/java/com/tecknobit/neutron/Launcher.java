@@ -24,6 +24,11 @@ import static com.tecknobit.equinox.ResourcesProvider.CUSTOM_CONFIGURATION_FILE_
 import static com.tecknobit.equinox.ResourcesProvider.DEFAULT_CONFIGURATION_FILE_PATH;
 import static com.tecknobit.neutron.helpers.services.RevenuesHelper.refreshCurrencyRates;
 
+/**
+ * The {@code Launcher} class is useful to launch <b>Neutron's backend service</b>
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ */
 @EnableAutoConfiguration
 @SpringBootApplication
 @PropertySources({
@@ -34,11 +39,61 @@ import static com.tecknobit.neutron.helpers.services.RevenuesHelper.refreshCurre
 @EntityScan("com.tecknobit.*")
 public class Launcher {
 
+    /**
+     * {@code protector} the instance to launch the server protector to manage the server accesses
+     *
+     * @apiNote the commands scheme:
+     * <ul>
+     *     <li>
+     *         <b>rss</b> -> launch your java application with "rss" to recreate the server secret <br>
+     *                       e.g java -jar Neutron.jar rss
+     *     </li>
+     *     <li>
+     *         <b>dss</b> -> launch your java application with "dss" to delete the current server secret <br>
+     *                       e.g java -jar Neutron.jar dss
+     *     </li>
+     *     <li>
+     *         <b>dssi</b> -> launch your java application with "dssi" to delete the current server secret and interrupt
+     *                        the current workflow of the server <br>
+     *                        e.g java -jar Neutron.jar dssi
+     *     </li>
+     * </ul>
+     */
     public static final ServerProtector serverProtector = new ServerProtector(
             "tecknobit/neutron/backend",
             " to correctly register a new user in the Neutron system "
     );
 
+    /**
+     * Main method to start the backend, will be created also the resources directories if not exist invoking the
+     * {@link ResourcesProvider} routine
+     *
+     * @param args: custom arguments to share with {@link SpringApplication} and with the {@link #serverProtector}
+     * @apiNote the arguments scheme:
+     * <ul>
+     *     <li>
+     *         {@link #serverProtector} ->
+     *         <ul>
+     *          <li>
+     *             <b>rss</b> -> launch your java application with "rss" to recreate the server secret <br>
+     *                       e.g java -jar Nova.jar rss
+     *             </li>
+     *              <li>
+     *                  <b>dss</b> -> launch your java application with "dss" to delete the current server secret <br>
+     *                       e.g java -jar Nova.jar dss
+     *              </li>
+     *              <li>
+     *                  <b>dssi</b> -> launch your java application with "dssi" to delete the current server secret and interrupt
+     *                        the current workflow of the server <br>
+     *                        e.g java -jar Nova.jar dssi
+     *              </li>
+     *          </ul>
+     *     </li>
+     *     <li>
+     *         {@link SpringApplication} -> see the allowed arguments <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html">here</a>
+     *     </li>
+     * </ul>
+     */
     public static void main(String[] args) throws NoSuchAlgorithmException, SaveData {
         ResourcesProvider resourcesProvider = new ResourcesProvider("resources", List.of("profiles"));
         resourcesProvider.createContainerDirectory();

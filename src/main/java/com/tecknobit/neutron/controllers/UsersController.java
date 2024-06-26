@@ -17,17 +17,31 @@ import static com.tecknobit.neutroncore.helpers.InputValidator.*;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.*;
 
+/**
+ * The {@code UsersController} class is useful to manage all the user operations
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ * @see NeutronController
+ */
 @RestController
 public class UsersController extends NeutronController {
 
+    /**
+     * {@code usersHelper} helper to manage the users database operations
+     */
     private final UsersHelper usersHelper;
 
+    /**
+     * Constructor to init the {@link UsersController} controller
+     *
+     * @param usersHelper: helper to manage the users database operations
+     */
     public UsersController(UsersHelper usersHelper) {
         this.usersHelper = usersHelper;
     }
 
     /**
-     * Method to sign up in the <b>Nova's system</b>
+     * Method to sign up in the <b>Neutron's system</b>
      *
      * @param payload: payload of the request
      * <pre>
@@ -64,7 +78,7 @@ public class UsersController extends NeutronController {
     }
 
     /**
-     * Method to sign in the <b>Nova's system</b>
+     * Method to sign in the <b>Neutron's system</b>
      *
      * @param payload: payload of the request
      * <pre>
@@ -321,6 +335,22 @@ public class UsersController extends NeutronController {
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    /**
+     * Method to change the currency of the user
+     *
+     * @param id: the identifier of the user
+     * @param token: the token of the user
+     * @param payload: payload of the request
+     * <pre>
+     *      {@code
+     *              {
+     *                  "currency": "the new currency of the user" -> [String]
+     *              }
+     *      }
+     * </pre>
+     *
+     * @return the result of the request as {@link String}
+     */
     @PatchMapping(
             path = USERS_KEY + "/{" + IDENTIFIER_KEY + "}" + CHANGE_CURRENCY_ENDPOINT,
             headers = {

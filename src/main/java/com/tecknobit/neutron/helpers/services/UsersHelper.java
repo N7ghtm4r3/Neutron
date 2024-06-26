@@ -17,18 +17,26 @@ import java.util.concurrent.Executors;
 import static com.tecknobit.apimanager.apis.APIRequest.SHA256_ALGORITHM;
 import static java.lang.System.currentTimeMillis;
 
+/**
+ * The {@code UsersHelper} class is useful to manage all the user database operations
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ * @see ResourcesManager
+ */
 @Service
 public class UsersHelper implements ResourcesManager {
 
+    /**
+     * {@code usersRepository} instance for the users repository
+     */
     @Autowired
-    private final UsersRepository usersRepository;
+    private UsersRepository usersRepository;
 
-    private final RevenuesHelper revenuesHelper;
-
-    public UsersHelper(UsersRepository usersRepository, RevenuesHelper revenuesHelper) {
-        this.usersRepository = usersRepository;
-        this.revenuesHelper = revenuesHelper;
-    }
+    /**
+     * {@code revenuesHelper} instance for the revenues repository
+     */
+    @Autowired
+    private RevenuesHelper revenuesHelper;
 
     /**
      * Method to sign up a new user in the Nova's system
@@ -117,6 +125,7 @@ public class UsersHelper implements ResourcesManager {
      * Method to change the currency of the {@link User}
      *
      * @param newCurrency: the new currency of the user
+     * @param oldCurrency: the current currency of the user
      * @param userId: the identifier of the user
      */
     public void changeCurrency(String newCurrency, NeutronCurrency oldCurrency, String userId) {

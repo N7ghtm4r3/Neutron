@@ -23,10 +23,18 @@ import static com.tecknobit.equinox.Requester.RESPONSE_STATUS_KEY;
 import static com.tecknobit.neutroncore.helpers.Endpoints.BASE_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.InputValidator.DEFAULT_LANGUAGE;
 
+/**
+ * The {@code NeutronController} class is useful to give the base behavior of the <b>Neutron's controllers</b>
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ */
 @RestController
 @RequestMapping(BASE_ENDPOINT)
 abstract public class NeutronController {
 
+    /**
+     * {@code mantis} the translations manager
+     */
     protected static final Mantis mantis;
 
     static {
@@ -168,6 +176,12 @@ abstract public class NeutronController {
                 .put(RESPONSE_MESSAGE_KEY, message).toString();
     }
 
+    /**
+     * Method to generate an identifier of an item <br>
+     * No-any params required
+     *
+     * @return the identifier as {@link String}
+     */
     public static String generateIdentifier() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }

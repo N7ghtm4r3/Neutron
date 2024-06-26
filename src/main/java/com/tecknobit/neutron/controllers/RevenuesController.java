@@ -30,16 +30,38 @@ import static com.tecknobit.neutroncore.records.revenues.Revenue.*;
 import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.TICKET_IDENTIFIER_KEY;
 
+/**
+ * The {@code RevenuesController} class is useful to manage all the operations on the user revenues
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ * @see NeutronController
+ */
 @RestController
 @RequestMapping(BASE_ENDPOINT + USERS_KEY + "/{" + IDENTIFIER_KEY + "}/" + REVENUES_KEY)
 public class RevenuesController extends NeutronController {
 
+    /**
+     * {@code revenuesHelper} helper to manage the revenues database operations
+     */
     private final RevenuesHelper revenuesHelper;
 
+    /**
+     * Constructor to init the {@link RevenuesController} controller
+     *
+     * @param revenuesHelper: helper to manage the revenues database operations
+     */
     public RevenuesController(RevenuesHelper revenuesHelper) {
         this.revenuesHelper = revenuesHelper;
     }
 
+    /**
+     * Method to get the list of the user revenues</b>
+     *
+     * @param userId: the identifier of the user
+     * @param token: the token of the user
+     *
+     * @return the result of the request as {@link String}
+     */
     @GetMapping(
             headers = {
                     TOKEN_KEY
@@ -61,6 +83,28 @@ public class RevenuesController extends NeutronController {
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    /**
+     * Method to create a new revenue
+     *
+     * @param userId: the identifier of the user
+     * @param token: the token of the user
+     * @param payload: payload of the request
+     * <pre>
+     *      {@code
+     *              {
+     *                  "is_project_revenue": "whether the revenue is a project", -> [boolean]
+     *                  "value": "the amount value of the revenue", -> [double]
+     *                  "title": "the title of the revenue", -> [String]
+     *                  "revenue_date": "the insertion date of the revenue", -> [long]
+     *                  ------- if "is_project_revenue" == false ------
+     *                  "description": "the description of the revenue", -> [String]
+     *                   "labels": "the labels attached to the revenue" -> [array of RevenueLabel]
+     *              }
+     *      }
+     * </pre>
+     *
+     * @return the result of the request as {@link String}
+     */
     @PostMapping(
             headers = {
                     TOKEN_KEY
@@ -104,6 +148,15 @@ public class RevenuesController extends NeutronController {
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    /**
+     * Method to get a project revenue
+     *
+     * @param userId: the identifier of the user
+     * @param token: the token of the user
+     * @param revenueId: the identifier of the project to get
+     *
+     * @return the result of the request as {@link String}
+     */
     @GetMapping(
             path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}",
             headers = {
@@ -126,6 +179,27 @@ public class RevenuesController extends NeutronController {
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    /**
+     * Method to add a new ticket to a project
+     *
+     * @param userId: the identifier of the user
+     * @param token: the token of the user
+     * @param revenueId: the identifier of the project
+     * @param payload: payload of the request
+     * <pre>
+     *      {@code
+     *              {
+     *                  "value": "the amount value of the ticket", -> [double]
+     *                  "title": "the title of the ticket", -> [String]
+     *                  "description": "the description of the ticket", -> [String]
+     *                  "revenue_date": "the insertion date of the ticket", -> [long]
+     *                  "closing_date": "the closing date of the ticket" -> [long, default -1]
+     *              }
+     *      }
+     * </pre>
+     *
+     * @return the result of the request as {@link String}
+     */
     @PostMapping(
             path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT,
             headers = {
@@ -161,6 +235,16 @@ public class RevenuesController extends NeutronController {
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    /**
+     * Method to close a ticket
+     *
+     * @param userId: the identifier of the user
+     * @param token: the token of the user
+     * @param revenueId: the identifier of the project
+     * @param ticketId: the identifier of the ticket
+     *
+     * @return the result of the request as {@link String}
+     */
     @PatchMapping(
             path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT
                     + "/{" + TICKET_IDENTIFIER_KEY + "}",
@@ -186,6 +270,16 @@ public class RevenuesController extends NeutronController {
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    /**
+     * Method to delete a ticket
+     *
+     * @param userId: the identifier of the user
+     * @param token: the token of the user
+     * @param revenueId: the identifier of the project
+     * @param ticketId: the identifier of the ticket
+     *
+     * @return the result of the request as {@link String}
+     */
     @DeleteMapping(
             path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT
                     + "/{" + TICKET_IDENTIFIER_KEY + "}",
@@ -211,6 +305,15 @@ public class RevenuesController extends NeutronController {
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
     }
 
+    /**
+     * Method to delete a revenue
+     *
+     * @param userId: the identifier of the user
+     * @param token: the token of the user
+     * @param revenueId: the identifier of the project
+     *
+     * @return the result of the request as {@link String}
+     */
     @DeleteMapping(
             path = "/{" + REVENUE_IDENTIFIER_KEY + "}",
             headers = {

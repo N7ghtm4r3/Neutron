@@ -32,6 +32,16 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.io.File
 
+/**
+ * The **NeutronRequester** class is useful to communicate with the Neutron's backend
+ *
+ * @param host: the host where is running the Neutron's backend
+ * @param userId: the user identifier
+ * @param userToken: the user token
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ * @see Requester
+ */
 @Structure
 open class NeutronRequester(
     host: String,
@@ -243,6 +253,13 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to get the revenues of the user
+     *
+     * No-any params required
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = GET)
     fun listRevenues(): JSONObject {
         return execGet(
@@ -250,6 +267,15 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to create a new project revenue
+     *
+     * @param title: the title of the project
+     * @param value: the initial revenue value
+     * @param revenueDate: the date when the project has been created
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @Wrapper
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = POST)
     fun createProjectRevenue(
@@ -264,6 +290,17 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to create a new general revenue
+     *
+     * @param title: the title of the general revenue
+     * @param description: the description of the general revenue
+     * @param value: the amount revenue value
+     * @param revenueDate: the date when the general revenue has been created
+     * @param labels: the labels to attach to the general revenue
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @Wrapper
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = POST)
     fun createGeneralRevenue(
@@ -291,6 +328,16 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to create a new revenue
+     *
+     * @param payload: the payload to send
+     * @param title: the title of the revenue
+     * @param value: the amount revenue value
+     * @param revenueDate: the date when the revenue has been created
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = POST)
     private fun createRevenue(
         payload: Params? = null,
@@ -313,6 +360,13 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to get a project revenue
+     *
+     * @param revenue: the project revenue to get
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}", method = GET)
     fun getProjectRevenue(
         revenue: Revenue
@@ -322,6 +376,13 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to get a project revenue
+     *
+     * @param revenueId: the identifier of the project revenue to get
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}", method = GET)
     fun getProjectRevenue(
         revenueId: String
@@ -334,6 +395,14 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to add a new ticket to a project revenue
+     *
+     * @param projectRevenue: the project revenue where add the ticket
+     * @param ticketRevenue: the ticket to add to the project
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
     fun addTicketToProjectRevenue(
         projectRevenue: ProjectRevenue,
@@ -349,6 +418,18 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to add a new ticket to a project revenue
+     *
+     * @param projectRevenueId: the identifier of the project revenue where add the ticket
+     * @param ticketTitle: the title of the ticket
+     * @param ticketValue: the amount value of the ticket
+     * @param ticketDescription: the description of the ticket
+     * @param openingDate: when the ticket has been opened
+     * @param closingDate: when the ticket has been closed
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
     fun addTicketToProjectRevenue(
         projectRevenueId: String,
@@ -374,6 +455,14 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to close a ticket
+     *
+     * @param projectRevenue: the project revenue where close a ticket
+     * @param ticket: the ticket to close
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PATCH)
     fun closeProjectRevenueTicket(
         projectRevenue: ProjectRevenue,
@@ -385,6 +474,14 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to close a ticket
+     *
+     * @param projectRevenueId: the identifier of the project revenue where close a ticket
+     * @param ticketId: the identifier of the ticket to close
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PATCH)
     fun closeProjectRevenueTicket(
         projectRevenueId: String,
@@ -401,6 +498,14 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to delete a ticket
+     *
+     * @param projectRevenue: the project revenue where delete a ticket
+     * @param ticket: the ticket to delete
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = DELETE)
     fun deleteProjectRevenueTicket(
         projectRevenue: ProjectRevenue,
@@ -412,6 +517,14 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to delete a ticket
+     *
+     * @param projectRevenueId: the identifier of the project revenue where delete a ticket
+     * @param ticketId: the identifier of the ticket to delete
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = DELETE)
     fun deleteProjectRevenueTicket(
         projectRevenueId: String,
@@ -427,6 +540,13 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to delete a revenue
+     *
+     * @param revenue: the revenue to delete
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/{revenue_id}", method = DELETE)
     fun deleteRevenue(
         revenue: Revenue
@@ -436,6 +556,13 @@ open class NeutronRequester(
         )
     }
 
+    /**
+     * Function to execute the request to delete a revenue
+     *
+     * @param revenueId: the revenue identifier to delete
+     *
+     * @return the result of the request as [JSONObject]
+     */
     @RequestPath(path = "/api/v1/users/{id}/revenues/{revenue_id}", method = DELETE)
     fun deleteRevenue(
         revenueId: String

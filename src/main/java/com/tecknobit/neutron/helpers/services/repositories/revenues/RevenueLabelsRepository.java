@@ -13,10 +13,25 @@ import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_KEY;
 import static com.tecknobit.neutroncore.records.revenues.RevenueLabel.*;
 
+/**
+ * The {@code RevenueLabelsRepository} interface is useful to manage the queries for the labels of a revenue operations
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ * @see JpaRepository
+ * @see RevenueLabel
+ */
 @Service
 @Repository
 public interface RevenueLabelsRepository extends JpaRepository<RevenueLabel, String> {
 
+    /**
+     * Method to store a general revenue label
+     *
+     * @param labelId: the identifier of the label
+     * @param labelColor: the color of the label
+     * @param labelText: the text of the label
+     * @param revenueId: the identifier of the revenue where the label is attached
+     */
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(

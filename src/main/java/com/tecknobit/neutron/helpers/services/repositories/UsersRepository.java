@@ -12,6 +12,13 @@ import org.springframework.stereotype.Service;
 import static com.tecknobit.neutroncore.records.NeutronItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.records.User.*;
 
+/**
+ * The {@code UsersRepository} interface is useful to manage the queries for the users operations
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ * @see JpaRepository
+ * @see User
+ */
 @Service
 @Repository
 public interface UsersRepository extends JpaRepository<User, String> {
