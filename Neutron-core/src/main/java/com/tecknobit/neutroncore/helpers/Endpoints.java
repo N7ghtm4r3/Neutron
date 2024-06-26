@@ -1,5 +1,10 @@
 package com.tecknobit.neutroncore.helpers;
 
+/**
+ * The {@code Endpoints} class is a container with all the Neutron's endpoints
+ *
+ * @author N7ghtm4r3 - Tecknobit
+ */
 public class Endpoints {
 
     /**
@@ -57,6 +62,10 @@ public class Endpoints {
      */
     public static final String TRANSFER_OUT_ENDPOINT = "transferOut";
 
+    /**
+     * Constructor to init the {@link Endpoints} class <br>
+     * No-any params required
+     */
     private Endpoints() {}
 
 }

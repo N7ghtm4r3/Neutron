@@ -13,6 +13,9 @@ import java.util.HashMap;
  */
 public class InputValidator {
 
+    /**
+     * {@code HOST_ADDRESS_KEY} the key for the <b>"host_address"</b> field
+     */
     public static final String HOST_ADDRESS_KEY = "host_address";
 
     /**
@@ -216,14 +219,35 @@ public class InputValidator {
         }
     }
 
+    /**
+     * Method to validate a value of a revenue
+     *
+     * @param revenueValue: value to check the validity
+     *
+     * @return whether the value is valid or not as {@code boolean}
+     */
     public static boolean isRevenueValueValid(double revenueValue) {
         return revenueValue >=0;
     }
 
+    /**
+     * Method to validate a title of a revenue
+     *
+     * @param revenueTitle: title to check the validity
+     *
+     * @return whether the title is valid or not as {@code boolean}
+     */
     public static boolean isRevenueTitleValid(String revenueTitle) {
         return isInputValid(revenueTitle) && revenueTitle.length() <= REVENUE_TITLE_MAX_LENGTH;
     }
 
+    /**
+     * Method to validate a description of a revenue
+     *
+     * @param revenueDescription: description to check the validity
+     *
+     * @return whether the description is valid or not as {@code boolean}
+     */
     public static boolean isRevenueDescriptionValid(String revenueDescription) {
         return isInputValid(revenueDescription) && revenueDescription.length() <= REVENUE_DESCRIPTION_MAX_LENGTH;
     }
