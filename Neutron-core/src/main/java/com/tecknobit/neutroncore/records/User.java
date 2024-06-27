@@ -68,8 +68,7 @@ public class User extends NeutronItem {
     /**
      * {@code DEFAULT_PROFILE_PIC} the default profile pic path when the user has not set own image
      */
-    //TODO: SET THE REAL DEFAULT PROFILE PIC
-    public static final String DEFAULT_PROFILE_PIC = "profiles/defProfilePic.jpg";
+    public static final String DEFAULT_PROFILE_PIC = "profiles/defProfilePic.png";
 
     /**
      * {@code LANGUAGE_KEY} the key for the <b>"language"</b> field
