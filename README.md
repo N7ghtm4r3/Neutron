@@ -2,7 +2,7 @@
 
 **v1.0.0**
 
-This project, based on Java and the Spring Boot framework, is an open source orders and ticket revenue manager for the projects 
+This project, based on Java and the Spring Boot framework, is an open source self-hosted orders and ticket revenue manager for the projects 
 you are developing
 
 Trace your revenues with **Neutron**!
