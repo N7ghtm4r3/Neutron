@@ -78,8 +78,7 @@ public abstract class LocalUser {
     protected ApplicationTheme theme;
 
     /**
-     * Method to init the local user session <br>
-     * No-any params required
+     * Method to init the local user session 
      *
      */
     protected void initLocalUser() {
@@ -134,8 +133,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #hostAddress} instance <br>
-     * No-any params required
+     * Method to get {@link #hostAddress} instance 
      *
      * @return {@link #hostAddress} instance as {@link String}
      */
@@ -157,8 +155,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #userId} instance <br>
-     * No-any params required
+     * Method to get {@link #userId} instance 
      *
      * @return {@link #userId} instance as {@link String}
      */
@@ -177,8 +174,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #userToken} instance <br>
-     * No-any params required
+     * Method to get {@link #userToken} instance 
      *
      * @return {@link #userToken} instance as {@link String}
      */
@@ -200,8 +196,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #profilePic} instance <br>
-     * No-any params required
+     * Method to get {@link #profilePic} instance 
      *
      * @return {@link #profilePic} instance as {@link String}
      */
@@ -220,8 +215,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #name} instance <br>
-     * No-any params required
+     * Method to get {@link #name} instance 
      *
      * @return {@link #name} instance as {@link String}
      */
@@ -240,8 +234,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #surname} instance <br>
-     * No-any params required
+     * Method to get {@link #surname} instance 
      *
      * @return {@link #surname} instance as {@link String}
      */
@@ -250,8 +243,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get the complete name of the user <br>
-     * No-any params required
+     * Method to get the complete name of the user 
      *
      * @return the complete name of the user as {@link String}
      */
@@ -270,8 +262,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #email} instance <br>
-     * No-any params required
+     * Method to get {@link #email} instance 
      *
      * @return {@link #email} instance as {@link String}
      */
@@ -290,8 +281,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #password} instance <br>
-     * No-any params required
+     * Method to get {@link #password} instance 
      *
      * @return {@link #password} instance as {@link String}
      */
@@ -310,8 +300,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #language} instance <br>
-     * No-any params required
+     * Method to get {@link #language} instance 
      *
      * @return {@link #language} instance as {@link String}
      */
@@ -332,8 +321,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #currency} instance <br>
-     * No-any params required
+     * Method to get {@link #currency} instance 
      *
      * @return {@link #currency} instance as {@link NeutronCurrency}
      */
@@ -352,8 +340,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to get {@link #theme} instance <br>
-     * No-any params required
+     * Method to get {@link #theme} instance 
      *
      * @return {@link #theme} instance as {@link ApplicationTheme}
      */
@@ -378,8 +365,7 @@ public abstract class LocalUser {
     protected abstract String getPreference(String key);
 
     /**
-     * Method to get whether the user is already authenticated in a session <br>
-     * No-any params required
+     * Method to get whether the user is already authenticated in a session 
      *
      * @return whether the user is already authenticated in a session as boolean
      */
@@ -388,8 +374,7 @@ public abstract class LocalUser {
     }
 
     /**
-     * Method to clear the current local user session <br>
-     * No-any params required
+     * Method to clear the current local user session 
      */
     public abstract void clear();
 

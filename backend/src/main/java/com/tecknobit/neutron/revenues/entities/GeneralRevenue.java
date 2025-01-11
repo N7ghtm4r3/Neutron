@@ -29,7 +29,7 @@ public class GeneralRevenue extends Revenue {
     /**
      * {@code REVENUE_LABELS_KEY} the key for the <b>"labels"</b> field
      */
-    public static final String REVENUE_LABELS_KEY = "labels";
+    public static final String REVENUE_LABELS_KEY = "revenue_labels";
 
     /**
      * {@code REVENUE_DESCRIPTION_KEY} the key for the <b>"description"</b> field
@@ -107,8 +107,7 @@ public class GeneralRevenue extends Revenue {
     }
 
     /**
-     * Method to get {@link #labels} instance <br>
-     * No-any params required
+     * Method to get {@link #labels} instance 
      *
      * @return {@link #labels} instance as {@link List} of {@link RevenueLabel}
      */
@@ -117,8 +116,7 @@ public class GeneralRevenue extends Revenue {
     }
 
     /**
-     * Method to get {@link #description} instance <br>
-     * No-any params required
+     * Method to get {@link #description} instance 
      *
      * @return {@link #description} instance as {@link String}
      */

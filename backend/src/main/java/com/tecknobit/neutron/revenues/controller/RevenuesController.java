@@ -4,7 +4,6 @@ package com.tecknobit.neutron.revenues.controller;
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.equinoxbackend.environment.services.DefaultEquinoxController;
 import com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController;
-import com.tecknobit.neutron.revenues.entities.GeneralRevenue;
 import com.tecknobit.neutron.revenues.entities.ProjectRevenue;
 import com.tecknobit.neutron.revenues.entities.RevenueLabel;
 import com.tecknobit.neutron.revenues.entities.TicketRevenue;
@@ -12,10 +11,6 @@ import com.tecknobit.neutron.revenues.service.RevenuesService;
 import com.tecknobit.neutron.users.entity.NeutronUser;
 import com.tecknobit.neutron.users.repository.NeutronUsersRepository;
 import com.tecknobit.neutron.users.service.NeutronUsersService;
-import com.tecknobit.neutroncore.helpers.NeutronInputsValidator;
-import com.tecknobit.neutroncore.records.revenues.ProjectRevenue;
-import com.tecknobit.neutroncore.records.revenues.RevenueLabel;
-import com.tecknobit.neutroncore.records.revenues.TicketRevenue;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +21,10 @@ import java.util.Map;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
 import static com.tecknobit.apimanager.apis.sockets.SocketManager.StandardResponseCode.SUCCESSFUL;
-import static com.tecknobit.equinox.Requester.RESPONSE_MESSAGE_KEY;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.*;
 import static com.tecknobit.equinoxcore.network.EquinoxBaseEndpointsSet.BASE_EQUINOX_ENDPOINT;
+import static com.tecknobit.equinoxcore.network.Requester.RESPONSE_DATA_KEY;
 import static com.tecknobit.equinoxcore.network.Requester.RESPONSE_STATUS_KEY;
 import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_DESCRIPTION_KEY;
 import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_LABELS_KEY;
@@ -42,14 +37,6 @@ import static com.tecknobit.neutron.users.entity.NeutronUser.CURRENCY_KEY;
 import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.TICKETS_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.INSTANCE;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.MAX_REVENUE_LABELS_NUMBER;
-import static com.tecknobit.neutroncore.records.User.*;
-import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_DESCRIPTION_KEY;
-import static com.tecknobit.neutroncore.records.revenues.GeneralRevenue.REVENUE_LABELS_KEY;
-import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.IS_PROJECT_REVENUE_KEY;
-import static com.tecknobit.neutroncore.records.revenues.ProjectRevenue.PROJECTS_KEY;
-import static com.tecknobit.neutroncore.records.revenues.Revenue.*;
-import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.CLOSING_DATE_KEY;
-import static com.tecknobit.neutroncore.records.revenues.TicketRevenue.TICKET_IDENTIFIER_KEY;
 
 /**
  * The {@code RevenuesController} class is useful to manage all the operations on the user revenues
@@ -90,7 +77,7 @@ public class RevenuesController extends EquinoxController<NeutronUser, NeutronUs
         HashMap<String, T> response = new HashMap<>();
         response.put(CURRENCY_KEY, (T) me.getCurrency().getIsoName());
         response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
-        response.put(RESPONSE_MESSAGE_KEY, (T) revenuesService.getRevenues(userId));
+        response.put(RESPONSE_DATA_KEY, (T) revenuesService.getRevenues(userId));
         response.put(RESPONSE_STATUS_KEY, (T) SUCCESSFUL);
         return (T) response;
     }
@@ -123,10 +110,10 @@ public class RevenuesController extends EquinoxController<NeutronUser, NeutronUs
             }
     )
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = POST)
-    public <T> String createRevenue(
+    public String createRevenue(
             @PathVariable(IDENTIFIER_KEY) String userId,
             @RequestHeader(TOKEN_KEY) String token,
-            @RequestBody Map<String, T> payload
+            @RequestBody Map<String, Object> payload
     ) {
         if(!isMe(userId, token))
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);

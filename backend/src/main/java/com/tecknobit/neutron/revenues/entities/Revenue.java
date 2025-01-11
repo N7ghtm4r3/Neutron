@@ -121,8 +121,7 @@ public abstract class Revenue extends EquinoxItem {
     }
 
     /**
-     * Method to get {@link #title} instance <br>
-     * No-any params required
+     * Method to get {@link #title} instance 
      *
      * @return {@link #title} instance as {@link String}
      */
@@ -131,8 +130,7 @@ public abstract class Revenue extends EquinoxItem {
     }
 
     /**
-     * Method to get {@link #value} instance <br>
-     * No-any params required
+     * Method to get {@link #value} instance 
      *
      * @return {@link #value} instance as double
      */
@@ -141,8 +139,7 @@ public abstract class Revenue extends EquinoxItem {
     }
 
     /**
-     * Method to get {@link #revenueDate} instance <br>
-     * No-any params required
+     * Method to get {@link #revenueDate} instance 
      *
      * @return {@link #revenueDate} instance as long
      */
@@ -152,8 +149,7 @@ public abstract class Revenue extends EquinoxItem {
     }
 
     /**
-     * Method to get {@link #revenueDate} instance <br>
-     * No-any params required
+     * Method to get {@link #revenueDate} instance 
      *
      * @return {@link #revenueDate} instance as {@link String}
      */

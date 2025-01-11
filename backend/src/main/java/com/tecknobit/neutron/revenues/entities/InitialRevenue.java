@@ -107,8 +107,7 @@ public class InitialRevenue extends Revenue {
     }
 
     /**
-     * Method to get {@link #title} instance <br>
-     * No-any params required
+     * Method to get {@link #title} instance 
      *
      * @return {@link #title} instance as {@link String}
      */
@@ -119,8 +118,7 @@ public class InitialRevenue extends Revenue {
     }
 
     /**
-     * Method to get {@link #revenueDate} instance <br>
-     * No-any params required
+     * Method to get {@link #revenueDate} instance 
      *
      * @return {@link #revenueDate} instance as {@link String}
      */

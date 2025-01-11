@@ -44,8 +44,7 @@ public class NeutronUser extends EquinoxUser {
     }
 
     /**
-     * Method to get {@link #currency} instance <br>
-     * No-any params required
+     * Method to get {@link #currency} instance 
      *
      * @return {@link #currency} instance as {@link NeutronCurrency}
      */

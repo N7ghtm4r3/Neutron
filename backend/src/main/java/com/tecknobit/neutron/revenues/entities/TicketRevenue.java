@@ -164,8 +164,7 @@ public class TicketRevenue extends GeneralRevenue {
     }
 
     /**
-     * Method to get {@link #closingDate-revenueDate} instance <br>
-     * No-any params required
+     * Method to get {@link #closingDate-revenueDate} instance 
      *
      * @return {@link #closingDate-revenueDate} instance as long
      */
@@ -175,8 +174,7 @@ public class TicketRevenue extends GeneralRevenue {
     }
 
     /**
-     * Method to get {@link #closingDate} instance <br>
-     * No-any params required
+     * Method to get {@link #closingDate} instance 
      *
      * @return {@link #closingDate} instance as long
      */
@@ -195,8 +193,7 @@ public class TicketRevenue extends GeneralRevenue {
     }
 
     /**
-     * Method to get {@link #closingDate} instance <br>
-     * No-any params required
+     * Method to get {@link #closingDate} instance 
      *
      * @return {@link #closingDate} instance as {@link String}
      */
@@ -206,8 +203,7 @@ public class TicketRevenue extends GeneralRevenue {
     }
 
     /**
-     * Method to get whether the ticket is closed<br>
-     * No-any params required
+     * Method to get whether the ticket is closed
      *
      * @return whether the ticket is closed as boolean
      */
@@ -217,8 +213,7 @@ public class TicketRevenue extends GeneralRevenue {
     }
 
     /**
-     * Method to get the label to indicate the ticket status <br>
-     * No-any params required
+     * Method to get the label to indicate the ticket status 
      *
      * @return the label to indicate the ticket status as {@link RevenueLabel}
      */

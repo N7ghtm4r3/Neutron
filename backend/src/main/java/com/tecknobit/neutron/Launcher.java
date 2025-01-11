@@ -1,6 +1,5 @@
 package com.tecknobit.neutron;
 
-import com.tecknobit.equinox.ResourcesProvider;
 import com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,8 +28,7 @@ import static com.tecknobit.equinoxbackend.resourcesutils.ResourcesProvider.DEFA
 public class Launcher {
 
     /**
-     * Main method to start the backend, will be created also the resources directories if not exist invoking the
-     * {@link ResourcesProvider} routine
+     * Main method to start the backend, will be created also the resources directories
      *
      * @param args: custom arguments to share with {@link SpringApplication} and with the {@link #serverProtector}
      * @apiNote the arguments scheme:

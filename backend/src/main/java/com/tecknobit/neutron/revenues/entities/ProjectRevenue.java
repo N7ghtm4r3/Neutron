@@ -151,8 +151,7 @@ public class ProjectRevenue extends Revenue {
     }
 
     /**
-     * Method to get the total value of the project <br>
-     * No-any params required
+     * Method to get the total value of the project 
      *
      * @return the total value of the project as double
      */
@@ -166,8 +165,7 @@ public class ProjectRevenue extends Revenue {
     }
 
     /**
-     * Method to get {@link #initialRevenue} instance <br>
-     * No-any params required
+     * Method to get {@link #initialRevenue} instance 
      *
      * @return {@link #initialRevenue} instance as {@link InitialRevenue}
      */
@@ -177,8 +175,7 @@ public class ProjectRevenue extends Revenue {
     }
 
     /**
-     * Method to get {@link #tickets} instance <br>
-     * No-any params required
+     * Method to get {@link #tickets} instance 
      *
      * @return {@link #tickets} instance as {@link List} of {@link TicketRevenue}
      */

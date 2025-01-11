@@ -2,10 +2,12 @@ package com.tecknobit.neutron.revenues.service;
 
 import com.tecknobit.apimanager.apis.APIRequest;
 import com.tecknobit.apimanager.formatters.JsonHelper;
+import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
 import com.tecknobit.neutron.revenues.entities.*;
 import com.tecknobit.neutron.revenues.repositories.RevenueLabelsRepository;
 import com.tecknobit.neutron.revenues.repositories.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
+import jakarta.persistence.Query;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,12 @@ import java.util.List;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
+import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_LABELS_KEY;
+import static com.tecknobit.neutron.revenues.entities.Revenue.REVENUE_KEY;
+import static com.tecknobit.neutron.revenues.entities.RevenueLabel.REVENUE_LABEL_COLOR_KEY;
+import static com.tecknobit.neutron.revenues.entities.RevenueLabel.REVENUE_LABEL_TEXT_KEY;
 import static com.tecknobit.neutroncore.enums.NeutronCurrency.DOLLAR;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -25,9 +33,11 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * The {@code RevenuesService} class is useful to manage all the revenues database operations
  *
  * @author N7ghtm4r3 - Tecknobit
+ *
+ * @see EquinoxItemsHelper
  */
 @Service
-public class RevenuesService {
+public class RevenuesService extends EquinoxItemsHelper {
 
     /**
      * {@code EXCHANGE_RATES_ENDPOINT} the endpoint to get the new fiat tax change
@@ -141,17 +151,25 @@ public class RevenuesService {
                 revenueDescription,
                 userId
         );
-        for (RevenueLabel label : labels) {
-            String id = label.getId();
-            if(id == null)
-                id = generateIdentifier();
-            labelsRepository.insertRevenueLabel(
-                id,
-                label.getColor(),
-                label.getText(),
-                revenueId
-            );
-        }
+        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new BatchQuery<RevenueLabel>() {
+            @Override
+            public List<RevenueLabel> getData() {
+                return labels;
+            }
+
+            @Override
+            public void prepareQuery(Query query, int index, List<RevenueLabel> labels) {
+                for (RevenueLabel label : labels) {
+                    String id = label.getId();
+                    if(id == null)
+                        id = generateIdentifier();
+                    query.setParameter(index++, id);
+                    query.setParameter(index++, label.getColor());
+                    query.setParameter(index++, label.getText());
+                    query.setParameter(index++, revenueId);
+                }
+            }
+        }, IDENTIFIER_KEY, REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY, REVENUE_KEY);
     }
 
     /**

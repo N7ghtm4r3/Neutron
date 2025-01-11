@@ -114,8 +114,7 @@ public class RevenueLabel extends EquinoxItem {
     }
 
     /**
-     * Method to get {@link #text} instance <br>
-     * No-any params required
+     * Method to get {@link #text} instance 
      *
      * @return {@link #text} instance as {@link String}
      */
@@ -124,8 +123,7 @@ public class RevenueLabel extends EquinoxItem {
     }
 
     /**
-     * Method to get {@link #color} instance <br>
-     * No-any params required
+     * Method to get {@link #color} instance 
      *
      * @return {@link #color} instance as {@link String}
      */
