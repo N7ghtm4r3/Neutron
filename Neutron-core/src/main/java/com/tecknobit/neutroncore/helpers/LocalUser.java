@@ -99,13 +99,13 @@ public abstract class LocalUser {
     /**
      * Method to insert and init a new local user
      *
-     * @param hostAddress: the host address which the user communicate
-     * @param name: the name of the user
-     * @param surname: the surname of the user
-     * @param email: the email of the user
-     * @param password: the password of the user
-     * @param language: the language of the user
-     * @param hResponse: the payload response received from an authentication request
+     * @param hostAddress The host address which the user communicate
+     * @param name The name of the user
+     * @param surname The surname of the user
+     * @param email The email of the user
+     * @param password The password of the user
+     * @param language The language of the user
+     * @param hResponse The payload response received from an authentication request
      */
     public void insertNewUser(String hostAddress, String name, String surname, String email, String password,
                               String language, JsonHelper hResponse) {
@@ -125,7 +125,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #hostAddress} instance <br>
-     * @param hostAddress: the host address which the user communicate
+     * @param hostAddress The host address which the user communicate
      *
      */
     public void setHostAddress(String hostAddress) {
@@ -148,7 +148,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #userId} instance <br>
-     * @param userId: the identifier of the user
+     * @param userId The identifier of the user
      *
      */
     public void setUserId(String userId) {
@@ -168,7 +168,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #userToken} instance <br>
-     * @param userToken: the token of the user
+     * @param userToken The token of the user
      *
      */
     public void setUserToken(String userToken) {
@@ -188,7 +188,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #profilePic} instance <br>
-     * @param profilePic: the profile pic of the user
+     * @param profilePic The profile pic of the user
      *
      */
     public void setProfilePic(String profilePic) {
@@ -211,7 +211,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #name} instance <br>
-     * @param name: the name of the user
+     * @param name The name of the user
      *
      */
     public void setName(String name) {
@@ -231,7 +231,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #surname} instance <br>
-     * @param surname: the surname of the user
+     * @param surname The surname of the user
      *
      */
     public void setSurname(String surname) {
@@ -261,7 +261,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #email} instance <br>
-     * @param email: the email of the user
+     * @param email The email of the user
      *
      */
     public void setEmail(String email) {
@@ -281,7 +281,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #password} instance <br>
-     * @param password: the password of the user
+     * @param password The password of the user
      *
      */
     public void setPassword(String password) {
@@ -301,7 +301,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #language} instance <br>
-     * @param language: the language of the user
+     * @param language The language of the user
      *
      */
     public void setLanguage(String language) {
@@ -321,7 +321,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #currency} instance <br>
-     * @param currency: the currency of the user
+     * @param currency The currency of the user
      *
      */
     public void setCurrency(NeutronCurrency currency) {
@@ -343,7 +343,7 @@ public abstract class LocalUser {
 
     /**
      * Method to set the {@link #theme} instance <br>
-     * @param theme: the theme of the user
+     * @param theme The theme of the user
      *
      */
     public void setTheme(ApplicationTheme theme) {
@@ -364,15 +364,15 @@ public abstract class LocalUser {
     /**
      * Method to store and set a preference
      *
-     * @param key: the key of the preference
-     * @param value: the value of the preference
+     * @param key The key of the preference
+     * @param value The value of the preference
      */
     protected abstract void setPreference(String key, String value);
 
     /**
      * Method to get a stored preference
      *
-     * @param key: the key of the preference to get
+     * @param key The key of the preference to get
      * @return the preference stored as {@link String}
      */
     protected abstract String getPreference(String key);

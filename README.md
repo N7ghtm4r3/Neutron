@@ -1,6 +1,6 @@
 # Neutron
 
-**v1.0.0**
+**v1.0.1**
 
 This project, based on Java and the Spring Boot framework, is an open source self-hosted orders and ticket revenue manager for the projects 
 you are developing
@@ -69,7 +69,7 @@ steps:
 ### Backend configuration
 
 > [!WARNING]  
-> Note: the service will run using the *HTTP* protocol as default, it is recommended to implement an *SSL* or *TLS* certificate to secure communication on your infrastructure.
+> Note The service will run using the *HTTP* protocol as default, it is recommended to implement an *SSL* or *TLS* certificate to secure communication on your infrastructure.
 >
 > **Wikis**
 >
@@ -168,7 +168,7 @@ When you have to start the service you will have different scenarios:
   the server, share it **only to the users that you retains allowed to access to your server**
   ``` java
   Exception in thread "main" com.tecknobit.apimanager.exceptions.SaveData: Note: is not an error, but is an alert!
-  Please you should safely save: the_server_secret_generated to correctly register a new user in the Neutron system
+  Please you should safely save The_server_secret_generated to correctly register a new user in the Neutron system
   ```
 - If is not the first launch the service will start directly
 - If you need to recreate the server secret you need to launch the service with the **rss** command like this:

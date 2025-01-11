@@ -46,9 +46,9 @@ import javax.net.ssl.X509TrustManager
 /**
  * The **NeutronRequester** class is useful to communicate with the Neutron's backend
  *
- * @param host: the host where is running the Neutron's backend
- * @param userId: the user identifier
- * @param userToken: the user token
+ * @param host The host where is running the Neutron's backend
+ * @param userId The user identifier
+ * @param userToken The user token
  *
  * @author N7ghtm4r3 - Tecknobit
  * @see Requester
@@ -69,12 +69,12 @@ open class NeutronRequester(
     /**
      * Function to execute the request to sign up in the Neutron's system
      *
-     * @param serverSecret: the secret of the personal Neutron's backend
-     * @param name: the name of the user
-     * @param surname: the surname of the user
-     * @param email: the email of the user
-     * @param password: the password of the user
-     * @param language: the language of the user
+     * @param serverSecret The secret of the personal Neutron's backend
+     * @param name The name of the user
+     * @param surname The surname of the user
+     * @param email The email of the user
+     * @param password The password of the user
+     * @param language The language of the user
      *
      * @return the result of the request as [JSONObject]
      *
@@ -109,8 +109,8 @@ open class NeutronRequester(
     /**
      * Function to execute the request to sign in the Neutron's system
      *
-     * @param email: the email of the user
-     * @param password: the password of the user
+     * @param email The email of the user
+     * @param password The password of the user
      *
      * @return the result of the request as [JSONObject]
      *
@@ -132,7 +132,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to change the profile pic of the user
      *
-     * @param profilePic: the profile pic chosen by the user to set as the new profile pic
+     * @param profilePic The profile pic chosen by the user to set as the new profile pic
      *
      * @return the result of the request as [JSONObject]
      */
@@ -154,8 +154,8 @@ open class NeutronRequester(
     /**
      * Function to exec a multipart body  request
      *
-     * @param endpoint: the endpoint path of the url
-     * @param body: the body payload of the request
+     * @param endpoint The endpoint path of the url
+     * @param body The body payload of the request
      *
      * @return the result of the request as [JSONObject]
      */
@@ -253,7 +253,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to change the email of the user
      *
-     * @param newEmail: the new email of the user
+     * @param newEmail The new email of the user
      *
      * @return the result of the request as [JSONObject]
      */
@@ -272,7 +272,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to change the password of the user
      *
-     * @param newPassword: the new password of the user
+     * @param newPassword The new password of the user
      *
      * @return the result of the request as [JSONObject]
      */
@@ -291,7 +291,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to change the language of the user
      *
-     * @param newLanguage: the new language of the user
+     * @param newLanguage The new language of the user
      *
      * @return the result of the request as [JSONObject]
      */
@@ -310,7 +310,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to change the currency of the user
      *
-     * @param newCurrency: the new currency of the user
+     * @param newCurrency The new currency of the user
      *
      * @return the result of the request as [JSONObject]
      */
@@ -358,9 +358,9 @@ open class NeutronRequester(
     /**
      * Function to execute the request to create a new project revenue
      *
-     * @param title: the title of the project
-     * @param value: the initial revenue value
-     * @param revenueDate: the date when the project has been created
+     * @param title The title of the project
+     * @param value The initial revenue value
+     * @param revenueDate The date when the project has been created
      *
      * @return the result of the request as [JSONObject]
      */
@@ -381,11 +381,11 @@ open class NeutronRequester(
     /**
      * Function to execute the request to create a new general revenue
      *
-     * @param title: the title of the general revenue
-     * @param description: the description of the general revenue
-     * @param value: the amount revenue value
-     * @param revenueDate: the date when the general revenue has been created
-     * @param labels: the labels to attach to the general revenue
+     * @param title The title of the general revenue
+     * @param description The description of the general revenue
+     * @param value The amount revenue value
+     * @param revenueDate The date when the general revenue has been created
+     * @param labels The labels to attach to the general revenue
      *
      * @return the result of the request as [JSONObject]
      */
@@ -419,10 +419,10 @@ open class NeutronRequester(
     /**
      * Function to execute the request to create a new revenue
      *
-     * @param payload: the payload to send
-     * @param title: the title of the revenue
-     * @param value: the amount revenue value
-     * @param revenueDate: the date when the revenue has been created
+     * @param payload The payload to send
+     * @param title The title of the revenue
+     * @param value The amount revenue value
+     * @param revenueDate The date when the revenue has been created
      *
      * @return the result of the request as [JSONObject]
      */
@@ -451,7 +451,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to get a project revenue
      *
-     * @param revenue: the project revenue to get
+     * @param revenue The project revenue to get
      *
      * @return the result of the request as [JSONObject]
      */
@@ -467,7 +467,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to get a project revenue
      *
-     * @param revenueId: the identifier of the project revenue to get
+     * @param revenueId The identifier of the project revenue to get
      *
      * @return the result of the request as [JSONObject]
      */
@@ -486,8 +486,8 @@ open class NeutronRequester(
     /**
      * Function to execute the request to add a new ticket to a project revenue
      *
-     * @param projectRevenue: the project revenue where add the ticket
-     * @param ticketRevenue: the ticket to add to the project
+     * @param projectRevenue The project revenue where add the ticket
+     * @param ticketRevenue The ticket to add to the project
      *
      * @return the result of the request as [JSONObject]
      */
@@ -509,12 +509,12 @@ open class NeutronRequester(
     /**
      * Function to execute the request to add a new ticket to a project revenue
      *
-     * @param projectRevenueId: the identifier of the project revenue where add the ticket
-     * @param ticketTitle: the title of the ticket
-     * @param ticketValue: the amount value of the ticket
-     * @param ticketDescription: the description of the ticket
-     * @param openingDate: when the ticket has been opened
-     * @param closingDate: when the ticket has been closed
+     * @param projectRevenueId The identifier of the project revenue where add the ticket
+     * @param ticketTitle The title of the ticket
+     * @param ticketValue The amount value of the ticket
+     * @param ticketDescription The description of the ticket
+     * @param openingDate When the ticket has been opened
+     * @param closingDate When the ticket has been closed
      *
      * @return the result of the request as [JSONObject]
      */
@@ -546,8 +546,8 @@ open class NeutronRequester(
     /**
      * Function to execute the request to close a ticket
      *
-     * @param projectRevenue: the project revenue where close a ticket
-     * @param ticket: the ticket to close
+     * @param projectRevenue The project revenue where close a ticket
+     * @param ticket The ticket to close
      *
      * @return the result of the request as [JSONObject]
      */
@@ -565,8 +565,8 @@ open class NeutronRequester(
     /**
      * Function to execute the request to close a ticket
      *
-     * @param projectRevenueId: the identifier of the project revenue where close a ticket
-     * @param ticketId: the identifier of the ticket to close
+     * @param projectRevenueId The identifier of the project revenue where close a ticket
+     * @param ticketId The identifier of the ticket to close
      *
      * @return the result of the request as [JSONObject]
      */
@@ -589,8 +589,8 @@ open class NeutronRequester(
     /**
      * Function to execute the request to delete a ticket
      *
-     * @param projectRevenue: the project revenue where delete a ticket
-     * @param ticket: the ticket to delete
+     * @param projectRevenue The project revenue where delete a ticket
+     * @param ticket The ticket to delete
      *
      * @return the result of the request as [JSONObject]
      */
@@ -608,8 +608,8 @@ open class NeutronRequester(
     /**
      * Function to execute the request to delete a ticket
      *
-     * @param projectRevenueId: the identifier of the project revenue where delete a ticket
-     * @param ticketId: the identifier of the ticket to delete
+     * @param projectRevenueId The identifier of the project revenue where delete a ticket
+     * @param ticketId The identifier of the ticket to delete
      *
      * @return the result of the request as [JSONObject]
      */
@@ -631,7 +631,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to delete a revenue
      *
-     * @param revenue: the revenue to delete
+     * @param revenue The revenue to delete
      *
      * @return the result of the request as [JSONObject]
      */
@@ -647,7 +647,7 @@ open class NeutronRequester(
     /**
      * Function to execute the request to delete a revenue
      *
-     * @param revenueId: the revenue identifier to delete
+     * @param revenueId The revenue identifier to delete
      *
      * @return the result of the request as [JSONObject]
      */
@@ -665,7 +665,7 @@ open class NeutronRequester(
     /**
      * Function to assemble the endpoint to make the request to the users controller
      *
-     * @param endpoint: the endpoint path of the url
+     * @param endpoint The endpoint path of the url
      *
      * @return an endpoint to make the request as [String]
      */
@@ -687,7 +687,7 @@ open class NeutronRequester(
     /**
      * Function to assemble the endpoint to make the request to the users controller
      *
-     * @param endpoint: the endpoint path of the url
+     * @param endpoint The endpoint path of the url
      *
      * @return an endpoint to make the request as [String]
      */
