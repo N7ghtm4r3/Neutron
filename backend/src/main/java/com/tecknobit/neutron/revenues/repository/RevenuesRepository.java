@@ -1,4 +1,4 @@
-package com.tecknobit.neutron.revenues.repositories;
+package com.tecknobit.neutron.revenues.repository;
 
 
 import com.tecknobit.neutron.revenues.entities.GeneralRevenue;
@@ -6,6 +6,7 @@ import com.tecknobit.neutron.revenues.entities.ProjectRevenue;
 import com.tecknobit.neutron.revenues.entities.Revenue;
 import com.tecknobit.neutron.revenues.entities.TicketRevenue;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,11 +36,30 @@ import static com.tecknobit.neutron.revenues.entities.TicketRevenue.CLOSING_DATE
 @Repository
 public interface RevenuesRepository extends JpaRepository<Revenue, String> {
 
+
+    /**
+     * Method to count the general revenues of a user
+     *
+     * @param userId The user identifier
+     *
+     * @return the count of the revenues long
+     */
+    @Query(
+            value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY + " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
+                    + " AND dtype='general'",
+            nativeQuery = true
+    )
+    long countGeneralRevenues(
+            @Param(IDENTIFIER_KEY) String userId
+    );
+    
     /**
      * Method to get the general revenues of a user
      *
      * @param userId The user identifier
-     * @return the revenues list as {@link List} of {@link GeneralRevenue}
+     * @param pageable  The parameters to paginate the query
+     *
+     * @return the revenues as {@link List} of {@link GeneralRevenue}
      */
     @Query(
             value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
@@ -48,7 +68,8 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             nativeQuery = true
     )
     List<GeneralRevenue> getGeneralRevenues(
-            @Param(IDENTIFIER_KEY) String userId
+            @Param(IDENTIFIER_KEY) String userId,
+            Pageable pageable
     );
 
     /**
@@ -168,10 +189,27 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     );
 
     /**
+     * Method to count the projects of a user
+     *
+     * @param userId The user identifier
+     *
+     * @return the count the projects of a user as long
+     */
+    @Query(
+            value = "SELECT COUNT(*) FROM " + PROJECT_REVENUES_KEY + " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
+                    + " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            nativeQuery = true
+    )
+    long countProjectRevenues(
+            @Param(IDENTIFIER_KEY) String userId
+    );
+
+    /**
      * Method to get the projects of a user
      *
      * @param userId The user identifier
-     * @return the revenues list as {@link List} of {@link ProjectRevenue}
+     * @param pageable  The parameters to paginate the query
+     * @return the revenues as {@link List} of {@link ProjectRevenue}
      */
     @Query(
             value = "SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
@@ -179,7 +217,8 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             nativeQuery = true
     )
     List<ProjectRevenue> getProjectRevenues(
-            @Param(IDENTIFIER_KEY) String userId
+            @Param(IDENTIFIER_KEY) String userId,
+            Pageable pageable
     );
 
     /**

@@ -3,13 +3,14 @@ package com.tecknobit.neutron.revenues.service;
 import com.tecknobit.apimanager.apis.APIRequest;
 import com.tecknobit.apimanager.formatters.JsonHelper;
 import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
+import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
 import com.tecknobit.neutron.revenues.entities.*;
-import com.tecknobit.neutron.revenues.repositories.RevenueLabelsRepository;
-import com.tecknobit.neutron.revenues.repositories.RevenuesRepository;
+import com.tecknobit.neutron.revenues.repository.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import jakarta.persistence.Query;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -61,22 +62,26 @@ public class RevenuesService extends EquinoxItemsHelper {
     private RevenuesRepository revenuesRepository;
 
     /**
-     * {@code labelsRepository} instance for the labels repository
-     */
-    @Autowired
-    private RevenueLabelsRepository labelsRepository;
-
-    /**
      * Method to get the revenues of a user
      *
      * @param userId The user identifier
-     * @return the revenues list as {@link List} of {@link Revenue}
+     * @param page      The page requested
+     * @param pageSize  The size of the items to insert in the page
+     * @return the revenues getRevenues as {@link List} of {@link Revenue}
      */
-    public List<Revenue> getRevenues(String userId) {
-        ArrayList<Revenue> revenues = new ArrayList<>(revenuesRepository.getGeneralRevenues(userId));
-        revenues.addAll(revenuesRepository.getProjectRevenues(userId));
+    public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        List<Revenue> revenues = new ArrayList<>(revenuesRepository.getGeneralRevenues(userId, pageable));
+        long revenuesCount = revenuesRepository.countGeneralRevenues(userId);
+        revenues.addAll(revenuesRepository.getProjectRevenues(userId, pageable));
+        long projectsCount = revenuesRepository.countProjectRevenues(userId);
         revenues.sort((o1, o2) -> Long.compare(o2.getRevenueTimestamp(), o1.getRevenueTimestamp()));
-        return revenues;
+        return new PaginatedResponse<>(
+                revenues,
+                page,
+                pageSize,
+                revenuesCount + projectsCount
+        );
     }
 
     /**
@@ -276,7 +281,8 @@ public class RevenuesService extends EquinoxItemsHelper {
     public void convertRevenues(String userId, NeutronCurrency oldCurrency, NeutronCurrency newCurrency) {
         refreshCurrencyRates();
         double taxChange = currencyRates.get(newCurrency);
-        for(Revenue revenue : getRevenues(userId)) {
+        List<Revenue> userRevenues = getRevenues(userId, 0, Integer.MAX_VALUE).getData();
+        for(Revenue revenue : userRevenues) {
             if(revenue instanceof ProjectRevenue projectRevenue) {
                 InitialRevenue initialRevenue = projectRevenue.getInitialRevenue();
                 revenuesRepository.convertInitialRevenue(

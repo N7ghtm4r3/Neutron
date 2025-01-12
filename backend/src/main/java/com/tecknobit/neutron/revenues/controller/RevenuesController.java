@@ -16,16 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
-import static com.tecknobit.apimanager.apis.sockets.SocketManager.StandardResponseCode.SUCCESSFUL;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
-import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.*;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.TOKEN_KEY;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
 import static com.tecknobit.equinoxcore.network.EquinoxBaseEndpointsSet.BASE_EQUINOX_ENDPOINT;
-import static com.tecknobit.equinoxcore.network.Requester.RESPONSE_DATA_KEY;
-import static com.tecknobit.equinoxcore.network.Requester.RESPONSE_STATUS_KEY;
+import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.*;
 import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_DESCRIPTION_KEY;
 import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_LABELS_KEY;
 import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.IS_PROJECT_REVENUE_KEY;
@@ -33,7 +31,6 @@ import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.PROJECTS_KE
 import static com.tecknobit.neutron.revenues.entities.Revenue.*;
 import static com.tecknobit.neutron.revenues.entities.TicketRevenue.CLOSING_DATE_KEY;
 import static com.tecknobit.neutron.revenues.entities.TicketRevenue.TICKET_IDENTIFIER_KEY;
-import static com.tecknobit.neutron.users.entity.NeutronUser.CURRENCY_KEY;
 import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.TICKETS_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.INSTANCE;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.MAX_REVENUE_LABELS_NUMBER;
@@ -55,10 +52,12 @@ public class RevenuesController extends EquinoxController<NeutronUser, NeutronUs
     private RevenuesService revenuesService;
 
     /**
-     * Method to get the list of the user revenues</b>
+     * Method to get the getRevenues of the user revenues
      *
      * @param userId The identifier of the user
      * @param token The token of the user
+     * @param page      The page requested
+     * @param pageSize  The size of the items to insert in the page
      *
      * @return the result of the request as {@link String}
      */
@@ -68,18 +67,18 @@ public class RevenuesController extends EquinoxController<NeutronUser, NeutronUs
             }
     )
     @RequestPath(path = "/api/v1/users/{id}/revenues", method = GET)
-    public <T> T list(
+    public <T> T getRevenues(
             @PathVariable(IDENTIFIER_KEY) String userId,
-            @RequestHeader(TOKEN_KEY) String token
+            @RequestHeader(TOKEN_KEY) String token,
+            @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
+            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        HashMap<String, T> response = new HashMap<>();
-        response.put(CURRENCY_KEY, (T) me.getCurrency().getIsoName());
-        response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
-        response.put(RESPONSE_DATA_KEY, (T) revenuesService.getRevenues(userId));
-        response.put(RESPONSE_STATUS_KEY, (T) SUCCESSFUL);
-        return (T) response;
+        // TODO: 12/01/2025 REPLACE OR CREATE A DEDICATED REQUEST
+        // response.put(CURRENCY_KEY, (T) me.getCurrency().getIsoName());
+        // response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
+        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize));
     }
 
     /**
