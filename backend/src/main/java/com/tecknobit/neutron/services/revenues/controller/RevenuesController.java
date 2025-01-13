@@ -1,16 +1,14 @@
-package com.tecknobit.neutron.revenues.controller;
+package com.tecknobit.neutron.services.revenues.controller;
 
 
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.equinoxbackend.environment.services.DefaultEquinoxController;
-import com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController;
-import com.tecknobit.neutron.revenues.entities.ProjectRevenue;
-import com.tecknobit.neutron.revenues.entities.RevenueLabel;
-import com.tecknobit.neutron.revenues.entities.TicketRevenue;
-import com.tecknobit.neutron.revenues.service.RevenuesService;
-import com.tecknobit.neutron.users.entity.NeutronUser;
-import com.tecknobit.neutron.users.repository.NeutronUsersRepository;
-import com.tecknobit.neutron.users.service.NeutronUsersService;
+import com.tecknobit.neutron.services.DefaultNeutronController;
+import com.tecknobit.neutron.services.revenues.entities.ProjectRevenue;
+import com.tecknobit.neutron.services.revenues.entities.RevenueLabel;
+import com.tecknobit.neutron.services.revenues.entities.TicketRevenue;
+import com.tecknobit.neutron.services.revenues.service.RevenuesService;
+import com.tecknobit.neutroncore.enums.RevenuePeriod;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +22,8 @@ import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.TOKEN_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
 import static com.tecknobit.equinoxcore.network.EquinoxBaseEndpointsSet.BASE_EQUINOX_ENDPOINT;
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.*;
-import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_DESCRIPTION_KEY;
-import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_LABELS_KEY;
-import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.IS_PROJECT_REVENUE_KEY;
-import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.PROJECTS_KEY;
-import static com.tecknobit.neutron.revenues.entities.Revenue.*;
-import static com.tecknobit.neutron.revenues.entities.TicketRevenue.CLOSING_DATE_KEY;
-import static com.tecknobit.neutron.revenues.entities.TicketRevenue.TICKET_IDENTIFIER_KEY;
+import static com.tecknobit.neutron.services.revenues.entities.ProjectRevenue.PROJECTS_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.*;
 import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.TICKETS_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.INSTANCE;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.MAX_REVENUE_LABELS_NUMBER;
@@ -40,10 +33,11 @@ import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.MAX_REVEN
  *
  * @author N7ghtm4r3 - Tecknobit
  * @see DefaultEquinoxController
+ * @see DefaultNeutronController
  */
 @RestController
 @RequestMapping(BASE_EQUINOX_ENDPOINT + USERS_KEY + "/{" + IDENTIFIER_KEY + "}/" + REVENUES_KEY)
-public class RevenuesController extends EquinoxController<NeutronUser, NeutronUsersRepository, NeutronUsersService> {
+public class RevenuesController extends DefaultNeutronController {
 
     /**
      * {@code revenuesService} helper to manage the revenues database operations
@@ -58,6 +52,7 @@ public class RevenuesController extends EquinoxController<NeutronUser, NeutronUs
      * @param token The token of the user
      * @param page      The page requested
      * @param pageSize  The size of the items to insert in the page
+     * @param period The period to use to select the revenues
      *
      * @return the result of the request as {@link String}
      */
@@ -71,14 +66,15 @@ public class RevenuesController extends EquinoxController<NeutronUser, NeutronUs
             @PathVariable(IDENTIFIER_KEY) String userId,
             @RequestHeader(TOKEN_KEY) String token,
             @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
-            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize
+            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "ALL", required = false) RevenuePeriod period
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
         // TODO: 12/01/2025 REPLACE OR CREATE A DEDICATED REQUEST
         // response.put(CURRENCY_KEY, (T) me.getCurrency().getIsoName());
         // response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
-        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize));
+        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, period));
     }
 
     /**

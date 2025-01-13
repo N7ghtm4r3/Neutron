@@ -1,7 +1,7 @@
-package com.tecknobit.neutron.users.repository;
+package com.tecknobit.neutron.services.users.repository;
 
 import com.tecknobit.equinoxbackend.environment.services.users.repository.EquinoxUsersRepository;
-import com.tecknobit.neutron.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
-import static com.tecknobit.neutron.users.entity.NeutronUser.CURRENCY_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.CURRENCY_KEY;
 
 /**
  * The {@code NeutronUsersRepository} interface is useful to manage the queries for the users operations

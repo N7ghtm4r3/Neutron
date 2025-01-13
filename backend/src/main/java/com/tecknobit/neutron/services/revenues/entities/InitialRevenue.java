@@ -1,14 +1,12 @@
-package com.tecknobit.neutron.revenues.entities;
+package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tecknobit.neutron.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 
-import static com.tecknobit.neutron.revenues.entities.InitialRevenue.INITIAL_REVENUES_KEY;
-import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.PROJECT_REVENUE_KEY;
-import static com.tecknobit.neutron.revenues.entities.Revenue.REVENUE_TITLE_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.*;
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 /**
@@ -30,21 +28,6 @@ import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 public class InitialRevenue extends Revenue {
 
     /**
-     * {@code INITIAL_REVENUES_KEY} the key for the <b>"initial_revenues"</b> field
-     */
-    public static final String INITIAL_REVENUES_KEY = "initial_revenues";
-
-    /**
-     * {@code INITIAL_REVENUE_KEY} the key for the <b>"initial_revenue"</b> field
-     */
-    public static final String INITIAL_REVENUE_KEY = "initial_revenue";
-
-    /**
-     * {@code INITIAL_REVENUE} the key for the <b>"initialRevenue"</b> field
-     */
-    public static final String INITIAL_REVENUE = "initialRevenue";
-
-    /**
      * {@code projectRevenue} the project where the revenue is attached
      */
     @OneToOne
@@ -55,7 +38,7 @@ public class InitialRevenue extends Revenue {
             "handler"
     })
     @OnDelete(action = CASCADE)
-    private  ProjectRevenue projectRevenue;
+    private final ProjectRevenue projectRevenue;
 
     /**
      * Constructor to init the {@link InitialRevenue} class 

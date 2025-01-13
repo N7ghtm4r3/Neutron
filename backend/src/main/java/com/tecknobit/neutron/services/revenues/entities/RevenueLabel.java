@@ -1,4 +1,4 @@
-package com.tecknobit.neutron.revenues.entities;
+package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem;
@@ -7,9 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.json.JSONObject;
 
-import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.REVENUE_SOURCE_KEY;
-import static com.tecknobit.neutron.revenues.entities.Revenue.REVENUE_KEY;
-import static com.tecknobit.neutron.revenues.entities.RevenueLabel.REVENUE_LABELS_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
  * The {@code RevenueLabel} class is useful to represent a label attached to a {@link GeneralRevenue}
@@ -21,21 +19,6 @@ import static com.tecknobit.neutron.revenues.entities.RevenueLabel.REVENUE_LABEL
 @Entity
 @Table(name = REVENUE_LABELS_KEY)
 public class RevenueLabel extends EquinoxItem {
-
-    /**
-     * {@code REVENUE_LABELS_KEY} the key for the <b>"revenue_labels"</b> field
-     */
-    public static final String REVENUE_LABELS_KEY = "revenue_labels";
-
-    /**
-     * {@code REVENUE_LABEL_TEXT_KEY} the key for the <b>"text"</b> field
-     */
-    public static final String REVENUE_LABEL_TEXT_KEY = "text";
-
-    /**
-     * {@code REVENUE_LABEL_COLOR_KEY} the key for the <b>"color"</b> field
-     */
-    public static final String REVENUE_LABEL_COLOR_KEY = "color";
 
     /**
      * {@code text} the text of the label

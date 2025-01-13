@@ -1,16 +1,15 @@
-package com.tecknobit.neutron.revenues.entities;
+package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tecknobit.neutron.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 
 import java.util.List;
 
-import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.PROJECT_REVENUE_KEY;
-import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.TICKETS_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.*;
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 /**
@@ -22,34 +21,9 @@ import static org.hibernate.annotations.OnDeleteAction.CASCADE;
  * @see GeneralRevenue
  */
 @Entity
-@Table(name = TicketRevenue.TICKET_REVENUES_KEY)
+@Table(name = TICKET_REVENUES_KEY)
 @DiscriminatorValue("ticket")
 public class TicketRevenue extends GeneralRevenue {
-
-    /**
-     * {@code TICKET_IDENTIFIER_KEY} the key for the <b>"ticket_id"</b> field
-     */
-    public static final String TICKET_IDENTIFIER_KEY = "ticket_id";
-
-    /**
-     * {@code TICKET_REVENUES_KEY} the key for the <b>"ticket_revenues"</b> field
-     */
-    public static final String TICKET_REVENUES_KEY = "ticket_revenues";
-
-    /**
-     * {@code PENDING_TICKET_LABEL_COLOR} the color used to indicate a ticket still in pending
-     */
-    public static final String PENDING_TICKET_LABEL_COLOR = "#B5A422";
-
-    /**
-     * {@code CLOSED_TICKET_LABEL_COLOR} the color used to indicate a ticket already closed
-     */
-    public static final String CLOSED_TICKET_LABEL_COLOR = "#12b543";
-
-    /**
-     * {@code CLOSING_DATE_KEY} the key for the <b>"closing_date"</b> field
-     */
-    public static final String CLOSING_DATE_KEY = "closing_date";
 
     /**
      * {@code PENDING_TICKET_LABEL} the label used when the ticket is pending

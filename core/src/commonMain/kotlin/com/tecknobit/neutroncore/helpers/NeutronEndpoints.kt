@@ -22,6 +22,11 @@ object NeutronEndpoints : EquinoxBaseEndpointsSet() {
     const val TICKETS_ENDPOINT: String = "/tickets"
 
     /**
+     * `WALLET_ENDPOINT` the endpoint to execute the all the wallet's operation
+     */
+    const val WALLET_ENDPOINT: String = "/wallet"
+
+    /**
      * `TRANSFER_IN_ENDPOINT` the endpoint to execute the migration to the current machine of an account data
      */
     const val TRANSFER_IN_ENDPOINT: String = "transferIn"

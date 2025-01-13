@@ -1,4 +1,4 @@
-package com.tecknobit.neutron.users.entity;
+package com.tecknobit.neutron.services.users.entity;
 
 import com.tecknobit.equinoxbackend.environment.services.users.entity.EquinoxUser;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.CURRENCY_KEY;
 import static jakarta.persistence.EnumType.STRING;
 
 /**
@@ -20,11 +21,6 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity
 @Table(name = USERS_KEY)
 public class NeutronUser extends EquinoxUser {
-
-    /**
-     * {@code CURRENCY_KEY} the key for the <b>"currency"</b> field
-     */
-    public static final String CURRENCY_KEY = "currency";
 
     /**
      * {@code currency} the currency of the user

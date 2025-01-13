@@ -1,10 +1,10 @@
-package com.tecknobit.neutron.users.controller;
+package com.tecknobit.neutron.services.users.controller;
 
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.equinoxbackend.environment.services.users.controller.EquinoxUsersController;
-import com.tecknobit.neutron.users.entity.NeutronUser;
-import com.tecknobit.neutron.users.repository.NeutronUsersRepository;
-import com.tecknobit.neutron.users.service.NeutronUsersService;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.repository.NeutronUsersRepository;
+import com.tecknobit.neutron.services.users.service.NeutronUsersService;
 import com.tecknobit.neutroncore.helpers.NeutronInputsValidator;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +14,7 @@ import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.PATCH;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.TOKEN_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
-import static com.tecknobit.neutron.users.entity.NeutronUser.CURRENCY_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.CURRENCY_KEY;
 import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.CHANGE_CURRENCY_ENDPOINT;
 
 /**

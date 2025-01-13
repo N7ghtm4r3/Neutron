@@ -1,6 +1,7 @@
+
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     id("maven-publish")
@@ -60,6 +61,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("io.github.n7ghtm4r3:equinox-core:1.0.6")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
             }
         }
 

@@ -1,9 +1,9 @@
-package com.tecknobit.neutron.users.service;
+package com.tecknobit.neutron.services.users.service;
 
 import com.tecknobit.equinoxbackend.environment.services.users.service.EquinoxUsersHelper;
-import com.tecknobit.neutron.revenues.service.RevenuesService;
-import com.tecknobit.neutron.users.entity.NeutronUser;
-import com.tecknobit.neutron.users.repository.NeutronUsersRepository;
+import com.tecknobit.neutron.services.revenues.service.RevenuesService;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.repository.NeutronUsersRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

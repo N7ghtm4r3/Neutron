@@ -1,13 +1,13 @@
-package com.tecknobit.neutron.revenues.entities;
+package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tecknobit.neutron.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.GENERAL_REVENUES_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
  * The {@code GeneralRevenue} class is useful to represent a generic revenue inserted by the user
@@ -20,26 +20,6 @@ import static com.tecknobit.neutron.revenues.entities.GeneralRevenue.GENERAL_REV
 @Table(name = GENERAL_REVENUES_KEY)
 @DiscriminatorValue("general")
 public class GeneralRevenue extends Revenue {
-
-    /**
-     * {@code GENERAL_REVENUES_KEY} the key for the <b>"general_revenues"</b> field
-     */
-    public static final String GENERAL_REVENUES_KEY = "general_revenues";
-
-    /**
-     * {@code REVENUE_LABELS_KEY} the key for the <b>"labels"</b> field
-     */
-    public static final String REVENUE_LABELS_KEY = "revenue_labels";
-
-    /**
-     * {@code REVENUE_DESCRIPTION_KEY} the key for the <b>"description"</b> field
-     */
-    public static final String REVENUE_DESCRIPTION_KEY = "description";
-
-    /**
-     * {@code REVENUE_SOURCE_KEY} the key for the <b>"source"</b> field
-     */
-    public static final String REVENUE_SOURCE_KEY = "source";
 
     /**
      * {@code labels} the labels attached to that revenue

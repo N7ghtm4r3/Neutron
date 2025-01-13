@@ -1,16 +1,17 @@
-package com.tecknobit.neutron.revenues.entities;
+package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.annotations.Structure;
 import com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem;
-import com.tecknobit.neutron.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
+import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
  * The {@code Revenue} class is useful to represent a basic revenue of the user
@@ -20,42 +21,8 @@ import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
  */
 @Structure
 @MappedSuperclass
+// TODO: 13/01/2025 REMOVE USELESS METHOD ALSO FROM INHERITED CLASSES
 public abstract class Revenue extends EquinoxItem {
-
-    /**
-     * {@code OWNER_KEY} the key for the <b>"owner"</b> field
-     */
-    public static final String OWNER_KEY = "owner";
-
-    /**
-     * {@code REVENUES_KEY} the key for the <b>"revenues"</b> field
-     */
-    public static final String REVENUES_KEY = "revenues";
-
-    /**
-     * {@code REVENUE_KEY} the key for the <b>"revenue"</b> field
-     */
-    public static final String REVENUE_KEY = "revenue";
-
-    /**
-     * {@code REVENUE_IDENTIFIER_KEY} the key for the <b>"revenue_id"</b> field
-     */
-    public static final String REVENUE_IDENTIFIER_KEY = "revenue_id";
-
-    /**
-     * {@code REVENUE_TITLE_KEY} the key for the <b>"title"</b> field
-     */
-    public static final String REVENUE_TITLE_KEY = "title";
-
-    /**
-     * {@code REVENUE_VALUE_KEY} the key for the <b>"value"</b> field
-     */
-    public static final String REVENUE_VALUE_KEY = "value";
-
-    /**
-     * {@code REVENUE_DATE_KEY} the key for the <b>"revenue_date"</b> field
-     */
-    public static final String REVENUE_DATE_KEY = "revenue_date";
 
     /**
      * {@code title} the title of the revenue

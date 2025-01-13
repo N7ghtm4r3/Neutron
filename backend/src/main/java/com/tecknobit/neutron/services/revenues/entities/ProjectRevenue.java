@@ -1,18 +1,16 @@
-package com.tecknobit.neutron.revenues.entities;
+package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tecknobit.neutron.users.entity.NeutronUser;
+import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
-import static com.tecknobit.neutron.revenues.entities.InitialRevenue.INITIAL_REVENUE_KEY;
-import static com.tecknobit.neutron.revenues.entities.ProjectRevenue.PROJECT_REVENUES_KEY;
-import static com.tecknobit.neutron.revenues.entities.Revenue.REVENUE_VALUE_KEY;
+import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
  * The {@code ProjectRevenue} class is useful to represent a project where it is possible have multiple revenues grouped
@@ -37,36 +35,6 @@ public class ProjectRevenue extends Revenue {
      * {@code PROJECTS_KEY} the key for the <b>"/projects/"</b> field
      */
     public static final String PROJECTS_KEY = "/projects/";
-
-    /**
-     * {@code IS_PROJECT_REVENUE_KEY} the key for the <b>"is_project_revenue"</b> field
-     */
-    public static final String IS_PROJECT_REVENUE_KEY = "is_project_revenue";
-
-    /**
-     * {@code PROJECT_REVENUES_KEY} the key for the <b>"project_revenues"</b> field
-     */
-    public static final String PROJECT_REVENUES_KEY = "project_revenues";
-
-    /**
-     * {@code PROJECT_LABEL_COLOR} the color used to indicate the label of a project
-     */
-    public static final String PROJECT_LABEL_COLOR = "#a68cef";
-
-    /**
-     * {@code PROJECT_REVENUE} the key for the <b>"projectRevenue"</b> field
-     */
-    public static final String PROJECT_REVENUE = "projectRevenue";
-
-    /**
-     * {@code PROJECT_REVENUE_KEY} the key for the <b>"project_revenue"</b> field
-     */
-    public static final String PROJECT_REVENUE_KEY = "project_revenue";
-
-    /**
-     * {@code TICKETS_KEY} the key for the <b>"tickets"</b> field
-     */
-    public static final String TICKETS_KEY = "tickets";
 
     /**
      * {@code initialRevenue} the initial revenue attached to the project
