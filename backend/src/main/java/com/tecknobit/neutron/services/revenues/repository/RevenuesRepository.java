@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.*;
@@ -35,19 +36,27 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      *
      * @param userId The user identifier
      * @param fromDate The date from fetch the revenues
+     * @param labels The labels used to filter the data
      *
      * @return the count of the revenues long
      */
     @Query(
-            value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
-                    + " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY
-                    + " AND dtype='general'",
+            value = "SELECT DISTINCT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
+                    " AS " + REVENUES_KEY + " INNER JOIN " + REVENUE_LABELS_KEY + " AS l " +
+                    " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = l." + REVENUE_KEY +
+                    " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
+                    " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
+                    " AND (" +
+                        "COALESCE(:" + REVENUE_LABELS_KEY + ") IS NULL OR " +
+                        "l." + REVENUE_LABEL_TEXT_KEY + " IN (:" + REVENUE_LABELS_KEY + ")" +
+                    " )" +
+                    " AND dtype = 'general'",
             nativeQuery = true
     )
     long countGeneralRevenues(
             @Param(IDENTIFIER_KEY) String userId,
-            @Param(REVENUE_PERIOD_KEY) long fromDate
+            @Param(REVENUE_PERIOD_KEY) long fromDate,
+            @Param(REVENUE_LABELS_KEY) Set<String> labels
     );
     
     /**
@@ -56,20 +65,28 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * @param userId The user identifier
      * @param fromDate The date from fetch the revenues
      * @param pageable  The parameters to paginate the query
+     * @param labels The labels used to filter the data
      *
      * @return the revenues as {@link List} of {@link GeneralRevenue}
      */
     @Query(
-            value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY
-                    + " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY
-                    + " AND dtype='general'"
-                    + " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            value = "SELECT DISTINCT " + REVENUES_KEY + ".* FROM " + GENERAL_REVENUES_KEY +
+                    " AS " + REVENUES_KEY + " INNER JOIN " + REVENUE_LABELS_KEY + " AS l " +
+                    " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = l." + REVENUE_KEY +
+                    " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
+                    " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
+                    " AND (" +
+                        "COALESCE(:" + REVENUE_LABELS_KEY + ") IS NULL OR " +
+                        "l." + REVENUE_LABEL_TEXT_KEY + " IN (:" + REVENUE_LABELS_KEY + ")" +
+                    " )" +
+                    " AND dtype = 'general'" +
+                    " ORDER BY " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " DESC",
             nativeQuery = true
     )
     List<GeneralRevenue> getGeneralRevenues(
             @Param(IDENTIFIER_KEY) String userId,
             @Param(REVENUE_PERIOD_KEY) long fromDate,
+            @Param(REVENUE_LABELS_KEY) Set<String> labels,
             Pageable pageable
     );
 

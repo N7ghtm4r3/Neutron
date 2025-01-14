@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.DEFAULT_PAGE;
 import static java.lang.Integer.MAX_VALUE;
@@ -21,10 +22,10 @@ public class WalletService {
     @Autowired
     private RevenuesService revenuesService;
 
-    public WalletStatus getWalletStatus(String userId, RevenuePeriod period) {
-        List<Revenue> revenues = revenuesService.getRevenues(userId, DEFAULT_PAGE, MAX_VALUE, period).getData();
+    public WalletStatus getWalletStatus(String userId, RevenuePeriod period, Set<String> labels) {
+        List<Revenue> revenues = revenuesService.getRevenues(userId, DEFAULT_PAGE, MAX_VALUE, period, labels).getData();
         List<Revenue> lastMonthRevenues = revenuesService.getRevenues(userId, DEFAULT_PAGE, MAX_VALUE, period,
-                PREVIOUS_PERIOD_GAP).getData();
+                PREVIOUS_PERIOD_GAP, labels).getData();
         lastMonthRevenues.removeAll(revenues);
         double totalEarnings = calculateEarnings(revenues);
         double lastMonthEarnings = calculateEarnings(lastMonthRevenues);

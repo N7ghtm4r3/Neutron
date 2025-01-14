@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.*;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
@@ -46,13 +47,40 @@ public class RevenuesController extends DefaultNeutronController {
     private RevenuesService revenuesService;
 
     /**
-     * Method to get the getRevenues of the user revenues
+     * Method to get the labels of the user
+     *
+     * @param userId The identifier of the user
+     * @param token The token of the user
+     *
+     * @return the result of the request as {@link String}
+     */
+    @GetMapping(
+            path = {
+                    REVENUE_LABELS_KEY
+            },
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/revenue_labels", method = GET)
+    public <T> T getRevenuesLabels(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if(!isMe(userId, token))
+            return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+        return (T) successResponse(revenuesService.getRevenueLabels(userId));
+    }
+
+    /**
+     * Method to get the list of the user revenues
      *
      * @param userId The identifier of the user
      * @param token The token of the user
      * @param page      The page requested
      * @param pageSize  The size of the items to insert in the page
      * @param period The period to use to select the revenues
+     * @param labels The labels used to filter the data
      *
      * @return the result of the request as {@link String}
      */
@@ -67,14 +95,15 @@ public class RevenuesController extends DefaultNeutronController {
             @RequestHeader(TOKEN_KEY) String token,
             @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
             @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
-            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "ALL", required = false) RevenuePeriod period
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
+            @RequestParam(name = REVENUE_LABELS_KEY, required = false) Set<String> labels
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
         // TODO: 12/01/2025 REPLACE OR CREATE A DEDICATED REQUEST
         // response.put(CURRENCY_KEY, (T) me.getCurrency().getIsoName());
         // response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
-        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, period));
+        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, period, labels));
     }
 
     /**

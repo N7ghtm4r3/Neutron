@@ -6,6 +6,7 @@ import com.tecknobit.equinoxbackend.environment.services.builtin.service.Equinox
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
 import com.tecknobit.neutron.services.revenues.entities.*;
+import com.tecknobit.neutron.services.revenues.repository.RevenueLabelsRepository;
 import com.tecknobit.neutron.services.revenues.repository.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
@@ -17,9 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
@@ -63,6 +62,23 @@ public class RevenuesService extends EquinoxItemsHelper {
     private RevenuesRepository revenuesRepository;
 
     /**
+     * {@code labelsRepository} instance for the revenue labels repository
+     */
+    @Autowired
+    private RevenueLabelsRepository labelsRepository;
+
+    /**
+     * Method to retrieve all the labels created by the user
+     *
+     * @param userId The user identifier
+     *
+     * @return the labels of the user as {@link Set} of {@link RevenueLabel}
+     */
+    public Set<RevenueLabel> getRevenueLabels(String userId) {
+        return labelsRepository.getRevenueLabels(userId);
+    }
+
+    /**
      * Method to get the revenues of a user
      *
      * @param userId The user identifier
@@ -70,11 +86,28 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param pageSize  The size of the items to insert in the page
      * @param period The period to use to select the revenues
      *
-     * @return the revenues getRevenues as {@link List} of {@link Revenue}
+     * @return the revenues getRevenues as {@link PaginatedResponse} of {@link Revenue}
      */
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period) {
-        return getRevenues(userId, page, pageSize, period, 1);
+        return getRevenues(userId, page, pageSize, period, 1, Collections.emptySet());
+    }
+
+    /**
+     * Method to get the revenues of a user
+     *
+     * @param userId The user identifier
+     * @param page      The page requested
+     * @param pageSize  The size of the items to insert in the page
+     * @param period The period to use to select the revenues
+     * @param labels The labels used to filter the data
+     *
+     * @return the revenues getRevenues as {@link PaginatedResponse} of {@link Revenue}
+     */
+    @Wrapper
+    public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
+                                                  Set<String> labels) {
+        return getRevenues(userId, page, pageSize, period, 1, labels);
     }
 
     /**
@@ -86,15 +119,16 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param period The period to use to select the revenues
      * @param offset The offset to apply to the period, for example to obtain the previous month you need to fetch the
      *              previous revenues of that month
+     * @param labels The labels used to filter the data
      *
-     * @return the revenues getRevenues as {@link List} of {@link Revenue}
+     * @return the revenues getRevenues as {@link PaginatedResponse} of {@link Revenue}
      */
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
-                                                  int offset) {
+                                                  int offset, Set<String> labels) {
         Pageable pageable = PageRequest.of(page, pageSize);
         long fromDate = period.calculateFromDate(period, offset);
-        List<Revenue> revenues = new ArrayList<>(revenuesRepository.getGeneralRevenues(userId, fromDate, pageable));
-        long revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate);
+        List<Revenue> revenues = new ArrayList<>(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
+        long revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
         revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));
         long projectsCount = revenuesRepository.countProjectRevenues(userId, fromDate);
         revenues.sort((o1, o2) -> Long.compare(o2.getRevenueTimestamp(), o1.getRevenueTimestamp()));
