@@ -21,7 +21,12 @@ import static com.tecknobit.neutroncore.ContantsKt.*;
  * @see Revenue
  */
 @Entity
-@Table(name = PROJECT_REVENUES_KEY)
+@Table(
+        name = PROJECT_REVENUES_KEY,
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = REVENUE_TITLE_KEY
+        )
+)
 @AttributeOverride(
         name = REVENUE_VALUE_KEY,
         column = @Column(

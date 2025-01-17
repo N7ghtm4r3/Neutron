@@ -10,6 +10,7 @@ import com.tecknobit.neutron.services.revenues.entities.TicketRevenue;
 import com.tecknobit.neutron.services.revenues.service.RevenuesService;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -145,29 +146,113 @@ public class RevenuesController extends DefaultNeutronController {
         double revenueValue = jsonHelper.getDouble(REVENUE_VALUE_KEY, 0);
         String revenueTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
         long insertionDate = jsonHelper.getLong(REVENUE_DATE_KEY, 0);
-        if(!INSTANCE.isRevenueValueValid(revenueValue) || !INSTANCE.isRevenueTitleValid(revenueTitle)
-                || revenuesService.revenueExists(userId, revenueTitle))
+        if(invalidRevenuePayload(revenueValue, revenueTitle, insertionDate))
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
         String identifier = generateIdentifier();
-        if(jsonHelper.getBoolean(IS_PROJECT_REVENUE_KEY)) {
-            revenuesService.createProjectRevenue(identifier, revenueValue, revenueTitle, insertionDate, userId);
-            return successResponse();
-        } else {
-            String revenueDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
-            if(!INSTANCE.isRevenueDescriptionValid(revenueDescription))
-                return failedResponse(WRONG_PROCEDURE_MESSAGE);
-            ArrayList<RevenueLabel> labels = new ArrayList<>();
-            try {
-                JSONArray jLabels = jsonHelper.getJSONArray(REVENUE_LABELS_KEY, new JSONArray());
-                for(int j = 0; j < jLabels.length() && j < MAX_REVENUE_LABELS_NUMBER; j++)
-                    labels.add(new RevenueLabel(jLabels.getJSONObject(j)));
+        try {
+            if(jsonHelper.getBoolean(IS_PROJECT_REVENUE_KEY))
+                revenuesService.createProjectRevenue(identifier, revenueValue, revenueTitle, insertionDate, userId);
+            else {
+                String revenueDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
+                if(!INSTANCE.isRevenueDescriptionValid(revenueDescription))
+                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+                ArrayList<RevenueLabel> labels = extractRevenueLabels();
                 revenuesService.createGeneralRevenue(identifier, revenueValue, revenueTitle, insertionDate,
                         revenueDescription, labels, userId);
-                return successResponse();
-            } catch (IllegalArgumentException e) {
-                return failedResponse(WRONG_PROCEDURE_MESSAGE);
             }
+        } catch (Exception e) {
+            return failedResponse(WRONG_PROCEDURE_MESSAGE);
         }
+        return successResponse();
+    }
+
+    /**
+     * Method to edit an existing revenue
+     *
+     * @param userId The identifier of the user
+     * @param token The token of the user
+     * @param payload: payload of the request
+     * <pre>
+     *      {@code
+     *              {
+     *                  "is_project_revenue": "whether the revenue is a project", -> [boolean]
+     *                  "value": "the amount value of the revenue", -> [double]
+     *                  "title": "the title of the revenue", -> [String]
+     *                  "revenue_date": "the insertion date of the revenue", -> [long]
+     *                  ------- if "is_project_revenue" == false ------
+     *                  "description": "the description of the revenue", -> [String]
+     *                   "labels": "the labels attached to the revenue" -> [array of RevenueLabel]
+     *              }
+     *      }
+     * </pre>
+     *
+     * @return the result of the request as {@link String}
+     */
+    @PatchMapping(
+            path = "/{" + REVENUE_IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/{revenue_id}", method = PATCH)
+    public String editRevenue(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @RequestHeader(TOKEN_KEY) String token,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @RequestBody Map<String, Object> payload
+    ) {
+        if(!isMe(userId, token) || !revenuesService.revenueExistsById(userId, revenueId))
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+        loadJsonHelper(payload);
+        double revenueValue = jsonHelper.getDouble(REVENUE_VALUE_KEY, 0);
+        String revenueTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
+        long insertionDate = jsonHelper.getLong(REVENUE_DATE_KEY, 0);
+        if(invalidRevenuePayload(revenueValue, revenueTitle, insertionDate))
+            return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        try {
+            if(jsonHelper.getBoolean(IS_PROJECT_REVENUE_KEY)) {
+                revenuesService.editProjectRevenue(revenueId, revenueValue, revenueTitle, insertionDate, userId);
+            } else {
+                String revenueDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
+                if(!INSTANCE.isRevenueDescriptionValid(revenueDescription))
+                    return failedResponse(WRONG_PROCEDURE_MESSAGE);
+                ArrayList<RevenueLabel> labels = extractRevenueLabels();
+                revenuesService.editGeneralRevenue(revenueId, revenueValue, revenueTitle, insertionDate,
+                        revenueDescription, labels, userId);
+            }
+        } catch (Exception e) {
+            return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        }
+        return successResponse();
+    }
+
+    /**
+     * Method to check whether the payload of the revenue is valid
+     *
+     * @param revenueValue The value of the revenue
+     * @param revenueTitle The title of the revenue
+     * @param insertionDate The date when the revenue has been created
+     * @return whether the payload is valid or not as {@code boolean}
+     */
+    private boolean invalidRevenuePayload(double revenueValue, String revenueTitle, long insertionDate) {
+        return !INSTANCE.isRevenueValueValid(revenueValue) || !INSTANCE.isRevenueTitleValid(revenueTitle);
+    }
+
+    /**
+     * Method to extract the labels from the payload
+     *
+     * @return the labels as {@link ArrayList} of {@link RevenueLabel}
+     */
+    private ArrayList<RevenueLabel> extractRevenueLabels() {
+        ArrayList<RevenueLabel> labels = new ArrayList<>();
+        JSONArray jLabels = jsonHelper.getJSONArray(REVENUE_LABELS_KEY, new JSONArray());
+        for(int j = 0; j < jLabels.length() && j < MAX_REVENUE_LABELS_NUMBER; j++) {
+            JSONObject jLabel = jLabels.getJSONObject(j);
+            if(!jLabel.has(IDENTIFIER_KEY))
+                jLabel.put(IDENTIFIER_KEY, generateIdentifier());
+            labels.add(new RevenueLabel(jLabel));
+        }
+        return labels;
     }
 
     /**

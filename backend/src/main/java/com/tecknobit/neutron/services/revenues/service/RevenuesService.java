@@ -6,11 +6,11 @@ import com.tecknobit.equinoxbackend.environment.services.builtin.service.Equinox
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
 import com.tecknobit.neutron.services.revenues.entities.*;
+import com.tecknobit.neutron.services.revenues.helpers.RevenueLabelBatchQuery;
 import com.tecknobit.neutron.services.revenues.repository.RevenueLabelsRepository;
 import com.tecknobit.neutron.services.revenues.repository.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
-import jakarta.persistence.Query;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +23,7 @@ import java.util.*;
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 import static com.tecknobit.neutroncore.enums.NeutronCurrency.DOLLAR;
@@ -144,18 +145,6 @@ public class RevenuesService extends EquinoxItemsHelper {
      * Method to get whether a revenue exists
      *
      * @param userId The identifier of the user
-     * @param revenueTitle The title of the revenue to check
-     * @return whether a revenue exists as boolean
-     */
-    public boolean revenueExists(String userId, String revenueTitle) {
-        return revenuesRepository.projectRevenueExists(userId, revenueTitle) != null ||
-                revenuesRepository.generalRevenueExists(userId, revenueTitle) != null;
-    }
-
-    /**
-     * Method to get whether a revenue exists
-     *
-     * @param userId The identifier of the user
      * @param revenueId The identifier of the revenue to check
      * @return whether a revenue exists as boolean
      */
@@ -212,25 +201,65 @@ public class RevenuesService extends EquinoxItemsHelper {
                 revenueDescription,
                 userId
         );
-        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new BatchQuery<RevenueLabel>() {
-            @Override
-            public List<RevenueLabel> getData() {
-                return labels;
-            }
+        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new RevenueLabelBatchQuery(revenueId, labels), IDENTIFIER_KEY,
+                REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY, REVENUE_KEY);
+    }
 
-            @Override
-            public void prepareQuery(Query query, int index, List<RevenueLabel> labels) {
-                for (RevenueLabel label : labels) {
-                    String id = label.getId();
-                    if(id == null)
-                        id = generateIdentifier();
-                    query.setParameter(index++, id);
-                    query.setParameter(index++, label.getColor());
-                    query.setParameter(index++, label.getText());
-                    query.setParameter(index++, revenueId);
-                }
-            }
-        }, IDENTIFIER_KEY, REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY, REVENUE_KEY);
+    /**
+     * Method to store a new general revenue
+     *
+     * @param revenueId The identifier of the new revenue
+     * @param revenueValue The value of the revenue
+     * @param revenueTitle The title of the revenue
+     * @param insertionDate The date when the revenue has been created/inserted
+     * @param revenueDescription The description of the revenue
+     * @param labels The labels attached to the revenue
+     * @param userId The identifier of the user who created the revenue
+     */
+    public void editGeneralRevenue(String revenueId, double revenueValue, String revenueTitle, long insertionDate,
+                                   String revenueDescription, List<RevenueLabel> labels, String userId) {
+        revenuesRepository.editGeneralRevenue(
+                revenueId,
+                revenueTitle,
+                insertionDate,
+                revenueValue,
+                revenueDescription
+        );
+        // FIXME: 17/01/2025 REMOVE THE WORKAROUND WITH THE syncBatch METHOD
+        batchInsert(INSERT_IGNORE_INTO, REVENUE_LABELS_KEY, new RevenueLabelBatchQuery(revenueId, labels),
+                IDENTIFIER_KEY, REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY, REVENUE_KEY);
+        GeneralRevenue generalRevenue = revenuesRepository.generalRevenueExistsById(userId, revenueId);
+        HashSet<String> currentLabels = new HashSet<>(generalRevenue.getLabels().stream().map(RevenueLabel::compareOn).toList());
+        for (RevenueLabel label : labels)
+            currentLabels.remove(label.compareOn());
+        batchDeleteOnSingleSet(REVENUE_LABELS_KEY,
+                Arrays.asList(currentLabels.toArray()),
+                IDENTIFIER_KEY);
+    }
+
+    /**
+     * Method to edit an existing project revenue
+     *
+     * @param projectRevenueId The identifier of the project revenue
+     * @param revenueValue The initial value of the project ({@link InitialRevenue})
+     * @param revenueTitle The title of the project
+     * @param insertionDate The date when the project has been created/inserted
+     * @param userId The identifier of the user who created the project
+     */
+    public void editProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle, long insertionDate,
+                                   String userId) {
+        revenuesRepository.editProjectRevenue(
+                projectRevenueId,
+                revenueTitle,
+                insertionDate
+        );
+        ProjectRevenue projectRevenue = getProjectRevenue(userId, projectRevenueId);
+        revenuesRepository.editInitialRevenue(
+                projectRevenue.getInitialRevenue().getId(),
+                insertionDate,
+                revenueTitle,
+                revenueValue
+        );
     }
 
     /**

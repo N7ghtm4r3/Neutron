@@ -20,7 +20,7 @@ object NeutronInputsValidator : InputsValidator() {
     /**
      * `REVENUE_DESCRIPTION_MAX_LENGTH` the max valid length for the revenue description
      */
-    const val REVENUE_DESCRIPTION_MAX_LENGTH: Int = 250
+    const val REVENUE_DESCRIPTION_MAX_LENGTH: Int = 65535
 
     /**
      * `MAX_REVENUE_LABELS_NUMBER_LENGTH` the max valid number of labels for revenue
@@ -54,7 +54,11 @@ object NeutronInputsValidator : InputsValidator() {
      *
      * @return whether the value is valid or not as `boolean`
      */
-    fun isRevenueValueValid(revenueValue: Double): Boolean {
+    fun isRevenueValueValid(
+        revenueValue: Double?
+    ): Boolean {
+        if(revenueValue == null)
+            return false
         return revenueValue >= 0
     }
 
@@ -65,8 +69,10 @@ object NeutronInputsValidator : InputsValidator() {
      *
      * @return whether the title is valid or not as `boolean`
      */
-    fun isRevenueTitleValid(revenueTitle: String): Boolean {
-        return isInputValid(revenueTitle) && revenueTitle.length <= REVENUE_TITLE_MAX_LENGTH
+    fun isRevenueTitleValid(
+        revenueTitle: String?
+    ): Boolean {
+        return isInputValid(revenueTitle) && revenueTitle!!.length <= REVENUE_TITLE_MAX_LENGTH
     }
 
     /**
@@ -76,8 +82,10 @@ object NeutronInputsValidator : InputsValidator() {
      *
      * @return whether the description is valid or not as `boolean`
      */
-    fun isRevenueDescriptionValid(revenueDescription: String): Boolean {
-        return isInputValid(revenueDescription) && revenueDescription.length <= REVENUE_DESCRIPTION_MAX_LENGTH
+    fun isRevenueDescriptionValid(
+        revenueDescription: String?
+    ): Boolean {
+        return isInputValid(revenueDescription) && revenueDescription!!.length <= REVENUE_DESCRIPTION_MAX_LENGTH
     }
 
 }

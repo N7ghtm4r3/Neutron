@@ -2,6 +2,7 @@ package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem;
+import com.tecknobit.neutron.services.revenues.helpers.BatchItem;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -18,7 +19,7 @@ import static com.tecknobit.neutroncore.ContantsKt.*;
  */
 @Entity
 @Table(name = REVENUE_LABELS_KEY)
-public class RevenueLabel extends EquinoxItem {
+public class RevenueLabel extends EquinoxItem implements BatchItem<String> {
 
     /**
      * {@code text} the text of the label
@@ -112,6 +113,12 @@ public class RevenueLabel extends EquinoxItem {
      */
     public String getColor() {
         return color;
+    }
+
+    @Deprecated(since = "USE THE EQUINOX BUILT-IN")
+    @Override
+    public String compareOn() {
+        return id;
     }
 
 }

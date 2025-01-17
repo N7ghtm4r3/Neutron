@@ -94,24 +94,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * Method to get a general revenue if exists
      *
      * @param userId The identifier of the user
-     * @param revenueTitle The title of the revenue to get
-     * @return a general revenue if exists as {@link GeneralRevenue}
-     */
-    @Query(
-            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE "
-                    + OWNER_KEY + "=:" + OWNER_KEY + " AND "
-                    + REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY,
-            nativeQuery = true
-    )
-    GeneralRevenue generalRevenueExists(
-            @Param(OWNER_KEY) String userId,
-            @Param(REVENUE_TITLE_KEY) String revenueTitle
-    );
-
-    /**
-     * Method to get a general revenue if exists
-     *
-     * @param userId The identifier of the user
      * @param revenueId The identifier of the revenue to get
      * @return a general revenue if exists as {@link GeneralRevenue}
      */
@@ -166,6 +148,34 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(REVENUE_VALUE_KEY) double value,
             @Param(REVENUE_DESCRIPTION_KEY) String revenueDescription,
             @Param(OWNER_KEY) String ownerId
+    );
+
+    /**
+     * Method to edit an existing general revenue
+     *
+     * @param revenueId The identifier of the revenue
+     * @param revenueTitle The title of the revenue
+     * @param insertionDate The date when the revenue has been created/inserted
+     * @param value The value of the revenue
+     * @param revenueDescription The description of the revenue
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE "+ GENERAL_REVENUES_KEY + " SET " +
+                    REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY + "," +
+                    REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY + "," +
+                    REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY + "," +
+                    REVENUE_DESCRIPTION_KEY + "=:" + REVENUE_DESCRIPTION_KEY +
+                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void editGeneralRevenue(
+            @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_TITLE_KEY) String revenueTitle,
+            @Param(REVENUE_DATE_KEY) long insertionDate,
+            @Param(REVENUE_VALUE_KEY) double value,
+            @Param(REVENUE_DESCRIPTION_KEY) String revenueDescription
     );
 
     /**
@@ -252,24 +262,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * Method to get a project if exists
      *
      * @param userId The identifier of the user
-     * @param revenueTitle The title of the project to get
-     * @return a project as {@link ProjectRevenue}
-     */
-    @Query(
-            value = "SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE "
-                    + OWNER_KEY + "=:" + IDENTIFIER_KEY + " AND "
-                    + REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY,
-            nativeQuery = true
-    )
-    ProjectRevenue projectRevenueExists(
-            @Param(IDENTIFIER_KEY) String userId,
-            @Param(REVENUE_TITLE_KEY) String revenueTitle
-    );
-
-    /**
-     * Method to get a project if exists
-     *
-     * @param userId The identifier of the user
      * @param revenueId The identifier of the project to get
      * @return a project as {@link ProjectRevenue}
      */
@@ -317,6 +309,28 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     );
 
     /**
+     * Method to edit an existing project revenue
+     *
+     * @param revenueId The identifier of the new project
+     * @param revenueTitle The title of the project
+     * @param insertionDate The date when the project has been created/inserted
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + PROJECT_REVENUES_KEY + " SET " +
+                    REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY + "," +
+                    REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY +
+                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void editProjectRevenue(
+            @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_TITLE_KEY) String revenueTitle,
+            @Param(REVENUE_DATE_KEY) long insertionDate
+    );
+
+    /**
      * Method to store a new initial revenue
      *
      * @param revenueId The identifier of the new project
@@ -354,6 +368,31 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(REVENUE_VALUE_KEY) double value,
             @Param(OWNER_KEY) String ownerId,
             @Param(PROJECT_REVENUE_KEY) String projectRevenue
+    );
+
+    /**
+     * Method to edit an initial revenue
+     *
+     * @param revenueId The identifier of the revenue
+     * @param insertionDate The date when the project has been created/inserted
+     * @param revenueTitle The title of the project
+     * @param value The initial amount value
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + INITIAL_REVENUES_KEY + " SET " +
+                    REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY + "," +
+                    REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY + "," +
+                    REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY +
+                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void editInitialRevenue(
+            @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_DATE_KEY) long insertionDate,
+            @Param(REVENUE_TITLE_KEY) String revenueTitle,
+            @Param(REVENUE_VALUE_KEY) double value
     );
 
     /**

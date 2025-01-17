@@ -17,7 +17,12 @@ import static com.tecknobit.neutroncore.ContantsKt.*;
  * @see Revenue
  */
 @Entity
-@Table(name = GENERAL_REVENUES_KEY)
+@Table(
+        name = GENERAL_REVENUES_KEY,
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = REVENUE_TITLE_KEY
+        )
+)
 @DiscriminatorValue("general")
 public class GeneralRevenue extends Revenue {
 
@@ -39,7 +44,12 @@ public class GeneralRevenue extends Revenue {
     /**
      * {@code description} the description of the revenue
      */
-    @Column(name = REVENUE_DESCRIPTION_KEY)
+    @Lob
+    @Column(
+            name = REVENUE_DESCRIPTION_KEY,
+            columnDefinition = "MEDIUMTEXT",
+            nullable = false
+    )
     protected final String description;
 
     /**
