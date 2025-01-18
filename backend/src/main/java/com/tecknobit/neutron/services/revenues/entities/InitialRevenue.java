@@ -100,15 +100,4 @@ public class InitialRevenue extends Revenue {
         return super.getTitle();
     }
 
-    /**
-     * Method to get {@link #revenueDate} instance 
-     *
-     * @return {@link #revenueDate} instance as {@link String}
-     */
-    @Override
-    @JsonIgnore
-    public String getRevenueDate() {
-        return super.getRevenueDate();
-    }
-
 }

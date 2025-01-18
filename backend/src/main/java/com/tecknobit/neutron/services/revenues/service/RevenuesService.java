@@ -21,13 +21,16 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
+import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
+import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.DEFAULT_PAGE;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 import static com.tecknobit.neutroncore.enums.NeutronCurrency.DOLLAR;
 import static com.tecknobit.neutroncore.enums.RevenuePeriod.ALL;
+import static java.lang.Integer.MAX_VALUE;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -91,7 +94,7 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period) {
-        return getRevenues(userId, page, pageSize, period, 1, Collections.emptySet());
+        return getRevenues(userId, page, pageSize, period, 1, true, true, Collections.emptySet());
     }
 
     /**
@@ -101,14 +104,17 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param page      The page requested
      * @param pageSize  The size of the items to insert in the page
      * @param period The period to use to select the revenues
+     * @param retrieveGeneralRevenues Whether include the {@link com.tecknobit.neutron.services.revenues.entities.GeneralRevenue}
+     * @param retrieveProjectRevenues Whether include the {@link com.tecknobit.neutron.services.revenues.entities.ProjectRevenue}
      * @param labels The labels used to filter the data
      *
      * @return the revenues getRevenues as {@link PaginatedResponse} of {@link Revenue}
      */
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
+                                                  boolean retrieveGeneralRevenues, boolean retrieveProjectRevenues,
                                                   Set<String> labels) {
-        return getRevenues(userId, page, pageSize, period, 1, labels);
+        return getRevenues(userId, page, pageSize, period, 1, retrieveGeneralRevenues, retrieveProjectRevenues, labels);
     }
 
     /**
@@ -121,17 +127,27 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param offset The offset to apply to the period, for example to obtain the previous month you need to fetch the
      *              previous revenues of that month
      * @param labels The labels used to filter the data
+     * @param retrieveGeneralRevenues Whether include the {@link com.tecknobit.neutron.services.revenues.entities.GeneralRevenue}
+     * @param retrieveProjectRevenues Whether include the {@link com.tecknobit.neutron.services.revenues.entities.ProjectRevenue}
      *
      * @return the revenues getRevenues as {@link PaginatedResponse} of {@link Revenue}
      */
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
-                                                  int offset, Set<String> labels) {
+                                                  int offset, boolean retrieveGeneralRevenues,
+                                                  boolean retrieveProjectRevenues, Set<String> labels) {
+        List<Revenue> revenues = new ArrayList<>();
         Pageable pageable = PageRequest.of(page, pageSize);
         long fromDate = period.calculateFromDate(period, offset);
-        List<Revenue> revenues = new ArrayList<>(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
-        long revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
-        revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));
-        long projectsCount = revenuesRepository.countProjectRevenues(userId, fromDate);
+        long revenuesCount = 0;
+        long projectsCount = 0;
+        if(retrieveGeneralRevenues) {
+            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
+            revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
+        }
+        if(retrieveProjectRevenues) {
+            revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));
+            projectsCount = revenuesRepository.countProjectRevenues(userId, fromDate);
+        }
         revenues.sort((o1, o2) -> Long.compare(o2.getRevenueTimestamp(), o1.getRevenueTimestamp()));
         return new PaginatedResponse<>(
                 revenues,
@@ -174,7 +190,7 @@ public class RevenuesService extends EquinoxItemsHelper {
                 generateIdentifier(),
                 insertionDate,
                 revenueTitle,
-                revenueValue,
+                roundValue(revenueValue, 2),
                 userId,
                 projectRevenueId
         );
@@ -197,7 +213,7 @@ public class RevenuesService extends EquinoxItemsHelper {
                 revenueId,
                 revenueTitle,
                 insertionDate,
-                revenueValue,
+                roundValue(revenueValue, 2),
                 revenueDescription,
                 userId
         );
@@ -222,7 +238,7 @@ public class RevenuesService extends EquinoxItemsHelper {
                 revenueId,
                 revenueTitle,
                 insertionDate,
-                revenueValue,
+                roundValue(revenueValue, 2),
                 revenueDescription
         );
         // FIXME: 17/01/2025 REMOVE THE WORKAROUND WITH THE syncBatch METHOD
@@ -258,7 +274,7 @@ public class RevenuesService extends EquinoxItemsHelper {
                 projectRevenue.getInitialRevenue().getId(),
                 insertionDate,
                 revenueTitle,
-                revenueValue
+                roundValue(revenueValue, 2)
         );
     }
 
@@ -274,6 +290,55 @@ public class RevenuesService extends EquinoxItemsHelper {
     }
 
     /**
+     * Method to get the balance of the project, this count just the closed ticket
+     *
+     * @param project The project to calculate its balance
+     * @param period The period to use to select the tickets
+     * @param retrieveClosedTickets Whether include the closed tickets
+     *
+     * @return the balance of the project as {@code double}
+     */
+    public double getProjectBalance(ProjectRevenue project, RevenuePeriod period, boolean retrieveClosedTickets) {
+        double balance = project.getInitialRevenue().getValue();
+        List<TicketRevenue> tickets = getTickets(project.getId(), DEFAULT_PAGE, MAX_VALUE, period, false,
+                retrieveClosedTickets).getData();
+        for (TicketRevenue ticket : tickets)
+                balance += ticket.getValue();
+        return roundValue(balance, 2);
+    }
+
+    /**
+     * Method to get the tickets attached to a project
+     *
+     * @param projectId The project identifier
+     * @param page      The page requested
+     * @param pageSize  The size of the items to insert in the page
+     * @param period The period to use to select the tickets
+     * @param retrievePendingTickets Whether include the pending tickets
+     * @param retrieveClosedTickets Whether include the closed tickets
+     *
+     * @return the tickets attached to a project as {@link PaginatedResponse} of {@link TicketRevenue}
+     */
+    public PaginatedResponse<TicketRevenue> getTickets(String projectId, int page, int pageSize, RevenuePeriod period,
+                                                       boolean retrievePendingTickets, boolean retrieveClosedTickets) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        long fromDate = period.calculateFromDate(period, 1);
+        List<TicketRevenue> tickets = new ArrayList<>();
+        long totalTickets = 0;
+        if(retrievePendingTickets && retrieveClosedTickets) {
+            tickets = revenuesRepository.getAllTickets(projectId, fromDate, pageable);
+            totalTickets = revenuesRepository.countAllTickets(projectId, fromDate);
+        } else if(retrievePendingTickets) {
+            tickets = revenuesRepository.getPendingTickets(projectId, fromDate, pageable);
+            totalTickets = revenuesRepository.countPendingTickets(projectId, fromDate);
+        } else if(retrieveClosedTickets){
+            tickets = revenuesRepository.getClosedTickets(projectId, fromDate, pageable);
+            totalTickets = revenuesRepository.countClosedTickets(projectId, fromDate);
+        }
+        return new PaginatedResponse<>(tickets, page, pageSize, totalTickets);
+    }
+
+    /**
      * Method to store a ticket for a project
      *
      * @param ticketId The identifier of the ticket
@@ -281,20 +346,18 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param ticketTitle The title of the ticket
      * @param ticketDescription The description of the ticket
      * @param openingTime When the ticket has been opened
-     * @param closingTime When the ticket has been closed
      * @param projectRevenueId The identifier of the project where attach the ticket
      * @param userId The identifier of the user who requested the ticket creation
      */
     public void addTicketToProjectRevenue(String ticketId, double ticketRevenue, String ticketTitle,
-                                          String ticketDescription, long openingTime, long closingTime,
-                                          String projectRevenueId, String userId) {
+                                          String ticketDescription, long openingTime, String projectRevenueId,
+                                          String userId) {
         revenuesRepository.addTicketToProjectRevenue(
                 ticketId,
-                ticketRevenue,
+                roundValue(ticketRevenue, 2),
                 ticketTitle,
                 ticketDescription,
                 openingTime,
-                closingTime,
                 projectRevenueId,
                 userId
         );
@@ -366,7 +429,7 @@ public class RevenuesService extends EquinoxItemsHelper {
     public void convertRevenues(String userId, NeutronCurrency oldCurrency, NeutronCurrency newCurrency) {
         refreshCurrencyRates();
         double taxChange = currencyRates.get(newCurrency);
-        List<Revenue> userRevenues = getRevenues(userId, 0, Integer.MAX_VALUE, ALL).getData();
+        List<Revenue> userRevenues = getRevenues(userId, 0, MAX_VALUE, ALL).getData();
         for(Revenue revenue : userRevenues) {
             if(revenue instanceof ProjectRevenue projectRevenue) {
                 InitialRevenue initialRevenue = projectRevenue.getInitialRevenue();
@@ -403,14 +466,14 @@ public class RevenuesService extends EquinoxItemsHelper {
         double taxChange;
         if(oldCurrency == DOLLAR) {
             taxChange = currencyRates.get(newCurrency);
-            return revenueValue * taxChange;
+            return roundValue(revenueValue * taxChange, 2);
         } else {
             taxChange = currencyRates.get(oldCurrency);
             double usdValue = revenueValue / taxChange;
             if(newCurrency == DOLLAR)
-                return usdValue;
+                return roundValue(usdValue, 2);
             else
-                return usdValue * currencyRates.get(newCurrency);
+                return roundValue(usdValue * currencyRates.get(newCurrency), 2);
         }
     }
 

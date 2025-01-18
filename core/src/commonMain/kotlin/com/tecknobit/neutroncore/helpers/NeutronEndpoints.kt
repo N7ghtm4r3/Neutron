@@ -17,6 +17,11 @@ object NeutronEndpoints : EquinoxBaseEndpointsSet() {
     const val CHANGE_CURRENCY_ENDPOINT: String = "/changeCurrency"
 
     /**
+     * `PROJECT_BALANCE_ENDPOINT` the endpoint to where retrieve the balance of a project
+     */
+    const val PROJECT_BALANCE_ENDPOINT: String = "/balance"
+
+    /**
      * `TICKETS_ENDPOINT` the endpoint to execute the all the ticket's operation
      */
     const val TICKETS_ENDPOINT: String = "/tickets"

@@ -26,6 +26,7 @@ import static com.tecknobit.equinoxcore.network.EquinoxBaseEndpointsSet.BASE_EQU
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.*;
 import static com.tecknobit.neutron.services.revenues.entities.ProjectRevenue.PROJECTS_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.*;
+import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.PROJECT_BALANCE_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.TICKETS_ENDPOINT;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.INSTANCE;
 import static com.tecknobit.neutroncore.helpers.NeutronInputsValidator.MAX_REVENUE_LABELS_NUMBER;
@@ -81,6 +82,8 @@ public class RevenuesController extends DefaultNeutronController {
      * @param page      The page requested
      * @param pageSize  The size of the items to insert in the page
      * @param period The period to use to select the revenues
+     * @param retrieveGeneralRevenues Whether include the {@link com.tecknobit.neutron.services.revenues.entities.GeneralRevenue}
+     * @param retrieveProjectRevenues Whether include the {@link com.tecknobit.neutron.services.revenues.entities.ProjectRevenue}
      * @param labels The labels used to filter the data
      *
      * @return the result of the request as {@link String}
@@ -97,6 +100,8 @@ public class RevenuesController extends DefaultNeutronController {
             @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
             @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
             @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
+            @RequestParam(name = GENERAL_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveGeneralRevenues,
+            @RequestParam(name = PROJECT_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveProjectRevenues,
             @RequestParam(name = REVENUE_LABELS_KEY, required = false) Set<String> labels
     ) {
         if(!isMe(userId, token))
@@ -104,7 +109,8 @@ public class RevenuesController extends DefaultNeutronController {
         // TODO: 12/01/2025 REPLACE OR CREATE A DEDICATED REQUEST
         // response.put(CURRENCY_KEY, (T) me.getCurrency().getIsoName());
         // response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
-        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, period, labels));
+        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, period, retrieveGeneralRevenues,
+                retrieveProjectRevenues, labels));
     }
 
     /**
@@ -283,6 +289,39 @@ public class RevenuesController extends DefaultNeutronController {
             return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
         return (T) successResponse(projectRevenue);
     }
+    
+    /**
+     * Method to get the balance of the project, this count just the closed ticket
+     *
+     * @param userId The identifier of the user
+     * @param revenueId The project identifier
+     * @param token The token of the user
+     * @param period The period to use to select the tickets
+     * @param retrieveClosedTickets Whether include the closed tickets
+     *
+     * @return the result of the request as {@link String}
+     */
+    @GetMapping(
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + PROJECT_BALANCE_ENDPOINT,
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/balance", method = GET)
+    public <T> T getProjectBalance(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @RequestHeader(TOKEN_KEY) String token,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
+            @RequestParam(name = CLOSED_TICKETS_KEY, defaultValue = "true", required = false) boolean retrieveClosedTickets
+    ) {
+        if(!isMe(userId, token))
+            return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+        ProjectRevenue project = revenuesService.getProjectRevenue(userId, revenueId);
+        if(project == null)
+            return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
+        return (T) successResponse(revenuesService.getProjectBalance(project, period, retrieveClosedTickets));
+    }
 
     /**
      * Method to add a new ticket to a project
@@ -312,11 +351,11 @@ public class RevenuesController extends DefaultNeutronController {
             }
     )
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
-    public <T> String addTicketToProjectRevenue(
+    public String addTicketToProjectRevenue(
             @PathVariable(IDENTIFIER_KEY) String userId,
             @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
             @RequestHeader(TOKEN_KEY) String token,
-            @RequestBody Map<String, T> payload
+            @RequestBody Map<String, Object> payload
     ) {
         if(!isMe(userId, token))
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
@@ -328,14 +367,50 @@ public class RevenuesController extends DefaultNeutronController {
         String ticketTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
         String ticketDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
         long openingTime = jsonHelper.getLong(REVENUE_DATE_KEY);
-        long closingTime = jsonHelper.getLong(CLOSING_DATE_KEY, -1);
         if (!INSTANCE.isRevenueValueValid(ticketRevenue) || !INSTANCE.isRevenueTitleValid(ticketTitle)
                 || !INSTANCE.isRevenueDescriptionValid(ticketDescription) || projectRevenue.hasTicket(ticketTitle)) {
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
         }
-        revenuesService.addTicketToProjectRevenue(generateIdentifier(), ticketRevenue, ticketTitle,
-                ticketDescription, openingTime, closingTime, revenueId, userId);
+        revenuesService.addTicketToProjectRevenue(generateIdentifier(), ticketRevenue, ticketTitle, ticketDescription,
+                openingTime, revenueId, userId);
         return successResponse();
+    }
+
+    /**
+     * Method to get the tickets attached to the project
+     *
+     * @param userId The identifier of the user
+     * @param revenueId The project identifier
+     * @param token The token of the user
+     * @param page      The page requested
+     * @param pageSize  The size of the items to insert in the page
+     * @param period The period to use to select the tickets
+     * @param retrievePendingTickets Whether include the pending tickets
+     * @param retrieveClosedTickets Whether include the closed tickets
+     *
+     * @return the result of the request as {@link String}
+     */
+    @GetMapping(
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT,
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
+    public <T> T getTickets(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @RequestHeader(TOKEN_KEY) String token,
+            @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
+            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
+            @RequestParam(name = PENDING_TICKETS_KEY, defaultValue = "true", required = false) boolean retrievePendingTickets,
+            @RequestParam(name = CLOSED_TICKETS_KEY, defaultValue = "true", required = false) boolean retrieveClosedTickets
+    ) {
+        if(!isMe(userId, token) || revenuesService.getProjectRevenue(userId, revenueId) == null)
+            return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+        return (T) revenuesService.getTickets(revenueId, page, pageSize, period, retrievePendingTickets,
+                retrieveClosedTickets);
     }
 
     /**

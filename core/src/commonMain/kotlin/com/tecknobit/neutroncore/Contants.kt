@@ -113,6 +113,16 @@ const val PROJECT_REVENUE_KEY = "project_revenue"
 const val TICKETS_KEY = "tickets"
 
 /**
+ * `PENDING_TICKETS_KEY` the key for the **"pending_tickets"** field
+ */
+const val PENDING_TICKETS_KEY = "pending_tickets"
+
+/**
+ * `CLOSED_TICKETS_KEY` the key for the **"closed_tickets"** field
+ */
+const val CLOSED_TICKETS_KEY = "closed_tickets"
+
+/**
  * `INITIAL_REVENUES_KEY` the key for the **"initial_revenues"** field
  */
 const val INITIAL_REVENUES_KEY = "initial_revenues"
@@ -136,6 +146,11 @@ const val TICKET_IDENTIFIER_KEY = "ticket_id"
  * `TICKET_REVENUES_KEY` the key for the **"ticket_revenues"** field
  */
 const val TICKET_REVENUES_KEY = "ticket_revenues"
+
+/**
+ * `FIRST_INCOME_LABEL_COLOR` the color used to indicate the first income of a project
+ */
+const val FIRST_INCOME_LABEL_COLOR = "#8132a8"
 
 /**
  * `PENDING_TICKET_LABEL_COLOR` the color used to indicate a ticket still in pending

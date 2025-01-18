@@ -61,7 +61,11 @@ public class TicketRevenue extends GeneralRevenue {
     /**
      * {@code closingDate} the date when the ticket has been closed
      */
-    @Column(name = CLOSING_DATE_KEY)
+    @Column(
+            name = CLOSING_DATE_KEY,
+            columnDefinition = "BIGINT DEFAULT -1",
+            insertable = false
+    )
     private long closingDate;
 
     /**
@@ -138,16 +142,6 @@ public class TicketRevenue extends GeneralRevenue {
     }
 
     /**
-     * Method to get {@link #closingDate-revenueDate} instance 
-     *
-     * @return {@link #closingDate-revenueDate} instance as long
-     */
-    @JsonIgnore
-    public long getDuration() {
-        return closingDate - revenueDate;
-    }
-
-    /**
      * Method to get {@link #closingDate} instance 
      *
      * @return {@link #closingDate} instance as long
@@ -184,18 +178,6 @@ public class TicketRevenue extends GeneralRevenue {
     @JsonIgnore
     public boolean isClosed() {
         return closingDate != -1;
-    }
-
-    /**
-     * Method to get the label to indicate the ticket status 
-     *
-     * @return the label to indicate the ticket status as {@link RevenueLabel}
-     */
-    public RevenueLabel getCurrentLabel() {
-        if(isClosed())
-            return CLOSED_TICKET_LABEL;
-        else
-            return PENDING_TICKET_LABEL;
     }
 
 }

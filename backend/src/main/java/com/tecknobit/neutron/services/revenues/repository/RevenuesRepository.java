@@ -403,7 +403,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * @param ticketTitle The title of the ticket
      * @param ticketDescription The description of the ticket
      * @param openingTime The date when the ticket has been opened/inserted
-     * @param closingTime The date when the ticket has been closed
      * @param projectRevenueId The identifier of the project where the ticket revenue is attached
      * @param ownerId The identifier of the owner of the project
      */
@@ -417,7 +416,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                         REVENUE_TITLE_KEY + "," +
                         REVENUE_DESCRIPTION_KEY + "," +
                         REVENUE_DATE_KEY + "," +
-                        CLOSING_DATE_KEY + "," +
                         PROJECT_REVENUE_KEY + "," +
                         OWNER_KEY +
                     ") " +
@@ -428,7 +426,6 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                         ":" + REVENUE_TITLE_KEY + "," +
                         ":" + REVENUE_DESCRIPTION_KEY + "," +
                         ":" + REVENUE_DATE_KEY + "," +
-                        ":" + CLOSING_DATE_KEY + "," +
                         ":" + PROJECT_REVENUE_KEY + "," +
                         ":" + OWNER_KEY +
                     ");",
@@ -440,9 +437,144 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(REVENUE_TITLE_KEY) String ticketTitle,
             @Param(REVENUE_DESCRIPTION_KEY) String ticketDescription,
             @Param(REVENUE_DATE_KEY) long openingTime,
-            @Param(CLOSING_DATE_KEY) long closingTime,
             @Param(PROJECT_REVENUE_KEY) String projectRevenueId,
             @Param(OWNER_KEY) String ownerId
+    );
+
+    /**
+     * Method to count all the tickets of the project
+     *
+     * @param projectId The project where the ticket is attached
+     * @param fromDate The date from fetch the revenues
+     *
+     * @return the count of the all tickets of a project as long
+     */
+    @Query(
+            value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
+                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
+                    " AND dtype = 'ticket'" +
+                    " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            nativeQuery = true
+    )
+    long countAllTickets(
+            @Param(PROJECT_REVENUE_KEY) String projectId,
+            @Param(REVENUE_PERIOD_KEY) long fromDate
+    );
+
+    /**
+     * Method to get all the tickets of a project
+     *
+     * @param projectId The project where the ticket is attached
+     * @param pageable  The parameters to paginate the query
+     * @param fromDate The date from fetch the tickets
+     *
+     * @return all the tickets as {@link List} of {@link TicketRevenue}
+     */
+    @Query(
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
+                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
+                    " AND dtype = 'ticket'" +
+                    " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            nativeQuery = true
+    )
+    List<TicketRevenue> getAllTickets(
+            @Param(PROJECT_REVENUE_KEY) String projectId,
+            @Param(REVENUE_PERIOD_KEY) long fromDate,
+            Pageable pageable
+    );
+
+    /**
+     * Method to count the pending tickets of the project
+     *
+     * @param projectId The project where the ticket is attached
+     * @param fromDate The date from fetch the revenues
+     *
+     * @return the count of the pending tickets of a project as long
+     */
+    @Query(
+            value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
+                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
+                    " AND " + CLOSING_DATE_KEY + "=-1" +
+                    " AND dtype = 'ticket'" +
+                    " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            nativeQuery = true
+    )
+    long countPendingTickets(
+            @Param(PROJECT_REVENUE_KEY) String projectId,
+            @Param(REVENUE_PERIOD_KEY) long fromDate
+    );
+
+    /**
+     * Method to get the pending tickets of a project
+     *
+     * @param projectId The project where the ticket is attached
+     * @param pageable  The parameters to paginate the query
+     * @param fromDate The date from fetch the tickets
+     *
+     * @return the pending tickets as {@link List} of {@link TicketRevenue}
+     */
+    @Query(
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
+                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
+                    " AND " + CLOSING_DATE_KEY + "=-1" +
+                    " AND dtype = 'ticket'" +
+                    " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            nativeQuery = true
+    )
+    List<TicketRevenue> getPendingTickets(
+            @Param(PROJECT_REVENUE_KEY) String projectId,
+            @Param(REVENUE_PERIOD_KEY) long fromDate,
+            Pageable pageable
+    );
+
+    /**
+     * Method to count the closed tickets of the project
+     *
+     * @param projectId The project where the ticket is attached
+     * @param fromDate The date from fetch the revenues
+     *
+     * @return the count of the closed tickets of a project as long
+     */
+    @Query(
+            value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
+                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
+                    " AND " + CLOSING_DATE_KEY + "=-1" +
+                    " AND dtype = 'ticket'" +
+                    " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            nativeQuery = true
+    )
+    long countClosedTickets(
+            @Param(PROJECT_REVENUE_KEY) String projectId,
+            @Param(REVENUE_PERIOD_KEY) long fromDate
+    );
+
+    /**
+     * Method to get the closed tickets of a project
+     *
+     * @param projectId The project where the ticket is attached
+     * @param pageable  The parameters to paginate the query
+     * @param fromDate The date from fetch the tickets
+     *
+     * @return the closed tickets as {@link List} of {@link TicketRevenue}
+     */
+    @Query(
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
+                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
+                    " AND " + CLOSING_DATE_KEY + "!=-1" +
+                    " AND dtype = 'ticket'" +
+                    " ORDER BY " + REVENUE_DATE_KEY + " DESC",
+            nativeQuery = true
+    )
+    List<TicketRevenue> getClosedTickets(
+            @Param(PROJECT_REVENUE_KEY) String projectId,
+            @Param(REVENUE_PERIOD_KEY) long fromDate,
+            Pageable pageable
     );
 
     /**

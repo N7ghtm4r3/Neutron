@@ -1,7 +1,6 @@
 package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.annotations.Structure;
 import com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem;
@@ -21,7 +20,6 @@ import static com.tecknobit.neutroncore.ContantsKt.*;
  */
 @Structure
 @MappedSuperclass
-// TODO: 13/01/2025 REMOVE USELESS METHOD ALSO FROM INHERITED CLASSES
 public abstract class Revenue extends EquinoxItem {
 
     /**
@@ -113,16 +111,6 @@ public abstract class Revenue extends EquinoxItem {
     @JsonGetter(REVENUE_DATE_KEY)
     public long getRevenueTimestamp() {
         return revenueDate;
-    }
-
-    /**
-     * Method to get {@link #revenueDate} instance 
-     *
-     * @return {@link #revenueDate} instance as {@link String}
-     */
-    @JsonIgnore
-    public String getRevenueDate() {
-        return timeFormatter.formatAsString(revenueDate);
     }
 
 }
