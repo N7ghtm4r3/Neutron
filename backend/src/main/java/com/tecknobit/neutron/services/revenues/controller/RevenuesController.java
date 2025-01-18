@@ -118,7 +118,7 @@ public class RevenuesController extends DefaultNeutronController {
      *
      * @param userId The identifier of the user
      * @param token The token of the user
-     * @param payload: payload of the request
+     * @param payload The payload of the request
      * <pre>
      *      {@code
      *              {
@@ -177,7 +177,7 @@ public class RevenuesController extends DefaultNeutronController {
      *
      * @param userId The identifier of the user
      * @param token The token of the user
-     * @param payload: payload of the request
+     * @param payload The payload of the request
      * <pre>
      *      {@code
      *              {
@@ -266,7 +266,7 @@ public class RevenuesController extends DefaultNeutronController {
      *
      * @param userId The identifier of the user
      * @param token The token of the user
-     * @param revenueId The identifier of the project to get
+     * @param projectId The identifier of the project to get
      *
      * @return the result of the request as {@link String}
      */
@@ -279,12 +279,12 @@ public class RevenuesController extends DefaultNeutronController {
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}", method = GET)
     public <T> T getProjectRevenue(
             @PathVariable(IDENTIFIER_KEY) String userId,
-            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @RequestHeader(TOKEN_KEY) String token
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        ProjectRevenue projectRevenue = revenuesService.getProjectRevenue(userId, revenueId);
+        ProjectRevenue projectRevenue = revenuesService.getProjectRevenue(userId, projectId);
         if(projectRevenue == null)
             return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
         return (T) successResponse(projectRevenue);
@@ -294,7 +294,7 @@ public class RevenuesController extends DefaultNeutronController {
      * Method to get the balance of the project, this count just the closed ticket
      *
      * @param userId The identifier of the user
-     * @param revenueId The project identifier
+     * @param projectId The project identifier
      * @param token The token of the user
      * @param period The period to use to select the tickets
      * @param retrieveClosedTickets Whether include the closed tickets
@@ -310,14 +310,14 @@ public class RevenuesController extends DefaultNeutronController {
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/balance", method = GET)
     public <T> T getProjectBalance(
             @PathVariable(IDENTIFIER_KEY) String userId,
-            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @RequestHeader(TOKEN_KEY) String token,
             @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
             @RequestParam(name = CLOSED_TICKETS_KEY, defaultValue = "true", required = false) boolean retrieveClosedTickets
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        ProjectRevenue project = revenuesService.getProjectRevenue(userId, revenueId);
+        ProjectRevenue project = revenuesService.getProjectRevenue(userId, projectId);
         if(project == null)
             return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
         return (T) successResponse(revenuesService.getProjectBalance(project, period, retrieveClosedTickets));
@@ -328,8 +328,8 @@ public class RevenuesController extends DefaultNeutronController {
      *
      * @param userId The identifier of the user
      * @param token The token of the user
-     * @param revenueId The identifier of the project
-     * @param payload: payload of the request
+     * @param projectId The identifier of the project
+     * @param payload The payload of the request
      * <pre>
      *      {@code
      *              {
@@ -337,7 +337,6 @@ public class RevenuesController extends DefaultNeutronController {
      *                  "title": "the title of the ticket", -> [String]
      *                  "description": "the description of the ticket", -> [String]
      *                  "revenue_date": "the insertion date of the ticket", -> [long]
-     *                  "closing_date": "the closing date of the ticket" -> [long, default -1]
      *              }
      *      }
      * </pre>
@@ -351,15 +350,15 @@ public class RevenuesController extends DefaultNeutronController {
             }
     )
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
-    public String addTicketToProjectRevenue(
+    public String addTicketToProject(
             @PathVariable(IDENTIFIER_KEY) String userId,
-            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @RequestHeader(TOKEN_KEY) String token,
             @RequestBody Map<String, Object> payload
     ) {
         if(!isMe(userId, token))
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        ProjectRevenue projectRevenue = revenuesService.getProjectRevenue(userId, revenueId);
+        ProjectRevenue projectRevenue = revenuesService.getProjectRevenue(userId, projectId);
         if (projectRevenue == null)
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
         loadJsonHelper(payload);
@@ -367,20 +366,77 @@ public class RevenuesController extends DefaultNeutronController {
         String ticketTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
         String ticketDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
         long openingTime = jsonHelper.getLong(REVENUE_DATE_KEY);
-        if (!INSTANCE.isRevenueValueValid(ticketRevenue) || !INSTANCE.isRevenueTitleValid(ticketTitle)
-                || !INSTANCE.isRevenueDescriptionValid(ticketDescription) || projectRevenue.hasTicket(ticketTitle)) {
+        if (invalidTicketPayload(ticketRevenue, ticketTitle, ticketDescription) || projectRevenue.hasTicket(ticketTitle))
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
-        }
-        revenuesService.addTicketToProjectRevenue(generateIdentifier(), ticketRevenue, ticketTitle, ticketDescription,
-                openingTime, revenueId, userId);
+        revenuesService.addTicket(generateIdentifier(), ticketRevenue, ticketTitle, ticketDescription,
+                openingTime, projectId, userId);
         return successResponse();
+    }
+
+    /**
+     * Method to edit an existing ticket of a project
+     *
+     * @param userId The identifier of the user
+     * @param token The token of the user
+     * @param projectId The identifier of the project
+     * @param ticketId The identifier of the ticket
+     * @param payload The payload of the request
+     * <pre>
+     *      {@code
+     *              {
+     *                  "value": "the amount value of the ticket", -> [double]
+     *                  "title": "the title of the ticket", -> [String]
+     *                  "description": "the description of the ticket", -> [String]
+     *                  "revenue_date": "the insertion date of the ticket", -> [long]
+     *              }
+     *      }
+     * </pre>
+     *
+     * @return the result of the request as {@link String}
+     */
+    @PatchMapping(
+            path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT + "/{" + TICKET_IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PATCH)
+    public String editTicket(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
+            @PathVariable(TICKET_IDENTIFIER_KEY) String ticketId,
+            @RequestHeader(TOKEN_KEY) String token,
+            @RequestBody Map<String, Object> payload
+    ) {
+        if(!isMe(userId, token))
+            return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+        ProjectRevenue projectRevenue = revenuesService.getProjectRevenue(userId, projectId);
+        if (projectRevenue == null)
+            return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        TicketRevenue currentTicket = projectRevenue.hasTicketById(ticketId);
+        if(currentTicket == null || currentTicket.isClosed())
+            return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        loadJsonHelper(payload);
+        double ticketRevenue = jsonHelper.getDouble(REVENUE_VALUE_KEY);
+        String ticketTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
+        String ticketDescription = jsonHelper.getString(REVENUE_DESCRIPTION_KEY);
+        long openingTime = jsonHelper.getLong(REVENUE_DATE_KEY);
+        if (invalidTicketPayload(ticketRevenue, ticketTitle, ticketDescription))
+            return failedResponse(WRONG_PROCEDURE_MESSAGE);
+        revenuesService.editTicket(ticketId, ticketRevenue, ticketTitle, ticketDescription, openingTime);
+        return successResponse();
+    }
+
+    private boolean invalidTicketPayload(double ticketRevenue, String ticketTitle, String ticketDescription) {
+        return !INSTANCE.isRevenueValueValid(ticketRevenue) || !INSTANCE.isRevenueTitleValid(ticketTitle)
+                || !INSTANCE.isRevenueDescriptionValid(ticketDescription);
     }
 
     /**
      * Method to get the tickets attached to the project
      *
      * @param userId The identifier of the user
-     * @param revenueId The project identifier
+     * @param projectId The project identifier
      * @param token The token of the user
      * @param page      The page requested
      * @param pageSize  The size of the items to insert in the page
@@ -399,7 +455,7 @@ public class RevenuesController extends DefaultNeutronController {
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets", method = POST)
     public <T> T getTickets(
             @PathVariable(IDENTIFIER_KEY) String userId,
-            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @RequestHeader(TOKEN_KEY) String token,
             @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
             @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
@@ -407,9 +463,9 @@ public class RevenuesController extends DefaultNeutronController {
             @RequestParam(name = PENDING_TICKETS_KEY, defaultValue = "true", required = false) boolean retrievePendingTickets,
             @RequestParam(name = CLOSED_TICKETS_KEY, defaultValue = "true", required = false) boolean retrieveClosedTickets
     ) {
-        if(!isMe(userId, token) || revenuesService.getProjectRevenue(userId, revenueId) == null)
+        if(!isMe(userId, token) || revenuesService.getProjectRevenue(userId, projectId) == null)
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        return (T) revenuesService.getTickets(revenueId, page, pageSize, period, retrievePendingTickets,
+        return (T) revenuesService.getTickets(projectId, page, pageSize, period, retrievePendingTickets,
                 retrieveClosedTickets);
     }
 
@@ -418,31 +474,31 @@ public class RevenuesController extends DefaultNeutronController {
      *
      * @param userId The identifier of the user
      * @param token The token of the user
-     * @param revenueId The identifier of the project
+     * @param projectId The identifier of the project
      * @param ticketId The identifier of the ticket
      *
      * @return the result of the request as {@link String}
      */
-    @PatchMapping(
+    @PutMapping(
             path = PROJECTS_KEY + "{" + REVENUE_IDENTIFIER_KEY + "}" + TICKETS_ENDPOINT
                     + "/{" + TICKET_IDENTIFIER_KEY + "}",
             headers = {
                     TOKEN_KEY
             }
     )
-    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PATCH)
-    public String closeProjectRevenueTicket(
+    @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = PUT)
+    public String closeTicket(
             @PathVariable(IDENTIFIER_KEY) String userId,
-            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @PathVariable(TICKET_IDENTIFIER_KEY) String ticketId,
             @RequestHeader(TOKEN_KEY) String token
     ) {
         if(!isMe(userId, token))
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        TicketRevenue ticketRevenue = revenuesService.getTicketRevenue(ticketId, userId, revenueId);
+        TicketRevenue ticketRevenue = revenuesService.getTicketRevenue(ticketId, userId, projectId);
         if(ticketRevenue == null || ticketRevenue.isClosed())
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
-        revenuesService.closeTicketRevenue(ticketId, userId, revenueId);
+        revenuesService.closeTicketRevenue(ticketId, userId, projectId);
         return successResponse();
     }
 
@@ -451,7 +507,7 @@ public class RevenuesController extends DefaultNeutronController {
      *
      * @param userId The identifier of the user
      * @param token The token of the user
-     * @param revenueId The identifier of the project
+     * @param projectId The identifier of the project
      * @param ticketId The identifier of the ticket
      *
      * @return the result of the request as {@link String}
@@ -466,13 +522,13 @@ public class RevenuesController extends DefaultNeutronController {
     @RequestPath(path = "/api/v1/users/{id}/revenues/projects/{revenue_id}/tickets/{ticket_id}", method = DELETE)
     public String deleteProjectRevenueTicket(
             @PathVariable(IDENTIFIER_KEY) String userId,
-            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @PathVariable(TICKET_IDENTIFIER_KEY) String ticketId,
             @RequestHeader(TOKEN_KEY) String token
     ) {
         if(!isMe(userId, token))
             return failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        TicketRevenue ticketRevenue = revenuesService.getTicketRevenue(ticketId, userId, revenueId);
+        TicketRevenue ticketRevenue = revenuesService.getTicketRevenue(ticketId, userId, projectId);
         if(ticketRevenue == null)
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
         revenuesService.deleteTicketRevenue(ticketId);

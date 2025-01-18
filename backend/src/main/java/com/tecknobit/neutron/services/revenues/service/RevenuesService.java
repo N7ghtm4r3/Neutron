@@ -349,10 +349,10 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param projectRevenueId The identifier of the project where attach the ticket
      * @param userId The identifier of the user who requested the ticket creation
      */
-    public void addTicketToProjectRevenue(String ticketId, double ticketRevenue, String ticketTitle,
-                                          String ticketDescription, long openingTime, String projectRevenueId,
-                                          String userId) {
-        revenuesRepository.addTicketToProjectRevenue(
+    public void addTicket(String ticketId, double ticketRevenue, String ticketTitle,
+                          String ticketDescription, long openingTime, String projectRevenueId,
+                          String userId) {
+        revenuesRepository.addTicket(
                 ticketId,
                 roundValue(ticketRevenue, 2),
                 ticketTitle,
@@ -360,6 +360,26 @@ public class RevenuesService extends EquinoxItemsHelper {
                 openingTime,
                 projectRevenueId,
                 userId
+        );
+    }
+
+    /**
+     * Method to update an existing ticket of a project
+     *
+     * @param ticketId The identifier of the ticket
+     * @param ticketRevenue The amount value of the ticket
+     * @param ticketTitle The title of the ticket
+     * @param ticketDescription The description of the ticket
+     * @param openingTime When the ticket has been opened
+     */
+    public void editTicket(String ticketId, double ticketRevenue, String ticketTitle, String ticketDescription,
+                           long openingTime) {
+        revenuesRepository.editTicket(
+                ticketId,
+                roundValue(ticketRevenue, 2),
+                ticketTitle,
+                ticketDescription,
+                openingTime
         );
     }
 

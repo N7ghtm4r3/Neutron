@@ -153,4 +153,17 @@ public class ProjectRevenue extends Revenue {
         return false;
     }
 
+    /**
+     * Method to check whether a {@link TicketRevenue} is attached to the current project
+     *
+     * @param ticketId The identifier of the ticket to check
+     * @return whether the ticket is attached as {@link TicketRevenue}, if not exists null
+     */
+    public TicketRevenue hasTicketById(String ticketId) {
+        for (TicketRevenue ticket : tickets)
+            if (ticket.getId().equals(ticketId))
+                return ticket;
+        return null;
+    }
+
 }

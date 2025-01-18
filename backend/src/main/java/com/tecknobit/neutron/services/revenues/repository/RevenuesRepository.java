@@ -431,7 +431,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     ");",
             nativeQuery = true
     )
-    void addTicketToProjectRevenue(
+    void addTicket(
             @Param(IDENTIFIER_KEY) String ticketId,
             @Param(REVENUE_VALUE_KEY) double ticketRevenue,
             @Param(REVENUE_TITLE_KEY) String ticketTitle,
@@ -439,6 +439,34 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(REVENUE_DATE_KEY) long openingTime,
             @Param(PROJECT_REVENUE_KEY) String projectRevenueId,
             @Param(OWNER_KEY) String ownerId
+    );
+
+    /**
+     * Method to edit an existing ticket revenue
+     *
+     * @param ticketId The identifier of the new ticket
+     * @param ticketRevenue The amount value of the ticket
+     * @param ticketTitle The title of the ticket
+     * @param ticketDescription The description of the ticket
+     * @param openingTime The date when the ticket has been opened/inserted
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + GENERAL_REVENUES_KEY + " SET " +
+                    REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY + "," +
+                    REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY + "," +
+                    REVENUE_DESCRIPTION_KEY + "=:" + REVENUE_DESCRIPTION_KEY + "," +
+                    REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY +
+                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void editTicket(
+            @Param(IDENTIFIER_KEY) String ticketId,
+            @Param(REVENUE_VALUE_KEY) double ticketRevenue,
+            @Param(REVENUE_TITLE_KEY) String ticketTitle,
+            @Param(REVENUE_DESCRIPTION_KEY) String ticketDescription,
+            @Param(REVENUE_DATE_KEY) long openingTime
     );
 
     /**
