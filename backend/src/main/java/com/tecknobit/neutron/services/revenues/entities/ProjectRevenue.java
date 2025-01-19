@@ -35,11 +35,6 @@ import static com.tecknobit.neutroncore.ContantsKt.*;
 public class ProjectRevenue extends Revenue {
 
     /**
-     * {@code PROJECTS_KEY} the key for the <b>"/projects/"</b> field
-     */
-    public static final String PROJECTS_KEY = "/projects/";
-
-    /**
      * {@code initialRevenue} the initial revenue attached to the project
      */
     @OneToOne(

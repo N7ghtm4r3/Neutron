@@ -88,6 +88,11 @@ const val REVENUE_LABEL_COLOR_KEY = "color"
 const val IS_PROJECT_REVENUE_KEY = "is_project_revenue"
 
 /**
+ * `PROJECTS_KEY` the key for the **"/projects/"** field
+ */
+const val PROJECTS_KEY = "/projects/"
+
+/**
  * `PROJECT_REVENUES_KEY` the key for the **"project_revenues"** field
  */
 const val PROJECT_REVENUES_KEY = "project_revenues"
