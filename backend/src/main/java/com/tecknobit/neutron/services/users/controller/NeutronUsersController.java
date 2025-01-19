@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.PATCH;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.TOKEN_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.CURRENCY_KEY;
 import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.CHANGE_CURRENCY_ENDPOINT;
+import static com.tecknobit.neutroncore.helpers.NeutronEndpoints.DYNAMIC_ACCOUNT_DATA_ENDPOINT;
 
 /**
  * The {@code NeutronUsersController} class is useful to manage all the user operations
@@ -32,6 +34,23 @@ public class NeutronUsersController extends EquinoxUsersController<NeutronUser, 
      * {@code WRONG_CURRENCY_MESSAGE} error message used when the currency inserted is not valid
      */
     public static final String WRONG_CURRENCY_MESSAGE = "wrong_currency_key";
+
+    @Deprecated(since = "USE THE EQUINOX BUILT-IN")
+    @GetMapping(
+            path = USERS_KEY + "/{" + IDENTIFIER_KEY + "}" + DYNAMIC_ACCOUNT_DATA_ENDPOINT,
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/dynamicAccountData", method = GET)
+    public <T> T getDynamicAccountData(
+            @PathVariable(IDENTIFIER_KEY) String id,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if(!isMe(id, token))
+            return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+        return (T) successResponse(usersHelper.getDynamicAccountData(id));
+    }
 
     /**
      * Method to change the currency of the user
