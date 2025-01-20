@@ -6,6 +6,7 @@ import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import com.tecknobit.neutron.services.users.repository.NeutronUsersRepository;
 import com.tecknobit.neutron.services.users.service.NeutronUsersService;
 import com.tecknobit.neutroncore.helpers.NeutronInputsValidator;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -34,6 +35,16 @@ public class NeutronUsersController extends EquinoxUsersController<NeutronUser, 
      * {@code WRONG_CURRENCY_MESSAGE} error message used when the currency inserted is not valid
      */
     public static final String WRONG_CURRENCY_MESSAGE = "wrong_currency_key";
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JSONObject assembleSignInSuccessResponse(NeutronUser user) {
+        JSONObject response = super.assembleSignInSuccessResponse(user);
+        response.put(CURRENCY_KEY, user.getCurrency());
+        return response;
+    }
 
     @Deprecated(since = "USE THE EQUINOX BUILT-IN")
     @GetMapping(

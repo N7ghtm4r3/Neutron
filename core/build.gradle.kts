@@ -62,6 +62,7 @@ kotlin {
             dependencies {
                 implementation("io.github.n7ghtm4r3:equinox-core:1.0.6")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
             }
         }
 

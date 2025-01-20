@@ -98,18 +98,16 @@ public class RevenuesController extends DefaultNeutronController {
             @RequestHeader(TOKEN_KEY) String token,
             @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
             @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
-            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
             @RequestParam(name = GENERAL_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveGeneralRevenues,
             @RequestParam(name = PROJECT_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveProjectRevenues,
             @RequestParam(name = REVENUE_LABELS_KEY, required = false) Set<String> labels
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        // TODO: 12/01/2025 REPLACE OR CREATE A DEDICATED REQUEST
-        // response.put(CURRENCY_KEY, (T) me.getCurrency().getIsoName());
-        // response.put(PROFILE_PIC_KEY, (T) me.getProfilePic());
-        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, period, retrieveGeneralRevenues,
-                retrieveProjectRevenues, labels));
+        RevenuePeriod revenuePeriod = RevenuePeriod.Companion.toRevenuePeriod(period);
+        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, revenuePeriod,
+                retrieveGeneralRevenues, retrieveProjectRevenues, labels));
     }
 
     /**

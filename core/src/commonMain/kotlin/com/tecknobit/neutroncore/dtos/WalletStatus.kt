@@ -1,6 +1,7 @@
 package com.tecknobit.neutroncore.dtos
 
 import com.tecknobit.equinoxcore.annotations.DTO
+import kotlinx.serialization.Serializable
 
 /**
  * `WalletStatus` data transferable object used to share the current status of the wallet of the user
@@ -9,6 +10,7 @@ import com.tecknobit.equinoxcore.annotations.DTO
  * @property trend The current trend of the wallet based on the period
  */
 @DTO
+@Serializable
 data class WalletStatus(
     val totalEarnings: Double,
     val trend: Double

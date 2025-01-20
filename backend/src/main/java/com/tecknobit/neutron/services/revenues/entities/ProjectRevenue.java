@@ -2,6 +2,7 @@ package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tecknobit.apimanager.trading.TradingTools;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 
@@ -114,6 +115,17 @@ public class ProjectRevenue extends Revenue {
         super(id, title, -1, revenueDate, owner);
         this.initialRevenue = initialRevenue;
         this.tickets = tickets;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getValue() {
+        double value = initialRevenue.getValue();
+        for (TicketRevenue ticket : tickets)
+            value += ticket.getValue();
+        return TradingTools.roundValue(value, 2);
     }
 
     /**

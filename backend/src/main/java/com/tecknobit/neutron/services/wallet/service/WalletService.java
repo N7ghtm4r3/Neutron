@@ -57,7 +57,7 @@ public class WalletService {
         lastMonthRevenues.removeAll(revenues);
         double totalEarnings = calculateEarnings(revenues);
         double lastMonthEarnings = calculateEarnings(lastMonthRevenues);
-        double trend = 100.0;
+        double trend = 0.0;
         if(lastMonthEarnings != 0)
             trend = TradingTools.computeAssetPercent(lastMonthEarnings, totalEarnings, 2);
         return new WalletStatus(
