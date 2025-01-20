@@ -11,6 +11,7 @@ import com.tecknobit.neutron.services.revenues.repository.RevenueLabelsRepositor
 import com.tecknobit.neutron.services.revenues.repository.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -94,7 +95,7 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period) {
-        return getRevenues(userId, page, pageSize, period, 1, true, true, Collections.emptySet());
+        return getRevenues(userId, page, pageSize, period, 1, true, true, new JSONArray());
     }
 
     /**
@@ -113,7 +114,7 @@ public class RevenuesService extends EquinoxItemsHelper {
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
                                                   boolean retrieveGeneralRevenues, boolean retrieveProjectRevenues,
-                                                  Set<String> labels) {
+                                                  JSONArray labels) {
         return getRevenues(userId, page, pageSize, period, 1, retrieveGeneralRevenues, retrieveProjectRevenues, labels);
     }
 
@@ -134,15 +135,16 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
                                                   int offset, boolean retrieveGeneralRevenues,
-                                                  boolean retrieveProjectRevenues, Set<String> labels) {
+                                                  boolean retrieveProjectRevenues, JSONArray labels) {
         List<Revenue> revenues = new ArrayList<>();
         Pageable pageable = PageRequest.of(page, pageSize);
         long fromDate = period.calculateFromDate(period, offset);
         long revenuesCount = 0;
         long projectsCount = 0;
+        List<String> labelsFilter = new JsonHelper(labels).toList();
         if(retrieveGeneralRevenues) {
-            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
-            revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
+            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labelsFilter, pageable));
+            revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labelsFilter);
         }
         if(retrieveProjectRevenues) {
             revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));

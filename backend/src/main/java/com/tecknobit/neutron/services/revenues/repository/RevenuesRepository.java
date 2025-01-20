@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.*;
@@ -56,7 +55,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     long countGeneralRevenues(
             @Param(IDENTIFIER_KEY) String userId,
             @Param(REVENUE_PERIOD_KEY) long fromDate,
-            @Param(REVENUE_LABELS_KEY) Set<String> labels
+            @Param(REVENUE_LABELS_KEY) List<String> labels
     );
     
     /**
@@ -86,7 +85,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     List<GeneralRevenue> getGeneralRevenues(
             @Param(IDENTIFIER_KEY) String userId,
             @Param(REVENUE_PERIOD_KEY) long fromDate,
-            @Param(REVENUE_LABELS_KEY) Set<String> labels,
+            @Param(REVENUE_LABELS_KEY) List<String> labels,
             Pageable pageable);
 
     /**
