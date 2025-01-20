@@ -8,7 +8,7 @@ import com.tecknobit.neutroncore.enums.RevenuePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
@@ -59,7 +59,7 @@ public class WalletController extends DefaultNeutronController {
             @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
             @RequestParam(name = GENERAL_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveGeneralRevenues,
             @RequestParam(name = PROJECT_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveProjectRevenues,
-            @RequestParam(name = REVENUE_LABELS_KEY, required = false) HashSet<String> labels
+            @RequestParam(name = REVENUE_LABELS_KEY, required = false) Set<String> labels
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);

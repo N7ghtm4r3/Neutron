@@ -67,13 +67,13 @@ public class NeutronUsersService extends EquinoxUsersHelper<NeutronUser, Neutron
     }
 
     @Deprecated(since = "REMOVE WHEN EQUINOX INTEGRATED")
-    private <E> void arrangeQuery(StringBuilder queryBuilder, List<E> list, boolean escape) {
-        int listSize = list.size();
-        int lastIndex = listSize - 1;
-        for (int j = 0; j < listSize; j++) {
+    private <E> void arrangeQuery(StringBuilder queryBuilder, List<E> List, boolean escape) {
+        int ListSize = List.size();
+        int lastIndex = ListSize - 1;
+        for (int j = 0; j < ListSize; j++) {
             if (escape)
                 queryBuilder.append(SINGLE_QUOTE);
-            queryBuilder.append(list.get(j));
+            queryBuilder.append(List.get(j));
             if (escape)
                 queryBuilder.append(SINGLE_QUOTE);
             if (j < lastIndex)

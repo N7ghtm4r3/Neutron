@@ -42,7 +42,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT DISTINCT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
-                    " AS " + REVENUES_KEY + " INNER JOIN " + REVENUE_LABELS_KEY + " AS l " +
+                    " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS l " +
                     " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = l." + REVENUE_KEY +
                     " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
                     " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
@@ -71,7 +71,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT DISTINCT " + REVENUES_KEY + ".* FROM " + GENERAL_REVENUES_KEY +
-                    " AS " + REVENUES_KEY + " INNER JOIN " + REVENUE_LABELS_KEY + " AS l " +
+                    " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS l " +
                     " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = l." + REVENUE_KEY +
                     " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
                     " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
@@ -87,8 +87,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(IDENTIFIER_KEY) String userId,
             @Param(REVENUE_PERIOD_KEY) long fromDate,
             @Param(REVENUE_LABELS_KEY) Set<String> labels,
-            Pageable pageable
-    );
+            Pageable pageable);
 
     /**
      * Method to get a general revenue if exists
