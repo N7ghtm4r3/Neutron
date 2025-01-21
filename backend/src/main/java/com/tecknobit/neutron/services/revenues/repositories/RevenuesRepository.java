@@ -1,4 +1,4 @@
-package com.tecknobit.neutron.services.revenues.repository;
+package com.tecknobit.neutron.services.revenues.repositories;
 
 
 import com.tecknobit.neutron.services.revenues.entities.GeneralRevenue;
@@ -41,8 +41,9 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT DISTINCT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
-                    " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS l " +
-                    " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = l." + REVENUE_KEY +
+                    " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS rv " +
+                    " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = rv." + REVENUE_IDENTIFIER_KEY +
+                    " LEFT JOIN " + LABELS_KEY + " AS l ON l." + IDENTIFIER_KEY + "=" + "rv." + IDENTIFIER_KEY +
                     " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
                     " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
                     " AND (" +
@@ -70,8 +71,9 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT DISTINCT " + REVENUES_KEY + ".* FROM " + GENERAL_REVENUES_KEY +
-                    " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS l " +
-                    " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = l." + REVENUE_KEY +
+                    " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS rv " +
+                    " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = rv." + REVENUE_IDENTIFIER_KEY +
+                    " LEFT JOIN " + LABELS_KEY + " AS l ON l." + IDENTIFIER_KEY + "=" + "rv." + IDENTIFIER_KEY +
                     " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
                     " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
                     " AND (" +
@@ -96,9 +98,9 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * @return a general revenue if exists as {@link GeneralRevenue}
      */
     @Query(
-            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE "
-                    + OWNER_KEY + "=:" + OWNER_KEY + " AND "
-                    + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
+                    " WHERE " + OWNER_KEY + "=:" + OWNER_KEY +
+                    " AND " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     GeneralRevenue generalRevenueExistsById(
@@ -174,6 +176,22 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             @Param(REVENUE_DATE_KEY) long insertionDate,
             @Param(REVENUE_VALUE_KEY) double value,
             @Param(REVENUE_DESCRIPTION_KEY) String revenueDescription
+    );
+
+    /**
+     * Method to detach labels from a general revenue
+     *
+     * @param revenueId The identifier of the revenue from detach labels
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "DELETE FROM " + REVENUE_LABELS_KEY
+                    + " WHERE " + REVENUE_IDENTIFIER_KEY + "=:" + REVENUE_IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void detachLabelsFromGeneralRevenue(
+            @Param(REVENUE_IDENTIFIER_KEY) String revenueId
     );
 
     /**

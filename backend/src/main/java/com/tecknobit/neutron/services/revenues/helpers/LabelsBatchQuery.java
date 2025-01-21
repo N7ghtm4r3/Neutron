@@ -8,18 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class used to execute a batch query with a {@link RevenueLabel} item
+ * Class used to execute a batch insert query with a {@link RevenueLabel} item
  *
  * @see EquinoxItemsHelper
  * @see com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.BatchQuery
  * @see RevenueLabel
  */
-public class RevenueLabelBatchQuery implements EquinoxItemsHelper.BatchQuery<RevenueLabel> {
-
-    /**
-     * {@code revenueId} the identifier of the revenue
-     */
-    private final String revenueId;
+public class LabelsBatchQuery implements EquinoxItemsHelper.BatchQuery<RevenueLabel> {
 
     /**
      * {@code labels} the labels attached to the revenue
@@ -27,13 +22,11 @@ public class RevenueLabelBatchQuery implements EquinoxItemsHelper.BatchQuery<Rev
     private final ArrayList<RevenueLabel> labels;
 
     /**
-     * Constructor to init the {@link RevenueLabelBatchQuery}
+     * Constructor to init the {@link LabelsBatchQuery}
      *
-     * @param revenueId The identifier of the revenue
      * @param labels The labels attached to the revenue
      */
-    public RevenueLabelBatchQuery(String revenueId, List<RevenueLabel> labels) {
-        this.revenueId = revenueId;
+    public LabelsBatchQuery(List<RevenueLabel> labels) {
         this.labels = new ArrayList<>(labels);
     }
 
@@ -54,7 +47,6 @@ public class RevenueLabelBatchQuery implements EquinoxItemsHelper.BatchQuery<Rev
             query.setParameter(index++, label.getId());
             query.setParameter(index++, label.getColor());
             query.setParameter(index++, label.getText());
-            query.setParameter(index++, revenueId);
         }
     }
 

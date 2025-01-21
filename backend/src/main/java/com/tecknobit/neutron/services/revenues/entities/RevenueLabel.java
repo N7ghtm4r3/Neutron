@@ -8,6 +8,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
@@ -18,7 +20,7 @@ import static com.tecknobit.neutroncore.ContantsKt.*;
  * @see Revenue
  */
 @Entity
-@Table(name = REVENUE_LABELS_KEY)
+@Table(name = LABELS_KEY)
 public class RevenueLabel extends EquinoxItem implements BatchItem<String> {
 
     /**
@@ -34,19 +36,19 @@ public class RevenueLabel extends EquinoxItem implements BatchItem<String> {
     private final String color;
 
     /**
-     * {@code source} the general revenue where the label is attached
+     * {@code source} the general revenues where the label is attached
      */
-    @ManyToOne(
-            cascade = CascadeType.ALL
+    @ManyToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = LABELS_KEY
     )
-    @JoinColumn(name = REVENUE_KEY)
     @JsonIgnoreProperties({
             REVENUE_SOURCE_KEY,
             "hibernateLazyInitializer",
             "handler"
     })
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private final GeneralRevenue source;
+    private final List<GeneralRevenue> source;
 
     /**
      * Constructor to init the {@link RevenueLabel} class 
@@ -77,7 +79,7 @@ public class RevenueLabel extends EquinoxItem implements BatchItem<String> {
      * @param source The general revenue where the label is attached
      *
      */
-    public RevenueLabel(String id, String text, String color, GeneralRevenue source) {
+    public RevenueLabel(String id, String text, String color, List<GeneralRevenue> source) {
         super(id);
         this.text = text;
         this.color = color;

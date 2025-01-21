@@ -58,7 +58,7 @@ public class WalletController extends DefaultNeutronController {
             @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
             @RequestParam(name = GENERAL_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveGeneralRevenues,
             @RequestParam(name = PROJECT_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveProjectRevenues,
-            @RequestParam(name = REVENUE_LABELS_KEY, required = false) JSONArray labels
+            @RequestParam(name = LABELS_KEY, required = false) JSONArray labels
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);

@@ -6,9 +6,10 @@ import com.tecknobit.equinoxbackend.environment.services.builtin.service.Equinox
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
 import com.tecknobit.neutron.services.revenues.entities.*;
-import com.tecknobit.neutron.services.revenues.helpers.RevenueLabelBatchQuery;
-import com.tecknobit.neutron.services.revenues.repository.RevenueLabelsRepository;
-import com.tecknobit.neutron.services.revenues.repository.RevenuesRepository;
+import com.tecknobit.neutron.services.revenues.helpers.LabelsBatchQuery;
+import com.tecknobit.neutron.services.revenues.helpers.RevenueLabelsBatchQuery;
+import com.tecknobit.neutron.services.revenues.repositories.RevenueLabelsRepository;
+import com.tecknobit.neutron.services.revenues.repositories.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
 import org.json.JSONArray;
@@ -25,8 +26,7 @@ import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
-import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
-import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.*;
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.DEFAULT_PAGE;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 import static com.tecknobit.neutroncore.enums.NeutronCurrency.DOLLAR;
@@ -141,7 +141,11 @@ public class RevenuesService extends EquinoxItemsHelper {
         long fromDate = period.calculateFromDate(period, offset);
         long revenuesCount = 0;
         long projectsCount = 0;
-        List<String> labelsFilter = new JsonHelper(labels).toList();
+        List<String> labelsFilter;
+        if(labels == null)
+            labelsFilter = Collections.EMPTY_LIST;
+        else
+            labelsFilter = new JsonHelper(labels).toList();
         if(retrieveGeneralRevenues) {
             revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labelsFilter, pageable));
             revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labelsFilter);
@@ -219,8 +223,10 @@ public class RevenuesService extends EquinoxItemsHelper {
                 revenueDescription,
                 userId
         );
-        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new RevenueLabelBatchQuery(revenueId, labels), IDENTIFIER_KEY,
-                REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY, REVENUE_KEY);
+        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels), IDENTIFIER_KEY,
+                REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY);
+        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels), REVENUE_IDENTIFIER_KEY,
+                IDENTIFIER_KEY);
     }
 
     /**
@@ -243,16 +249,30 @@ public class RevenuesService extends EquinoxItemsHelper {
                 roundValue(revenueValue, 2),
                 revenueDescription
         );
-        // FIXME: 17/01/2025 REMOVE THE WORKAROUND WITH THE syncBatch METHOD
-        batchInsert(INSERT_IGNORE_INTO, REVENUE_LABELS_KEY, new RevenueLabelBatchQuery(revenueId, labels),
-                IDENTIFIER_KEY, REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY, REVENUE_KEY);
+        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels),
+                IDENTIFIER_KEY, REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY);
+        batchInsert(INSERT_IGNORE_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels),
+                REVENUE_IDENTIFIER_KEY, IDENTIFIER_KEY);
         GeneralRevenue generalRevenue = revenuesRepository.generalRevenueExistsById(userId, revenueId);
-        HashSet<String> currentLabels = new HashSet<>(generalRevenue.getLabels().stream().map(RevenueLabel::compareOn).toList());
+        HashSet<String> currentLabels = new HashSet<>(generalRevenue.getLabels()
+                .stream()
+                .map(RevenueLabel::compareOn)
+                .toList());
         for (RevenueLabel label : labels)
             currentLabels.remove(label.compareOn());
-        batchDeleteOnSingleSet(REVENUE_LABELS_KEY,
-                Arrays.asList(currentLabels.toArray()),
+        batchDelete(REVENUE_LABELS_KEY, List.of(List.of(revenueId), currentLabels.stream().toList()), REVENUE_IDENTIFIER_KEY,
                 IDENTIFIER_KEY);
+    }
+
+    /**
+     * Method to get a revenue
+     *
+     * @param userId The identifier of the user who requested the revenue
+     * @param revenueId The identifier of the project to get
+     * @return the revenue as {@link Revenue}, null if it not exists
+     */
+    public GeneralRevenue getGeneralRevenue(String userId, String revenueId) {
+        return revenuesRepository.generalRevenueExistsById(userId, revenueId);
     }
 
     /**
@@ -435,6 +455,8 @@ public class RevenuesService extends EquinoxItemsHelper {
             revenuesRepository.deleteProjectRevenue(revenueId, userId);
             return true;
         } else if(revenuesRepository.generalRevenueExistsById(userId, revenueId) != null) {
+            revenuesRepository.detachLabelsFromGeneralRevenue(revenueId);
+            // TODO: 21/01/2025 DELETE THE LABELS WHEN NO MORE REVENUES HAS THAT LABEL 
             revenuesRepository.deleteGeneralRevenue(revenueId, userId);
             return true;
         }

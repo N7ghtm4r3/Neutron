@@ -4,9 +4,7 @@ package com.tecknobit.neutron.services.revenues.controller;
 import com.tecknobit.apimanager.annotations.RequestPath;
 import com.tecknobit.equinoxbackend.environment.services.DefaultEquinoxController;
 import com.tecknobit.neutron.services.DefaultNeutronController;
-import com.tecknobit.neutron.services.revenues.entities.ProjectRevenue;
-import com.tecknobit.neutron.services.revenues.entities.RevenueLabel;
-import com.tecknobit.neutron.services.revenues.entities.TicketRevenue;
+import com.tecknobit.neutron.services.revenues.entities.*;
 import com.tecknobit.neutron.services.revenues.service.RevenuesService;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
 import org.json.JSONArray;
@@ -55,13 +53,13 @@ public class RevenuesController extends DefaultNeutronController {
      */
     @GetMapping(
             path = {
-                    REVENUE_LABELS_KEY
+                    LABELS_KEY
             },
             headers = {
                     TOKEN_KEY
             }
     )
-    @RequestPath(path = "/api/v1/users/{id}/revenues/revenue_labels", method = GET)
+    @RequestPath(path = "/api/v1/users/{id}/revenues/labels", method = GET)
     public <T> T getRevenuesLabels(
             @PathVariable(IDENTIFIER_KEY) String userId,
             @RequestHeader(TOKEN_KEY) String token
@@ -99,7 +97,7 @@ public class RevenuesController extends DefaultNeutronController {
             @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
             @RequestParam(name = GENERAL_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveGeneralRevenues,
             @RequestParam(name = PROJECT_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveProjectRevenues,
-            @RequestParam(name = REVENUE_LABELS_KEY, required = false) JSONArray labels
+            @RequestParam(name = LABELS_KEY, required = false) JSONArray labels
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
@@ -246,7 +244,7 @@ public class RevenuesController extends DefaultNeutronController {
      */
     private ArrayList<RevenueLabel> extractRevenueLabels() {
         ArrayList<RevenueLabel> labels = new ArrayList<>();
-        JSONArray jLabels = jsonHelper.getJSONArray(REVENUE_LABELS_KEY, new JSONArray());
+        JSONArray jLabels = jsonHelper.getJSONArray(LABELS_KEY, new JSONArray());
         for(int j = 0; j < jLabels.length() && j < MAX_REVENUE_LABELS_NUMBER; j++) {
             JSONObject jLabel = jLabels.getJSONObject(j);
             if(!jLabel.has(IDENTIFIER_KEY))
@@ -254,6 +252,37 @@ public class RevenuesController extends DefaultNeutronController {
             labels.add(new RevenueLabel(jLabel));
         }
         return labels;
+    }
+
+    /**
+     * Method to get a general revenue or a project revenue
+     *
+     * @param userId The identifier of the user
+     * @param token The token of the user
+     * @param revenueId The identifier of the revenue to get
+     *
+     * @return the result of the request as {@link String}
+     */
+    @GetMapping(
+            path = "{" + REVENUE_IDENTIFIER_KEY + "}",
+            headers = {
+                    TOKEN_KEY
+            }
+    )
+    @RequestPath(path = "/api/v1/users/{id}/revenues/{revenue_id}", method = GET)
+    public <T> T getRevenue(
+            @PathVariable(IDENTIFIER_KEY) String userId,
+            @PathVariable(REVENUE_IDENTIFIER_KEY) String revenueId,
+            @RequestHeader(TOKEN_KEY) String token
+    ) {
+        if(!isMe(userId, token))
+            return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
+        Revenue revenue = revenuesService.getGeneralRevenue(userId, revenueId);
+        if(revenue == null)
+            revenue = revenuesService.getProjectRevenue(userId, revenueId);
+        if(revenue == null)
+            return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
+        return (T) successResponse(revenue);
     }
 
     /**

@@ -29,11 +29,21 @@ public class GeneralRevenue extends Revenue {
     /**
      * {@code labels} the labels attached to that revenue
      */
-    @OneToMany(
-            fetch = FetchType.LAZY,
-            mappedBy = REVENUE_SOURCE_KEY
+    @ManyToMany(
+            fetch = FetchType.LAZY
     )
-    @Column(name = REVENUE_LABELS_KEY)
+    @JoinTable(
+            name = REVENUE_LABELS_KEY,
+            joinColumns = @JoinColumn(
+                    name = REVENUE_IDENTIFIER_KEY
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = IDENTIFIER_KEY
+            ),
+            uniqueConstraints = @UniqueConstraint(
+                    columnNames = {REVENUE_IDENTIFIER_KEY, IDENTIFIER_KEY}
+            )
+    )
     @JsonIgnoreProperties({
             REVENUE_SOURCE_KEY,
             "hibernateLazyInitializer",

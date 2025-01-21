@@ -51,16 +51,20 @@ const val REVENUE_VALUE_KEY = "value"
  */
 const val REVENUE_DATE_KEY = "revenue_date"
 
-
 /**
  * `GENERAL_REVENUES_KEY` the key for the **"general_revenues"** field
  */
 const val GENERAL_REVENUES_KEY = "general_revenues"
 
 /**
- * `REVENUE_LABELS_KEY` the key for the **"labels"** field
+ * `REVENUE_LABELS_KEY` the key for the **"revenue_labels"** field
  */
 const val REVENUE_LABELS_KEY = "revenue_labels"
+
+/**
+ * `LABELS_KEY` the key for the **"labels"** field
+ */
+const val LABELS_KEY = "labels"
 
 /**
  * `REVENUE_DESCRIPTION_KEY` the key for the **"description"** field
