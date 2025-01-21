@@ -419,6 +419,17 @@ public class RevenuesService extends EquinoxItemsHelper {
     }
 
     /**
+     * Method to get a ticket
+     *
+     * @param ticketId The identifier of the ticket to get
+     * @param userId The identifier of the user who requested the ticket
+     * @return the ticket revenue as {@link TicketRevenue}, null if it not exists
+     */
+    public TicketRevenue getTicketRevenue(String ticketId, String userId) {
+        return revenuesRepository.getTicketRevenue(ticketId, userId);
+    }
+
+    /**
      * Method to close a ticket
      *
      * @param ticketId The identifier of the ticket to close

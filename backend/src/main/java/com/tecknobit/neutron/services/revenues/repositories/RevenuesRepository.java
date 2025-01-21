@@ -644,6 +644,25 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     );
 
     /**
+     * Method to get a ticket revenue
+     *
+     * @param ticketId The identifier of the ticket
+     * @param ownerId The identifier of the owner of the project
+     * @return the ticket as {@link TicketRevenue}
+     */
+    @Query(
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE "
+                    + "dtype='ticket' AND "
+                    + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
+                    + OWNER_KEY + "=:" + OWNER_KEY,
+            nativeQuery = true
+    )
+    TicketRevenue getTicketRevenue(
+            @Param(IDENTIFIER_KEY) String ticketId,
+            @Param(OWNER_KEY) String ownerId
+    );
+
+    /**
      * Method to close a ticket revenue
      *
      * @param ticketId The identifier of the ticket

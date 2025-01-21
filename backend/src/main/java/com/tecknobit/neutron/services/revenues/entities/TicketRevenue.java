@@ -23,6 +23,7 @@ import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 @Entity
 @Table(name = TICKET_REVENUES_KEY)
 @DiscriminatorValue("ticket")
+@JsonIgnoreProperties(LABELS_KEY)
 public class TicketRevenue extends GeneralRevenue {
 
     /**
