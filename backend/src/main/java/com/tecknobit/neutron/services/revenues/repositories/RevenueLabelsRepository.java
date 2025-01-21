@@ -41,4 +41,20 @@ public interface RevenueLabelsRepository extends JpaRepository<RevenueLabel, Str
             @Param(IDENTIFIER_KEY) String userId
     );
 
+    /**
+     * Method to count the current relationship of a shared label
+     *
+     * @param labelId The identifier of the label to check
+     *
+     * @return the count the current relationship of a shared label as long
+     */
+    @Query(
+            value = "SELECT COUNT(*) FROM " + REVENUE_LABELS_KEY +
+                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    long countSharedLabels(
+            @Param(IDENTIFIER_KEY) String labelId
+    );
+
 }

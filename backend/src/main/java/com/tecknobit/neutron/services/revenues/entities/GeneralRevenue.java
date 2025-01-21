@@ -30,7 +30,7 @@ public class GeneralRevenue extends Revenue {
      * {@code labels} the labels attached to that revenue
      */
     @ManyToMany(
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     @JoinTable(
             name = REVENUE_LABELS_KEY,

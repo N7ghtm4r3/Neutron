@@ -26,7 +26,8 @@ import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
-import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.*;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.DEFAULT_PAGE;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 import static com.tecknobit.neutroncore.enums.NeutronCurrency.DOLLAR;
@@ -449,18 +450,40 @@ public class RevenuesService extends EquinoxItemsHelper {
      *
      * @param userId The identifier of the user who requested the deletion of the revenue
      * @param revenueId The identifier of the revenue to delete
+     *
+     * @return whether the revenue has been deleted as boolean
      */
     public boolean deleteRevenue(String userId, String revenueId) {
         if(getProjectRevenue(userId, revenueId) != null) {
             revenuesRepository.deleteProjectRevenue(revenueId, userId);
             return true;
-        } else if(revenuesRepository.generalRevenueExistsById(userId, revenueId) != null) {
-            revenuesRepository.detachLabelsFromGeneralRevenue(revenueId);
-            // TODO: 21/01/2025 DELETE THE LABELS WHEN NO MORE REVENUES HAS THAT LABEL 
-            revenuesRepository.deleteGeneralRevenue(revenueId, userId);
-            return true;
+        } else {
+            GeneralRevenue revenue = revenuesRepository.generalRevenueExistsById(userId, revenueId);
+            if (revenue != null) {
+                deleteAndDeleteUnrelatedLabels(revenue);
+                revenuesRepository.deleteGeneralRevenue(revenueId, userId);
+                return true;
+
+            } else
+                return false;
         }
-        return false;
+    }
+
+    /**
+     * Method to detach the labels from the deleting revenue and, if needed, delete the labels which no have relationship
+     * with other revenues
+     *
+     * @param revenue The deleting revenue
+     */
+    private void deleteAndDeleteUnrelatedLabels(GeneralRevenue revenue) {
+        List<RevenueLabel> labels = revenue.getLabels();
+        revenuesRepository.detachLabelsFromGeneralRevenue(revenue.getId());
+        for (RevenueLabel label : labels) {
+            String labelId = label.getId();
+            long labelRelationships = labelsRepository.countSharedLabels(labelId);
+            if(labelRelationships == 0)
+                labelsRepository.deleteById(labelId);
+        }
     }
 
     /**
