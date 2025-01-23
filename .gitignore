@@ -5,6 +5,7 @@ build/
 !**/src/test/**/build/
 
 ### IntelliJ IDEA ###
+.idea
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
@@ -12,6 +13,8 @@ build/
 *.iws
 *.iml
 *.ipr
+.kotlin
+.kotlin/metadata
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
@@ -40,3 +43,4 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+local.properties

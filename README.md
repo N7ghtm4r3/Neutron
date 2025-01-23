@@ -1,6 +1,6 @@
 # Neutron
 
-**v1.0.0**
+**v1.0.1**
 
 This project, based on Java and the Spring Boot framework, is an open source self-hosted orders and ticket revenue manager for the projects 
 you are developing
@@ -9,7 +9,7 @@ Trace your revenues with **Neutron**!
 
 ## Customize the application
 
-To customize and create your own version of this application you need to have the <a href="https://github.com/N7ghtm4r3/Neutron/tree/main/Neutron-core">
+To customize and create your own version of this application you need to have the <a href="https://github.com/N7ghtm4r3/Neutron/tree/main/core">
 core library</a> implemented in your project and published into maven local system
 
 ### Clone the core library and publish to maven local
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.tecknobit.neutroncore:Neutron-core:1.0.0'
+  implementation 'com.tecknobit.neutroncore:neutroncore:1.0.1'
 }
 ```
 
@@ -44,32 +44,29 @@ repositories {
 }
 
 dependencies {
-  implementation("com.tecknobit.neutroncore:Neutron-core:1.0.0")
+  implementation("com.tecknobit.neutroncore:neutroncore:1.0.1")
 }
 ```
 
-## 🛠 Skills
+## Architecture
 
-- Java
-- Kotlin
+### Clients
 
-## Roadmap
+  - [Android](https://play.google.com/store/apps/details?id=com.tecknobit.neutron)
+  - [Neutron desktop version](https://github.com/N7ghtm4r3/Neutron-Clients/releases/tag/1.0.1)
+  - iOS -> source code available, but cannot distribute due missing [Apple Developer Program license](https://developer.apple.com/programs/)
+  - [Neutron webapp version](https://github.com/N7ghtm4r3/Neutron-Clients/releases/tag/1.0.1)
 
-This project will be constantly developed to reach different platforms to work on, following the platforms releases
-steps:
+### Backend
 
-- Mobile
-    - <a href="https://github.com/N7ghtm4r3/Neutron-Android#readme">Android</a>
-    - iOS -> planned
-- <a href="https://github.com/N7ghtm4r3/Neutron-Desktop#readme">Desktop version</a>
-- <a href="https://github.com/N7ghtm4r3/Neutron/releases/tag/1.0.0">Backend service "out-of-the-box"</a>
+- <a href="https://github.com/N7ghtm4r3/Neutron/releases/tag/1.0.1">Backend service "out-of-the-box"</a>
 
 ## Usages
 
 ### Backend configuration
 
 > [!WARNING]  
-> Note: the service will run using the *HTTP* protocol as default, it is recommended to implement an *SSL* or *TLS* certificate to secure communication on your infrastructure.
+> Note The service will run using the *HTTP* protocol as default, it is recommended to implement an *SSL* or *TLS* certificate to secure communication on your infrastructure.
 >
 > **Wikis**
 >
@@ -168,7 +165,7 @@ When you have to start the service you will have different scenarios:
   the server, share it **only to the users that you retains allowed to access to your server**
   ``` java
   Exception in thread "main" com.tecknobit.apimanager.exceptions.SaveData: Note: is not an error, but is an alert!
-  Please you should safely save: the_server_secret_generated to correctly register a new user in the Neutron system
+  Please you should safely save The_server_secret_generated to correctly register a new user in the Neutron system
   ```
 - If is not the first launch the service will start directly
 - If you need to recreate the server secret you need to launch the service with the **rss** command like this:
@@ -185,10 +182,6 @@ When you have to start the service you will have different scenarios:
    // dssi command
   java -jar Neutron.jar dssi // this will delete the current server secret and interrupts the server workflow right next
   ```
-
-## Authors
-
-- [@N7ghtm4r3](https://www.github.com/N7ghtm4r3)
 
 ## Support
 
@@ -213,12 +206,13 @@ Thank you for your help!
 
 If you want support project and developer
 
-| Crypto                                                                                              | Address                                        | Network  |
-|-----------------------------------------------------------------------------------------------------|------------------------------------------------|----------|
-| ![](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white)   | **3H3jyCzcRmnxroHthuXh22GXXSmizin2yp**         | Bitcoin  |
-| ![](https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=Ethereum&logoColor=white) | **0x1b45bc41efeb3ed655b078f95086f25fc83345c4** | Ethereum |
+| Crypto                                                                                              | Address                                          | Network  |
+|-----------------------------------------------------------------------------------------------------|--------------------------------------------------|----------|
+| ![](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white)   | **3H3jyCzcRmnxroHthuXh22GXXSmizin2yp**           | Bitcoin  |
+| ![](https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=Ethereum&logoColor=white) | **0x1b45bc41efeb3ed655b078f95086f25fc83345c4**   | Ethereum |
+| ![](https://img.shields.io/badge/Solana-000?style=for-the-badge&logo=Solana&logoColor=9945FF)       | **AtPjUnxYFHw3a6Si9HinQtyPTqsdbfdKX3dJ1xiDjbrL** | Solana   |
 
 If you want support project and developer
-with <a href="https://www.paypal.com/donate/?hosted_button_id=5QMN5UQH7LDT4">PayPal</a>
+with [PayPal](https://www.paypal.com/donate/?hosted_button_id=5QMN5UQH7LDT4)
 
-Copyright © 2024 Tecknobit
+Copyright © 2025 Tecknobit

@@ -181,11 +181,11 @@ if "$cygwin" || "$msys" ; then
         then
             arg=$( cygpath --path --ignore --mixed "$arg" )
         fi
-        # Roll the args list around exactly as many times as the number of
+        # Roll the args List around exactly as many times as the number of
         # args, so each arg winds up back in the position where it started, but
         # possibly modified.
         #
-        # NB: a `for` loop captures its iteration list before it begins, so
+        # NB: a `for` loop captures its iteration List before it begins, so
         # changing the positional parameters here affects neither the number of
         # iterations, nor the values presented in `arg`.
         shift                   # remove old arg
