@@ -38,14 +38,4 @@ object NeutronEndpoints : EquinoxBaseEndpointsSet() {
      */
     const val WALLET_ENDPOINT: String = "/wallet"
 
-    /**
-     * `TRANSFER_IN_ENDPOINT` the endpoint to execute the migration to the current machine of an account data
-     */
-    const val TRANSFER_IN_ENDPOINT: String = "transferIn"
-
-    /**
-     * `TRANSFER_OUT_ENDPOINT` the endpoint to execute the migration from the current machine of an account data
-     */
-    const val TRANSFER_OUT_ENDPOINT: String = "transferOut"
-
 }
