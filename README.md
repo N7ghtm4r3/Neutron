@@ -80,7 +80,6 @@ dependencies {
 > openssl pkcs12 -export -in your_certificate_file.crt -inkey your_private_key.key -out your_out_pkcs12_file.p12 -name your_alias_name -CAfile your_certificate_file.crt -caname root
 > ```
 
-
 #### Default configuration
 
 The default properties to launch the backend service as designed are the following:
