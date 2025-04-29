@@ -77,7 +77,7 @@ public class ProjectRevenue extends Revenue {
      *
      * @param id The identifier of the project
      * @param title The title of the project
-     * @param revenueDate The date when the revenue has been created the project
+     * @param revenueDate The last date of a revenue
      * @param initialRevenue The initial revenue attached to the project
      * @param tickets The ticket attached to the project
      *
@@ -92,7 +92,7 @@ public class ProjectRevenue extends Revenue {
      *
      * @param id The identifier of the project
      * @param title The title of the project
-     * @param revenueDate The date when the revenue has been created the project
+     * @param revenueDate The last date of a revenue
      * @param initialRevenue The initial revenue attached to the project
      * @param tickets The ticket attached to the project
      * @param owner The owner of the project

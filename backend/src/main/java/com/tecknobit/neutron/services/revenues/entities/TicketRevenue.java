@@ -118,16 +118,6 @@ public class TicketRevenue extends GeneralRevenue {
     }
 
     /**
-     * Method to get {@link #closingDate} instance 
-     *
-     * @return {@link #closingDate} instance as {@link String}
-     */
-    @JsonIgnore
-    public String getClosingDate() {
-        return timeFormatter.formatAsString(closingDate);
-    }
-
-    /**
      * Method to get whether the ticket is closed
      *
      * @return whether the ticket is closed as boolean
@@ -135,6 +125,16 @@ public class TicketRevenue extends GeneralRevenue {
     @JsonIgnore
     public boolean isClosed() {
         return closingDate != -1;
+    }
+
+    /**
+     * Method to get {@link #projectRevenue} instance
+     *
+     * @return {@link #projectRevenue} instance as {@link ProjectRevenue}
+     */
+    @JsonIgnore
+    public ProjectRevenue getProjectRevenue() {
+        return projectRevenue;
     }
 
 }

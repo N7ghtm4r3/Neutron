@@ -186,8 +186,8 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param insertionDate The date when the project has been created/inserted
      * @param userId The identifier of the user who created the project
      */
-    public void createProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle, long insertionDate,
-                                     String userId) {
+    public void createProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle,
+                                     long insertionDate, String userId) {
         revenuesRepository.insertProjectRevenue(
                 projectRevenueId,
                 revenueTitle,
@@ -282,14 +282,18 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     public void editProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle, long insertionDate,
                                    String userId) {
+        ProjectRevenue projectRevenue = getProjectRevenue(userId, projectRevenueId);
+        InitialRevenue initialRevenue = projectRevenue.getInitialRevenue();
+        long projectRevenueDate = projectRevenue.getRevenueTimestamp();
+        if(projectRevenueDate == initialRevenue.getRevenueTimestamp())
+            projectRevenueDate = insertionDate;
         revenuesRepository.editProjectRevenue(
                 projectRevenueId,
                 revenueTitle,
-                insertionDate
+                projectRevenueDate
         );
-        ProjectRevenue projectRevenue = getProjectRevenue(userId, projectRevenueId);
         revenuesRepository.editInitialRevenue(
-                projectRevenue.getInitialRevenue().getId(),
+                initialRevenue.getId(),
                 insertionDate,
                 revenueTitle,
                 roundValue(revenueValue, 2)
@@ -432,23 +436,54 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param projectRevenueId The identifier of the project
      */
     public void closeTicketRevenue(String ticketId, String userId, String projectRevenueId) {
+        long closingDate = System.currentTimeMillis();
         revenuesRepository.closeTicketRevenue(
                 ticketId,
                 userId,
                 projectRevenueId,
-                System.currentTimeMillis()
+                closingDate
         );
+        editLastRevenueDate(projectRevenueId, closingDate);
     }
 
     /**
      * Method to delete a ticket
      *
-     * @param ticketId The identifier of the ticket to delete
+     * @param ticket The ticket to delete
      */
-    public void deleteTicketRevenue(String ticketId) {
-        revenuesRepository.deleteTicketRevenue(
-                ticketId
-        );
+    public void deleteTicketRevenue(TicketRevenue ticket) {
+        revenuesRepository.deleteTicketRevenue(ticket.getId());
+        if(ticket.isClosed())
+            editLastRevenueDateAfterTicketDeletion(ticket);
+    }
+
+    /**
+     * Method invoked after a closed {@link TicketRevenue} has been deleted to edit the revenue date of a
+     * {@link ProjectRevenue} with the last closed ticket date if available, otherwise with the revenue date of the
+     * {@link InitialRevenue}
+     *
+     * @param ticket The ticket deleted
+     */
+    private void editLastRevenueDateAfterTicketDeletion(TicketRevenue ticket) {
+        ProjectRevenue project = ticket.getProjectRevenue();
+        String projectId = project.getId();
+        Long lastClosedTicket = revenuesRepository.getLastClosedTicketDate(projectId);
+        long lastRevenueDate;
+        if(lastClosedTicket != null)
+            lastRevenueDate = lastClosedTicket;
+        else
+            lastRevenueDate = project.getInitialRevenue().getRevenueTimestamp();
+        editLastRevenueDate(projectId, lastRevenueDate);
+    }
+
+    /**
+     * Method used to edit the date of the project with the last revenue date
+     *
+     * @param projectId The identifier of the project
+     * @param lastRevenueDate The date of the last revenue
+     */
+    private void editLastRevenueDate(String projectId, long lastRevenueDate) {
+        revenuesRepository.editLastRevenueDate(projectId, lastRevenueDate);
     }
 
     /**

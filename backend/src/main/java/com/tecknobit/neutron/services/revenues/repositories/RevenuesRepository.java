@@ -707,6 +707,42 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     );
 
     /**
+     * Method to edit the last date of a revenue of a project
+     *
+     * @param revenueId The identifier of the project
+     * @param lastRevenueDate The last revenue date
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + PROJECT_REVENUES_KEY + " SET " +
+                    REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY +
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void editLastRevenueDate(
+            @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_DATE_KEY) long lastRevenueDate
+    );
+
+    /**
+     * Query used to retrieve the last closed ticket of the project
+     *
+     * @param revenueId The identifier of the project revenue
+     *
+     * @return the timestamp of the last closed ticket as {@link Long}, {@code null} if not exists
+     */
+    @Query(
+            value = "SELECT MAX(" + CLOSING_DATE_KEY + ") FROM " + GENERAL_REVENUES_KEY +
+                    _WHERE_ +  PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + CLOSING_DATE_KEY + "!= -1",
+            nativeQuery = true
+    )
+    Long getLastClosedTicketDate(
+            @Param(PROJECT_REVENUE_KEY) String revenueId
+    );
+
+    /**
      * Method to delete a revenue
      *
      * @param revenueId The identifier of the revenue

@@ -553,7 +553,7 @@ public class RevenuesController extends DefaultNeutronController {
         TicketRevenue ticketRevenue = revenuesService.getTicketRevenue(ticketId, userId, projectId);
         if(ticketRevenue == null)
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
-        revenuesService.deleteTicketRevenue(ticketId);
+        revenuesService.deleteTicketRevenue(ticketRevenue);
         return successResponse();
     }
 
