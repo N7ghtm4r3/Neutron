@@ -1,5 +1,6 @@
 package com.tecknobit.neutron.services.users.entity;
 
+import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
 import com.tecknobit.equinoxbackend.environment.services.users.entity.EquinoxUser;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import jakarta.persistence.Column;
@@ -34,10 +35,9 @@ public class NeutronUser extends EquinoxUser {
     private final NeutronCurrency currency;
 
     /**
-     * Constructor to init the {@link EquinoxUser} class <br>
-     *
-     * @apiNote empty constructor required
+     * Constructor to init the {@link EquinoxUser} class
      */
+    @EmptyConstructor
     public NeutronUser() {
         this(null, null, null, null, null, null, null, null, null);
     }

@@ -3,6 +3,7 @@ package com.tecknobit.neutron.services.revenues.entities;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.trading.TradingTools;
+import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 
@@ -64,24 +65,11 @@ public class ProjectRevenue extends Revenue {
     private final List<TicketRevenue> tickets;
 
     /**
-     * Constructor to init the {@link ProjectRevenue} class 
-     *
-     * @apiNote empty constructor required
+     * Constructor to init the {@link ProjectRevenue} class
      */
+    @EmptyConstructor
     public ProjectRevenue() {
         this(null, null, -1, null, new ArrayList<>());
-    }
-
-    /**
-     * Constructor to init the {@link ProjectRevenue} class
-     *
-     * @param id The identifier of the project
-     * @param title The title of the project
-     * @param revenueDate The date when the revenue has been created the project
-     * @param initialRevenue The initial revenue attached to the project
-     */
-    public ProjectRevenue(String id, String title, long revenueDate, InitialRevenue initialRevenue) {
-        this(id, title, revenueDate, initialRevenue, List.of(), null);
     }
 
     /**

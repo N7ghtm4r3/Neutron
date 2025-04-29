@@ -2,6 +2,7 @@ package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
@@ -45,33 +46,9 @@ public class InitialRevenue extends Revenue {
      *
      * @apiNote empty constructor required
      */
+    @EmptyConstructor
     public InitialRevenue() {
         this(null, 0, -1, null, null);
-    }
-
-    /**
-     * Constructor to init the {@link InitialRevenue} class
-     *
-     * @param id The identifier of the revenue
-     * @param value The amount value of the revenue
-     * @param revenueDate The date when the revenue has been inserted or its value has been received by the user
-     *
-     */
-    public InitialRevenue(String id, double value, long revenueDate) {
-        this(id, value, revenueDate, null, null);
-    }
-
-    /**
-     * Constructor to init the {@link InitialRevenue} class
-     *
-     * @param id The identifier of the revenue
-     * @param value The amount value of the revenue
-     * @param revenueDate The date when the revenue has been inserted
-     * @param owner The owner of the revenue
-     *
-     */
-    public InitialRevenue(String id, double value, long revenueDate, NeutronUser owner) {
-        this(id, value, revenueDate, owner, null);
     }
 
     /**

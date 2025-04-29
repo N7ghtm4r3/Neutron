@@ -3,6 +3,7 @@ package com.tecknobit.neutron.services.revenues.entities;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.annotations.Structure;
+import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
 import com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
@@ -60,10 +61,9 @@ public abstract class Revenue extends EquinoxItem {
     protected final NeutronUser owner;
 
     /**
-     * Constructor to init the {@link Revenue} class 
-     *
-     * @apiNote empty constructor required
+     * Constructor to init the {@link Revenue} class
      */
+    @EmptyConstructor
     public Revenue() {
         this(null, null, 0, -1, null);
     }

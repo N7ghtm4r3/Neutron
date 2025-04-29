@@ -3,6 +3,7 @@ package com.tecknobit.neutron.services.revenues.entities;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
@@ -70,56 +71,11 @@ public class TicketRevenue extends GeneralRevenue {
     private long closingDate;
 
     /**
-     * Constructor to init the {@link TicketRevenue} class 
-     *
-     * @apiNote empty constructor required
+     * Constructor to init the {@link TicketRevenue} class
      */
+    @EmptyConstructor
     public TicketRevenue() {
         this(null, null, 0, -1, null, -1, null, null);
-    }
-
-    /**
-     * Constructor to init the {@link TicketRevenue} class
-     *
-     * @param id The identifier of the ticket
-     * @param title The title of the ticket
-     * @param value The amount value of the ticket
-     * @param openingDate The date when the ticket has been inserted
-     * @param description The description of the revenue
-     *
-     */
-    public TicketRevenue(String id, String title, double value, long openingDate, String description) {
-        this(id, title, value, openingDate, description, null);
-    }
-
-    /**
-     * Constructor to init the {@link TicketRevenue} class
-     *
-     * @param id The identifier of the ticket
-     * @param title The title of the ticket
-     * @param value The amount value of the ticket
-     * @param openingDate The date when the ticket has been inserted
-     * @param description The description of the revenue
-     * @param owner The owner of the ticket
-     *
-     */
-    public TicketRevenue(String id, String title, double value, long openingDate, String description, NeutronUser owner) {
-        this(id, title, value, openingDate, description, -1, null, null);
-    }
-
-    /**
-     * Constructor to init the {@link TicketRevenue} class
-     *
-     * @param id The identifier of the ticket
-     * @param title The title of the ticket
-     * @param value The amount value of the ticket
-     * @param openingDate The date when the ticket has been inserted
-     * @param description The description of the revenue
-     * @param closingDate The date when the ticket has been closed
-     *
-     */
-    public TicketRevenue(String id, String title, double value, long openingDate, String description, long closingDate) {
-        this(id, title, value, openingDate, description, closingDate, null, null);
     }
 
     /**
