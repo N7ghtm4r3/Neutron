@@ -53,15 +53,14 @@ public class WalletController extends DefaultNeutronController {
     public <T> T getWalletStatus(
             @PathVariable(USER_IDENTIFIER_KEY) String userId,
             @RequestHeader(TOKEN_KEY) String token,
-            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
             @RequestParam(name = GENERAL_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveGeneralRevenues,
             @RequestParam(name = PROJECT_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveProjectRevenues,
             @RequestParam(name = LABELS_KEY, required = false) JSONArray labels
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        RevenuePeriod revenuePeriod = RevenuePeriod.Companion.toRevenuePeriod(period);
-        return (T) successResponse(walletService.getWalletStatus(userId, revenuePeriod, retrieveGeneralRevenues,
+        return (T) successResponse(walletService.getWalletStatus(userId, period, retrieveGeneralRevenues,
                 retrieveProjectRevenues, labels));
     }
 

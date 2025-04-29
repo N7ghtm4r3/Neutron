@@ -90,18 +90,17 @@ public class RevenuesController extends DefaultNeutronController {
     public <T> T getRevenues(
             @PathVariable(USER_IDENTIFIER_KEY) String userId,
             @RequestHeader(TOKEN_KEY) String token,
-            @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
-            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
-            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
             @RequestParam(name = GENERAL_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveGeneralRevenues,
             @RequestParam(name = PROJECT_REVENUES_KEY, defaultValue = "true", required = false) boolean retrieveProjectRevenues,
-            @RequestParam(name = LABELS_KEY, required = false) JSONArray labels
+            @RequestParam(name = LABELS_KEY, required = false) JSONArray labels,
+            @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
+            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize
     ) {
         if(!isMe(userId, token))
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        RevenuePeriod revenuePeriod = RevenuePeriod.Companion.toRevenuePeriod(period);
-        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, revenuePeriod,
-                retrieveGeneralRevenues, retrieveProjectRevenues, labels));
+        return (T) successResponse(revenuesService.getRevenues(userId, page, pageSize, period, retrieveGeneralRevenues,
+                retrieveProjectRevenues, labels));
     }
 
     /**
@@ -143,7 +142,7 @@ public class RevenuesController extends DefaultNeutronController {
         double revenueValue = jsonHelper.getDouble(REVENUE_VALUE_KEY, 0);
         String revenueTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
         long insertionDate = jsonHelper.getLong(REVENUE_DATE_KEY, 0);
-        if(invalidRevenuePayload(revenueValue, revenueTitle, insertionDate))
+        if(invalidRevenuePayload(revenueValue, revenueTitle))
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
         String identifier = generateIdentifier();
         try {
@@ -204,7 +203,7 @@ public class RevenuesController extends DefaultNeutronController {
         double revenueValue = jsonHelper.getDouble(REVENUE_VALUE_KEY, 0);
         String revenueTitle = jsonHelper.getString(REVENUE_TITLE_KEY);
         long insertionDate = jsonHelper.getLong(REVENUE_DATE_KEY, 0);
-        if(invalidRevenuePayload(revenueValue, revenueTitle, insertionDate))
+        if(invalidRevenuePayload(revenueValue, revenueTitle))
             return failedResponse(WRONG_PROCEDURE_MESSAGE);
         try {
             if(jsonHelper.getBoolean(IS_PROJECT_REVENUE_KEY)) {
@@ -228,10 +227,9 @@ public class RevenuesController extends DefaultNeutronController {
      *
      * @param revenueValue The value of the revenue
      * @param revenueTitle The title of the revenue
-     * @param insertionDate The date when the revenue has been created
      * @return whether the payload is valid or not as {@code boolean}
      */
-    private boolean invalidRevenuePayload(double revenueValue, String revenueTitle, long insertionDate) {
+    private boolean invalidRevenuePayload(double revenueValue, String revenueTitle) {
         return !INSTANCE.isRevenueValueValid(revenueValue) || !INSTANCE.isRevenueTitleValid(revenueTitle);
     }
 
@@ -336,7 +334,7 @@ public class RevenuesController extends DefaultNeutronController {
             @PathVariable(USER_IDENTIFIER_KEY) String userId,
             @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @RequestHeader(TOKEN_KEY) String token,
-            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
             @RequestParam(name = CLOSED_TICKETS_KEY, defaultValue = "true", required = false) boolean retrieveClosedTickets
     ) {
         if(!isMe(userId, token))
@@ -344,8 +342,7 @@ public class RevenuesController extends DefaultNeutronController {
         ProjectRevenue project = revenuesService.getProjectRevenue(userId, projectId);
         if(project == null)
             return (T) failedResponse(WRONG_PROCEDURE_MESSAGE);
-        RevenuePeriod revenuePeriod = RevenuePeriod.Companion.toRevenuePeriod(period);
-        return (T) successResponse(revenuesService.getProjectBalance(project, revenuePeriod, retrieveClosedTickets));
+        return (T) successResponse(revenuesService.getProjectBalance(project, period, retrieveClosedTickets));
     }
 
     /**
@@ -482,17 +479,16 @@ public class RevenuesController extends DefaultNeutronController {
             @PathVariable(USER_IDENTIFIER_KEY) String userId,
             @PathVariable(REVENUE_IDENTIFIER_KEY) String projectId,
             @RequestHeader(TOKEN_KEY) String token,
-            @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
-            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize,
-            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) String period,
+            @RequestParam(name = REVENUE_PERIOD_KEY, defaultValue = "LAST_MONTH", required = false) RevenuePeriod period,
             @RequestParam(name = PENDING_TICKETS_KEY, defaultValue = "true", required = false) boolean retrievePendingTickets,
-            @RequestParam(name = CLOSED_TICKETS_KEY, defaultValue = "true", required = false) boolean retrieveClosedTickets
+            @RequestParam(name = CLOSED_TICKETS_KEY, defaultValue = "true", required = false) boolean retrieveClosedTickets,
+            @RequestParam(name = PAGE_KEY, defaultValue = DEFAULT_PAGE_HEADER_VALUE, required = false) int page,
+            @RequestParam(name = PAGE_SIZE_KEY, defaultValue = DEFAULT_PAGE_SIZE_HEADER_VALUE, required = false) int pageSize
     ) {
         if(!isMe(userId, token) || revenuesService.getProjectRevenue(userId, projectId) == null)
             return (T) failedResponse(NOT_AUTHORIZED_OR_WRONG_DETAILS_MESSAGE);
-        RevenuePeriod revenuePeriod = RevenuePeriod.Companion.toRevenuePeriod(period);
-        return (T) successResponse(revenuesService.getTickets(projectId, page, pageSize, revenuePeriod,
-                retrievePendingTickets, retrieveClosedTickets));
+        return (T) successResponse(revenuesService.getTickets(projectId, page, pageSize, period, retrievePendingTickets,
+                retrieveClosedTickets));
     }
 
     /**

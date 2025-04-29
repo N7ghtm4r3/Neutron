@@ -57,20 +57,4 @@ enum class RevenuePeriod(
         return now - (this.days * offset)
     }
 
-    companion object {
-
-        /**
-         * Method to get the related [RevenuePeriod] from a raw string value
-         *
-         * @param stringPeriod The period formatted as string
-         * @return the [RevenuePeriod] found
-         */
-        fun toRevenuePeriod(
-            stringPeriod: String
-        ) : RevenuePeriod {
-            return RevenuePeriod.valueOf(stringPeriod.replace("\"", ""))
-        }
-
-    }
-
 }
