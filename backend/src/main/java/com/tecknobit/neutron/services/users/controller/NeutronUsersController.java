@@ -30,7 +30,7 @@ public class NeutronUsersController extends EquinoxUsersController<NeutronUser, 
     /**
      * {@code WRONG_CURRENCY_MESSAGE} error message used when the currency inserted is not valid
      */
-    public static final String WRONG_CURRENCY_MESSAGE = "wrong_currency_key";
+    public static final String WRONG_CURRENCY_MESSAGE = "wrong_currency";
 
     /**
      * {@inheritDoc}
