@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.OWNER_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**

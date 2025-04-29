@@ -12,13 +12,6 @@ import com.tecknobit.equinoxcore.network.EquinoxBaseEndpointsSet
 object NeutronEndpoints : EquinoxBaseEndpointsSet() {
 
     /**
-     * `DYNAMIC_ACCOUNT_DATA_ENDPOINT` the endpoint where the user can retrieve the dynamic data of his/her account,
-     * such email, profile picture, etc...
-     */
-    @Deprecated(message = "USE THE EQUINOX BUILT-IN")
-    const val DYNAMIC_ACCOUNT_DATA_ENDPOINT: String = "/dynamicAccountData"
-
-    /**
      * `CHANGE_CURRENCY_ENDPOINT` the endpoint to execute the change of the user currency
      */
     const val CHANGE_CURRENCY_ENDPOINT: String = "/changeCurrency"

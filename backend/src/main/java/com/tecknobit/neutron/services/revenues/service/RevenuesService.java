@@ -5,9 +5,10 @@ import com.tecknobit.apimanager.formatters.JsonHelper;
 import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
+import com.tecknobit.neutron.services.revenues.batch.RevenueLabelItem;
 import com.tecknobit.neutron.services.revenues.entities.*;
-import com.tecknobit.neutron.services.revenues.helpers.LabelsBatchQuery;
-import com.tecknobit.neutron.services.revenues.helpers.RevenueLabelsBatchQuery;
+import com.tecknobit.neutron.services.revenues.batch.LabelsBatchQuery;
+import com.tecknobit.neutron.services.revenues.batch.RevenueLabelsBatchQuery;
 import com.tecknobit.neutron.services.revenues.repositories.RevenueLabelsRepository;
 import com.tecknobit.neutron.services.revenues.repositories.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
@@ -25,9 +26,9 @@ import java.util.*;
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
-import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.DEFAULT_PAGE;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 import static com.tecknobit.neutroncore.enums.NeutronCurrency.DOLLAR;
@@ -224,10 +225,8 @@ public class RevenuesService extends EquinoxItemsHelper {
                 revenueDescription,
                 userId
         );
-        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels), IDENTIFIER_KEY,
-                REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY);
-        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels), REVENUE_IDENTIFIER_KEY,
-                IDENTIFIER_KEY);
+        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels));
+        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels));
     }
 
     /**
@@ -250,19 +249,15 @@ public class RevenuesService extends EquinoxItemsHelper {
                 roundValue(revenueValue, 2),
                 revenueDescription
         );
-        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels),
-                IDENTIFIER_KEY, REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY);
-        batchInsert(INSERT_IGNORE_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels),
-                REVENUE_IDENTIFIER_KEY, IDENTIFIER_KEY);
+        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels));
+        batchInsert(INSERT_IGNORE_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels));
         GeneralRevenue generalRevenue = revenuesRepository.generalRevenueExistsById(userId, revenueId);
-        HashSet<String> currentLabels = new HashSet<>(generalRevenue.getLabels()
-                .stream()
-                .map(RevenueLabel::compareOn)
-                .toList());
-        for (RevenueLabel label : labels)
-            currentLabels.remove(label.compareOn());
-        batchDelete(REVENUE_LABELS_KEY, List.of(List.of(revenueId), currentLabels.stream().toList()), REVENUE_IDENTIFIER_KEY,
-                IDENTIFIER_KEY);
+        HashSet<String> labelsAttached = new HashSet<>(labels.stream().map(RevenueLabel::getId).toList());
+        List<RevenueLabelItem> deletableLabels = new ArrayList<>();
+        for (RevenueLabel label : generalRevenue.getLabels())
+            if(!labelsAttached.contains(label.getId()))
+                deletableLabels.add(new RevenueLabelItem(generalRevenue, label));
+        batchDelete(REVENUE_LABELS_KEY, deletableLabels, REVENUE_IDENTIFIER_KEY, IDENTIFIER_KEY);
     }
 
     /**

@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Set;
 
-import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper._WHERE_;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.OWNER_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
@@ -34,7 +36,7 @@ public interface RevenueLabelsRepository extends JpaRepository<RevenueLabel, Str
                     " ON " + GENERAL_REVENUES_KEY + "." + OWNER_KEY + "=:" + IDENTIFIER_KEY +
                     " INNER JOIN " + REVENUE_LABELS_KEY + " AS rv ON rv." + REVENUE_IDENTIFIER_KEY + "=" +
                     GENERAL_REVENUES_KEY + "." + IDENTIFIER_KEY +
-                    " WHERE " + LABELS_KEY + "." + IDENTIFIER_KEY + "=rv." + IDENTIFIER_KEY,
+                    _WHERE_ + LABELS_KEY + "." + IDENTIFIER_KEY + "=rv." + IDENTIFIER_KEY,
             nativeQuery = true
     )
     Set<RevenueLabel> getRevenueLabels(
@@ -50,7 +52,7 @@ public interface RevenueLabelsRepository extends JpaRepository<RevenueLabel, Str
      */
     @Query(
             value = "SELECT COUNT(*) FROM " + REVENUE_LABELS_KEY +
-                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     long countSharedLabels(

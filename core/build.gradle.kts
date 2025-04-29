@@ -5,13 +5,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("maven-publish")
-    id("com.android.library") version "8.2.2"
+    alias(libs.plugins.androidLibrary)
     kotlin("multiplatform")
     kotlin("plugin.serialization") version "2.0.20"
 }
 
 group = "com.tecknobit.neutroncore"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     google()
@@ -60,9 +60,9 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                implementation("io.github.n7ghtm4r3:equinox-core:1.0.6")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+                implementation(libs.equinox.core)
+                implementation(libs.kotlinx.datetime)
+                implementation(libs.kotlinx.serialization.json)
             }
         }
 
@@ -73,7 +73,7 @@ kotlin {
 
 android {
     namespace = "com.tecknobit.neutroncore"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         minSdk = 24
     }
@@ -85,7 +85,7 @@ afterEvaluate {
             create<MavenPublication>("maven") {
                 groupId = "com.tecknobit.neutroncore"
                 artifactId = "neutroncore"
-                version = "1.0.1"
+                version = "1.0.2"
                 from(components["kotlin"])
             }
         }
