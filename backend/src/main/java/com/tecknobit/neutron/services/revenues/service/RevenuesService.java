@@ -5,15 +5,14 @@ import com.tecknobit.apimanager.formatters.JsonHelper;
 import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
-import com.tecknobit.neutron.services.revenues.batch.RevenueLabelItem;
-import com.tecknobit.neutron.services.revenues.entities.*;
 import com.tecknobit.neutron.services.revenues.batch.LabelsBatchQuery;
+import com.tecknobit.neutron.services.revenues.batch.RevenueLabelItem;
 import com.tecknobit.neutron.services.revenues.batch.RevenueLabelsBatchQuery;
+import com.tecknobit.neutron.services.revenues.entities.*;
 import com.tecknobit.neutron.services.revenues.repositories.RevenueLabelsRepository;
 import com.tecknobit.neutron.services.revenues.repositories.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -97,7 +96,8 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period) {
-        return getRevenues(userId, page, pageSize, period, 1, true, true, new JSONArray());
+        return getRevenues(userId, page, pageSize, period, 1, true, true,
+                Collections.EMPTY_LIST);
     }
 
     /**
@@ -116,8 +116,9 @@ public class RevenuesService extends EquinoxItemsHelper {
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
                                                   boolean retrieveGeneralRevenues, boolean retrieveProjectRevenues,
-                                                  JSONArray labels) {
-        return getRevenues(userId, page, pageSize, period, 1, retrieveGeneralRevenues, retrieveProjectRevenues, labels);
+                                                  List<String> labels) {
+        return getRevenues(userId, page, pageSize, period, 1, retrieveGeneralRevenues, retrieveProjectRevenues,
+                labels);
     }
 
     /**
@@ -137,20 +138,15 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
                                                   int offset, boolean retrieveGeneralRevenues,
-                                                  boolean retrieveProjectRevenues, JSONArray labels) {
+                                                  boolean retrieveProjectRevenues, List<String> labels) {
         List<Revenue> revenues = new ArrayList<>();
         Pageable pageable = PageRequest.of(page, pageSize);
         long fromDate = period.calculateFromDate(period, offset);
         long revenuesCount = 0;
         long projectsCount = 0;
-        List<String> labelsFilter;
-        if(labels == null)
-            labelsFilter = Collections.EMPTY_LIST;
-        else
-            labelsFilter = new JsonHelper(labels).toList();
         if(retrieveGeneralRevenues) {
-            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labelsFilter, pageable));
-            revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labelsFilter);
+            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
+            revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
         }
         if(retrieveProjectRevenues) {
             revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));

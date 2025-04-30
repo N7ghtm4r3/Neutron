@@ -116,7 +116,7 @@ The **spring.datasource.username** if is not set is used the default password of
 #### Custom configuration
 
 To customize the properties to launch the backend service you must create a file **in the same folder where you placed
-the server file (.jar)** and call it **"custom.properties"** as below:
+the server file (.jar)** and call it `custom.properties` as below:
 
 ``` bash
   folderOfWhereYouPlacedTheServerFile

@@ -6,7 +6,6 @@ import com.tecknobit.neutron.services.revenues.entities.Revenue;
 import com.tecknobit.neutron.services.revenues.service.RevenuesService;
 import com.tecknobit.neutroncore.dtos.WalletStatus;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +48,7 @@ public class WalletService {
      * @return the result of the request as {@link WalletStatus}
      */
     public WalletStatus getWalletStatus(String userId, RevenuePeriod period, boolean retrieveGeneralRevenues,
-                                        boolean retrieveProjectRevenues, JSONArray labels) {
+                                        boolean retrieveProjectRevenues, List<String> labels) {
         List<Revenue> revenues = revenuesService.getRevenues(userId, DEFAULT_PAGE, MAX_VALUE, period,
                 retrieveGeneralRevenues, retrieveProjectRevenues, labels).getData();
         List<Revenue> lastMonthRevenues = revenuesService.getRevenues(userId, DEFAULT_PAGE, MAX_VALUE, period,
