@@ -99,7 +99,7 @@
                     " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS rv " +
                     " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = rv." + REVENUE_IDENTIFIER_KEY +
                     " LEFT JOIN " + LABELS_KEY + " AS l ON l." + IDENTIFIER_KEY + "=" + "rv." + IDENTIFIER_KEY +
-                    " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
+                    _WHERE_ + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
                     " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " &gt;= :" + REVENUE_PERIOD_KEY +
                     " AND (" +
                         "COALESCE(:" + REVENUE_LABELS_KEY + ") IS NULL OR " +

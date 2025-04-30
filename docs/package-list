@@ -5,9 +5,9 @@ module:backend
 com.tecknobit.neutron
 com.tecknobit.neutron.configuration
 com.tecknobit.neutron.services
+com.tecknobit.neutron.services.revenues.batch
 com.tecknobit.neutron.services.revenues.controller
 com.tecknobit.neutron.services.revenues.entities
-com.tecknobit.neutron.services.revenues.helpers
 com.tecknobit.neutron.services.revenues.repositories
 com.tecknobit.neutron.services.revenues.service
 com.tecknobit.neutron.services.users.controller

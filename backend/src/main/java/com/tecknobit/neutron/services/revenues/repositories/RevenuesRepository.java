@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper._WHERE_;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.OWNER_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
@@ -44,7 +46,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS rv " +
                     " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = rv." + REVENUE_IDENTIFIER_KEY +
                     " LEFT JOIN " + LABELS_KEY + " AS l ON l." + IDENTIFIER_KEY + "=" + "rv." + IDENTIFIER_KEY +
-                    " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
+                    _WHERE_ + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
                     " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
                     " AND (" +
                         "COALESCE(:" + REVENUE_LABELS_KEY + ") IS NULL OR " +
@@ -74,7 +76,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     " AS " + REVENUES_KEY + " LEFT JOIN " + REVENUE_LABELS_KEY + " AS rv " +
                     " ON " + REVENUES_KEY + "." + IDENTIFIER_KEY + " = rv." + REVENUE_IDENTIFIER_KEY +
                     " LEFT JOIN " + LABELS_KEY + " AS l ON l." + IDENTIFIER_KEY + "=" + "rv." + IDENTIFIER_KEY +
-                    " WHERE " + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
+                    _WHERE_ + REVENUES_KEY + "." + OWNER_KEY + " = :" + IDENTIFIER_KEY +
                     " AND " + REVENUES_KEY + "." + REVENUE_DATE_KEY + " >= :" + REVENUE_PERIOD_KEY +
                     " AND (" +
                         "COALESCE(:" + REVENUE_LABELS_KEY + ") IS NULL OR " +
@@ -99,7 +101,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + OWNER_KEY + "=:" + OWNER_KEY +
+                    _WHERE_ + OWNER_KEY + "=:" + OWNER_KEY +
                     " AND " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
@@ -167,7 +169,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY + "," +
                     REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY + "," +
                     REVENUE_DESCRIPTION_KEY + "=:" + REVENUE_DESCRIPTION_KEY +
-                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void editGeneralRevenue(
@@ -187,7 +189,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     @Transactional
     @Query(
             value = "DELETE FROM " + REVENUE_LABELS_KEY
-                    + " WHERE " + REVENUE_IDENTIFIER_KEY + "=:" + REVENUE_IDENTIFIER_KEY,
+                    + _WHERE_ + REVENUE_IDENTIFIER_KEY + "=:" + REVENUE_IDENTIFIER_KEY,
             nativeQuery = true
     )
     void detachLabelsFromGeneralRevenue(
@@ -203,7 +205,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(
-            value = "DELETE FROM " + GENERAL_REVENUES_KEY + " WHERE "
+            value = "DELETE FROM " + GENERAL_REVENUES_KEY + _WHERE_
                     + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
                     + OWNER_KEY + "=:" + OWNER_KEY,
             nativeQuery = true
@@ -224,7 +226,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     @Query(
             value = "UPDATE " + GENERAL_REVENUES_KEY
                     + " SET " + REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY
-                    + " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    + _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void convertGeneralRevenue(
@@ -242,7 +244,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT COUNT(*) FROM " + PROJECT_REVENUES_KEY +
-                    " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY +
+                    _WHERE_ + OWNER_KEY + "=:" + IDENTIFIER_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " ORDER BY " + REVENUE_DATE_KEY + " DESC",
             nativeQuery = true
@@ -263,7 +265,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT * FROM " + PROJECT_REVENUES_KEY +
-                    " WHERE " + OWNER_KEY + "=:" + IDENTIFIER_KEY +
+                    _WHERE_ + OWNER_KEY + "=:" + IDENTIFIER_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " ORDER BY " + REVENUE_DATE_KEY + " DESC",
             nativeQuery = true
@@ -282,7 +284,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * @return a project as {@link ProjectRevenue}
      */
     @Query(
-            value = "SELECT * FROM " + PROJECT_REVENUES_KEY + " WHERE "
+            value = "SELECT * FROM " + PROJECT_REVENUES_KEY + _WHERE_
                     + OWNER_KEY + "=:" + OWNER_KEY + " AND "
                     + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
@@ -337,7 +339,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
             value = "UPDATE " + PROJECT_REVENUES_KEY + " SET " +
                     REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY + "," +
                     REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY +
-                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void editProjectRevenue(
@@ -401,7 +403,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY + "," +
                     REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY + "," +
                     REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY +
-                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void editInitialRevenue(
@@ -474,7 +476,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
                     REVENUE_TITLE_KEY + "=:" + REVENUE_TITLE_KEY + "," +
                     REVENUE_DESCRIPTION_KEY + "=:" + REVENUE_DESCRIPTION_KEY + "," +
                     REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY +
-                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void editTicket(
@@ -495,7 +497,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    _WHERE_ + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " AND dtype = 'ticket'" +
                     " ORDER BY " + REVENUE_DATE_KEY + " DESC",
@@ -517,7 +519,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    _WHERE_ + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " AND dtype = 'ticket'" +
                     " ORDER BY " + REVENUE_DATE_KEY + " DESC",
@@ -539,7 +541,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    _WHERE_ + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " AND " + CLOSING_DATE_KEY + "=-1" +
                     " AND dtype = 'ticket'" +
@@ -562,7 +564,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    _WHERE_ + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " AND " + CLOSING_DATE_KEY + "=-1" +
                     " AND dtype = 'ticket'" +
@@ -585,7 +587,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT COUNT(*) FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    _WHERE_ + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " AND " + CLOSING_DATE_KEY + "=-1" +
                     " AND dtype = 'ticket'" +
@@ -608,7 +610,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      */
     @Query(
             value = "SELECT * FROM " + GENERAL_REVENUES_KEY +
-                    " WHERE " + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    _WHERE_ + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
                     " AND " + REVENUE_DATE_KEY + ">=:" + REVENUE_PERIOD_KEY +
                     " AND " + CLOSING_DATE_KEY + "!=-1" +
                     " AND dtype = 'ticket'" +
@@ -630,7 +632,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * @return the ticket as {@link TicketRevenue}
      */
     @Query(
-            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE "
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + _WHERE_
                     + "dtype='ticket' AND "
                     + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
                     + OWNER_KEY + "=:" + OWNER_KEY + " AND "
@@ -651,7 +653,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
      * @return the ticket as {@link TicketRevenue}
      */
     @Query(
-            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + " WHERE "
+            value = "SELECT * FROM " + GENERAL_REVENUES_KEY + _WHERE_
                     + "dtype='ticket' AND "
                     + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
                     + OWNER_KEY + "=:" + OWNER_KEY,
@@ -675,7 +677,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     @Query(
             value = "UPDATE " + GENERAL_REVENUES_KEY
                     + " SET " + CLOSING_DATE_KEY + "=:" + CLOSING_DATE_KEY
-                    + " WHERE " + "dtype='ticket' AND "
+                    + _WHERE_ + "dtype='ticket' AND "
                     + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
                     + OWNER_KEY + "=:" + OWNER_KEY + " AND "
                     + PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY,
@@ -696,12 +698,48 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(
-            value = "DELETE FROM " + GENERAL_REVENUES_KEY + " WHERE " + "dtype='ticket' AND "
+            value = "DELETE FROM " + GENERAL_REVENUES_KEY + _WHERE_ + "dtype='ticket' AND "
                     + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void deleteTicketRevenue(
             @Param(IDENTIFIER_KEY) String ticketId
+    );
+
+    /**
+     * Method to edit the last date of a revenue of a project
+     *
+     * @param revenueId The identifier of the project
+     * @param lastRevenueDate The last revenue date
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(
+            value = "UPDATE " + PROJECT_REVENUES_KEY + " SET " +
+                    REVENUE_DATE_KEY + "=:" + REVENUE_DATE_KEY +
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            nativeQuery = true
+    )
+    void editLastRevenueDate(
+            @Param(IDENTIFIER_KEY) String revenueId,
+            @Param(REVENUE_DATE_KEY) long lastRevenueDate
+    );
+
+    /**
+     * Query used to retrieve the last closed ticket of the project
+     *
+     * @param revenueId The identifier of the project revenue
+     *
+     * @return the timestamp of the last closed ticket as {@link Long}, {@code null} if not exists
+     */
+    @Query(
+            value = "SELECT MAX(" + CLOSING_DATE_KEY + ") FROM " + GENERAL_REVENUES_KEY +
+                    _WHERE_ +  PROJECT_REVENUE_KEY + "=:" + PROJECT_REVENUE_KEY +
+                    " AND " + CLOSING_DATE_KEY + "!= -1",
+            nativeQuery = true
+    )
+    Long getLastClosedTicketDate(
+            @Param(PROJECT_REVENUE_KEY) String revenueId
     );
 
     /**
@@ -713,7 +751,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(
-            value = "DELETE FROM " + PROJECT_REVENUES_KEY + " WHERE "
+            value = "DELETE FROM " + PROJECT_REVENUES_KEY + _WHERE_
                     + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY + " AND "
                     + OWNER_KEY + "=:" + OWNER_KEY,
             nativeQuery = true
@@ -734,7 +772,7 @@ public interface RevenuesRepository extends JpaRepository<Revenue, String> {
     @Query(
             value = "UPDATE " + INITIAL_REVENUES_KEY
                     + " SET " + REVENUE_VALUE_KEY + "=:" + REVENUE_VALUE_KEY
-                    + " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    + _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void convertInitialRevenue(

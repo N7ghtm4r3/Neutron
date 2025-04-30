@@ -9,7 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
+import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper._WHERE_;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.CURRENCY_KEY;
 
@@ -34,7 +35,7 @@ public interface NeutronUsersRepository extends EquinoxUsersRepository<NeutronUs
     @Query(
             value = "UPDATE " + USERS_KEY + " SET " +
                     CURRENCY_KEY + "=:" + CURRENCY_KEY +
-                    " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+                    _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void changeCurrency(
@@ -50,7 +51,7 @@ public interface NeutronUsersRepository extends EquinoxUsersRepository<NeutronUs
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(
-            value = "DELETE FROM " + USERS_KEY + " WHERE " + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
+            value = "DELETE FROM " + USERS_KEY + _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
             nativeQuery = true
     )
     void deleteAfterTransferred(

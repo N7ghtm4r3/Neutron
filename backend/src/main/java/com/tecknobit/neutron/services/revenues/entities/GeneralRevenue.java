@@ -1,12 +1,14 @@
 package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 
 /**
@@ -64,27 +66,10 @@ public class GeneralRevenue extends Revenue {
 
     /**
      * Constructor to init the {@link GeneralRevenue} class 
-     *
-     * @apiNote empty constructor required
      */
+    @EmptyConstructor
     public GeneralRevenue() {
         this(null, null, 0, -1, new ArrayList<>(), null, null);
-    }
-
-    /**
-     * Constructor to init the {@link GeneralRevenue} class
-     *
-     * @param id The identifier of the revenue
-     * @param title The title of the revenue
-     * @param value The amount value of the revenue
-     * @param revenueDate The date when the revenue has been inserted or its value has been received by the user
-     * @param labels The labels attached to that revenue
-     * @param description The description of the revenue
-     *
-     */
-    public GeneralRevenue(String id, String title, double value, long revenueDate, List<RevenueLabel> labels,
-                          String description) {
-        this(id, title, value, revenueDate, labels, description, null);
     }
 
     /**

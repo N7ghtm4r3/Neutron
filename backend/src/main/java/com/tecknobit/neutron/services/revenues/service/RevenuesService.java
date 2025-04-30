@@ -5,14 +5,14 @@ import com.tecknobit.apimanager.formatters.JsonHelper;
 import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
+import com.tecknobit.neutron.services.revenues.batch.LabelsBatchQuery;
+import com.tecknobit.neutron.services.revenues.batch.RevenueLabelItem;
+import com.tecknobit.neutron.services.revenues.batch.RevenueLabelsBatchQuery;
 import com.tecknobit.neutron.services.revenues.entities.*;
-import com.tecknobit.neutron.services.revenues.helpers.LabelsBatchQuery;
-import com.tecknobit.neutron.services.revenues.helpers.RevenueLabelsBatchQuery;
 import com.tecknobit.neutron.services.revenues.repositories.RevenueLabelsRepository;
 import com.tecknobit.neutron.services.revenues.repositories.RevenuesRepository;
 import com.tecknobit.neutroncore.enums.NeutronCurrency;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +25,9 @@ import java.util.*;
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
-import static com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
+import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.DEFAULT_PAGE;
 import static com.tecknobit.neutroncore.ContantsKt.*;
 import static com.tecknobit.neutroncore.enums.NeutronCurrency.DOLLAR;
@@ -96,7 +96,8 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period) {
-        return getRevenues(userId, page, pageSize, period, 1, true, true, new JSONArray());
+        return getRevenues(userId, page, pageSize, period, 1, true, true,
+                Collections.EMPTY_LIST);
     }
 
     /**
@@ -115,8 +116,9 @@ public class RevenuesService extends EquinoxItemsHelper {
     @Wrapper
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
                                                   boolean retrieveGeneralRevenues, boolean retrieveProjectRevenues,
-                                                  JSONArray labels) {
-        return getRevenues(userId, page, pageSize, period, 1, retrieveGeneralRevenues, retrieveProjectRevenues, labels);
+                                                  List<String> labels) {
+        return getRevenues(userId, page, pageSize, period, 1, retrieveGeneralRevenues, retrieveProjectRevenues,
+                labels);
     }
 
     /**
@@ -136,20 +138,15 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     public PaginatedResponse<Revenue> getRevenues(String userId, int page, int pageSize, RevenuePeriod period,
                                                   int offset, boolean retrieveGeneralRevenues,
-                                                  boolean retrieveProjectRevenues, JSONArray labels) {
+                                                  boolean retrieveProjectRevenues, List<String> labels) {
         List<Revenue> revenues = new ArrayList<>();
         Pageable pageable = PageRequest.of(page, pageSize);
         long fromDate = period.calculateFromDate(period, offset);
         long revenuesCount = 0;
         long projectsCount = 0;
-        List<String> labelsFilter;
-        if(labels == null)
-            labelsFilter = Collections.EMPTY_LIST;
-        else
-            labelsFilter = new JsonHelper(labels).toList();
         if(retrieveGeneralRevenues) {
-            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labelsFilter, pageable));
-            revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labelsFilter);
+            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
+            revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
         }
         if(retrieveProjectRevenues) {
             revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));
@@ -185,8 +182,8 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param insertionDate The date when the project has been created/inserted
      * @param userId The identifier of the user who created the project
      */
-    public void createProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle, long insertionDate,
-                                     String userId) {
+    public void createProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle,
+                                     long insertionDate, String userId) {
         revenuesRepository.insertProjectRevenue(
                 projectRevenueId,
                 revenueTitle,
@@ -224,10 +221,8 @@ public class RevenuesService extends EquinoxItemsHelper {
                 revenueDescription,
                 userId
         );
-        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels), IDENTIFIER_KEY,
-                REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY);
-        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels), REVENUE_IDENTIFIER_KEY,
-                IDENTIFIER_KEY);
+        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels));
+        batchInsert(INSERT_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels));
     }
 
     /**
@@ -250,19 +245,15 @@ public class RevenuesService extends EquinoxItemsHelper {
                 roundValue(revenueValue, 2),
                 revenueDescription
         );
-        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels),
-                IDENTIFIER_KEY, REVENUE_LABEL_COLOR_KEY, REVENUE_LABEL_TEXT_KEY);
-        batchInsert(INSERT_IGNORE_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels),
-                REVENUE_IDENTIFIER_KEY, IDENTIFIER_KEY);
+        batchInsert(INSERT_IGNORE_INTO, LABELS_KEY, new LabelsBatchQuery(labels));
+        batchInsert(INSERT_IGNORE_INTO, REVENUE_LABELS_KEY, new RevenueLabelsBatchQuery(revenueId, labels));
         GeneralRevenue generalRevenue = revenuesRepository.generalRevenueExistsById(userId, revenueId);
-        HashSet<String> currentLabels = new HashSet<>(generalRevenue.getLabels()
-                .stream()
-                .map(RevenueLabel::compareOn)
-                .toList());
-        for (RevenueLabel label : labels)
-            currentLabels.remove(label.compareOn());
-        batchDelete(REVENUE_LABELS_KEY, List.of(List.of(revenueId), currentLabels.stream().toList()), REVENUE_IDENTIFIER_KEY,
-                IDENTIFIER_KEY);
+        HashSet<String> labelsAttached = new HashSet<>(labels.stream().map(RevenueLabel::getId).toList());
+        List<RevenueLabelItem> deletableLabels = new ArrayList<>();
+        for (RevenueLabel label : generalRevenue.getLabels())
+            if(!labelsAttached.contains(label.getId()))
+                deletableLabels.add(new RevenueLabelItem(generalRevenue, label));
+        batchDelete(REVENUE_LABELS_KEY, deletableLabels, REVENUE_IDENTIFIER_KEY, IDENTIFIER_KEY);
     }
 
     /**
@@ -287,14 +278,18 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     public void editProjectRevenue(String projectRevenueId, double revenueValue, String revenueTitle, long insertionDate,
                                    String userId) {
+        ProjectRevenue projectRevenue = getProjectRevenue(userId, projectRevenueId);
+        InitialRevenue initialRevenue = projectRevenue.getInitialRevenue();
+        long projectRevenueDate = projectRevenue.getRevenueTimestamp();
+        if(projectRevenueDate == initialRevenue.getRevenueTimestamp())
+            projectRevenueDate = insertionDate;
         revenuesRepository.editProjectRevenue(
                 projectRevenueId,
                 revenueTitle,
-                insertionDate
+                projectRevenueDate
         );
-        ProjectRevenue projectRevenue = getProjectRevenue(userId, projectRevenueId);
         revenuesRepository.editInitialRevenue(
-                projectRevenue.getInitialRevenue().getId(),
+                initialRevenue.getId(),
                 insertionDate,
                 revenueTitle,
                 roundValue(revenueValue, 2)
@@ -437,23 +432,54 @@ public class RevenuesService extends EquinoxItemsHelper {
      * @param projectRevenueId The identifier of the project
      */
     public void closeTicketRevenue(String ticketId, String userId, String projectRevenueId) {
+        long closingDate = System.currentTimeMillis();
         revenuesRepository.closeTicketRevenue(
                 ticketId,
                 userId,
                 projectRevenueId,
-                System.currentTimeMillis()
+                closingDate
         );
+        editLastRevenueDate(projectRevenueId, closingDate);
     }
 
     /**
      * Method to delete a ticket
      *
-     * @param ticketId The identifier of the ticket to delete
+     * @param ticket The ticket to delete
      */
-    public void deleteTicketRevenue(String ticketId) {
-        revenuesRepository.deleteTicketRevenue(
-                ticketId
-        );
+    public void deleteTicketRevenue(TicketRevenue ticket) {
+        revenuesRepository.deleteTicketRevenue(ticket.getId());
+        if(ticket.isClosed())
+            editLastRevenueDateAfterTicketDeletion(ticket);
+    }
+
+    /**
+     * Method invoked after a closed {@link TicketRevenue} has been deleted to edit the revenue date of a
+     * {@link ProjectRevenue} with the last closed ticket date if available, otherwise with the revenue date of the
+     * {@link InitialRevenue}
+     *
+     * @param ticket The ticket deleted
+     */
+    private void editLastRevenueDateAfterTicketDeletion(TicketRevenue ticket) {
+        ProjectRevenue project = ticket.getProjectRevenue();
+        String projectId = project.getId();
+        Long lastClosedTicket = revenuesRepository.getLastClosedTicketDate(projectId);
+        long lastRevenueDate;
+        if(lastClosedTicket != null)
+            lastRevenueDate = lastClosedTicket;
+        else
+            lastRevenueDate = project.getInitialRevenue().getRevenueTimestamp();
+        editLastRevenueDate(projectId, lastRevenueDate);
+    }
+
+    /**
+     * Method used to edit the date of the project with the last revenue date
+     *
+     * @param projectId The identifier of the project
+     * @param lastRevenueDate The date of the last revenue
+     */
+    private void editLastRevenueDate(String projectId, long lastRevenueDate) {
+        revenuesRepository.editLastRevenueDate(projectId, lastRevenueDate);
     }
 
     /**
