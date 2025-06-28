@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.tecknobit.neutroncore"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     google()
@@ -85,7 +85,7 @@ afterEvaluate {
             create<MavenPublication>("maven") {
                 groupId = "com.tecknobit.neutroncore"
                 artifactId = "neutroncore"
-                version = "1.0.2"
+                version = "1.0.3"
                 from(components["kotlin"])
             }
         }
