@@ -33,7 +33,7 @@ public class WalletController extends DefaultNeutronController {
     private final WalletService walletService;
 
     /**
-     * Constructo to init the controller
+     * Constructor to init the controller
      *
      * @param walletService The helper to manage the wallet database operations
      */
