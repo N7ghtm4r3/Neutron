@@ -33,8 +33,16 @@ public class WalletService {
     /**
      * {@code revenuesService} helper to manage the revenues database operations
      */
+    private final RevenuesService revenuesService;
+
+    /**
+     * Constructor to init the service
+     * @param revenuesService The helper to manage the revenues database operations
+     */
     @Autowired
-    private RevenuesService revenuesService;
+    public WalletService(RevenuesService revenuesService) {
+        this.revenuesService = revenuesService;
+    }
 
     /**
      * Method to get the wallet status of the user

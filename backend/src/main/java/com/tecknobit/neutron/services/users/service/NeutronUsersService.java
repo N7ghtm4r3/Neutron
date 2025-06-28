@@ -27,8 +27,19 @@ public class NeutronUsersService extends EquinoxUsersService<NeutronUser, Neutro
     /**
      * {@code revenuesService} instance for the revenues repository
      */
+    private final RevenuesService revenuesService;
+
+    /**
+     * Constructor to init the {@link EquinoxUsersService} service
+     *
+     * @param usersRepository The instance for the users repository
+     * @param revenuesService The instance for the revenues repository
+     */
     @Autowired
-    private RevenuesService revenuesService;
+    public NeutronUsersService(NeutronUsersRepository usersRepository, RevenuesService revenuesService) {
+        super(usersRepository);
+        this.revenuesService = revenuesService;
+    }
 
     /**
      * Method used to get the list of keys to use in the {@link #getDynamicAccountData(String)} method
