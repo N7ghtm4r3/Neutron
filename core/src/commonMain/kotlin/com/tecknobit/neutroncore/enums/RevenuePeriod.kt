@@ -14,27 +14,27 @@ enum class RevenuePeriod(
     /**
      * `LAST_WEEK` retrieve the revenues inserted within last week
      */
-    LAST_WEEK(7 * 86400 * 1000L),
+    LAST_WEEK(7L * 86400L * 1000L),
 
     /**
      * `LAST_MONTH` retrieve the revenues inserted within last month
      */
-    LAST_MONTH(30 * 86400 * 1000L),
+    LAST_MONTH(30L * 86400L * 1000L),
 
     /**
      * `LAST_THREE_MONTHS` retrieve the revenues inserted within last three months
      */
-    LAST_THREE_MONTHS(90 * 86400 * 1000L),
+    LAST_THREE_MONTHS(90L * 86400L * 1000L),
 
     /**
      * `LAST_SIX_MONTHS` retrieve the revenues inserted within last six months
      */
-    LAST_SIX_MONTHS(180 * 86400 * 1000L),
+    LAST_SIX_MONTHS(180L * 86400L * 1000L),
 
     /**
      * `LAST_YEAR` retrieve the revenues inserted within last years
      */
-    LAST_YEAR(365 * 86400 * 1000L),
+    LAST_YEAR(365L * 86400L * 1000L),
 
     /**
      * `ALL` retrieve all the revenues

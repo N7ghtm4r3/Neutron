@@ -6,6 +6,11 @@ package com.tecknobit.neutroncore
 const val CURRENCY_KEY = "currency"
 
 /**
+ * `PROJECTS_KEY` the key for the `projects` field
+ */
+const val PROJECTS_KEY = "projects"
+
+/**
  * `REVENUE_PERIOD_KEY` the key for the `period` field
  */
 const val REVENUE_PERIOD_KEY = "period"
