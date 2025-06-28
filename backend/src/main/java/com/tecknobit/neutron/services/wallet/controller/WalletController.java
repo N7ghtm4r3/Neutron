@@ -5,7 +5,6 @@ import com.tecknobit.equinoxbackend.environment.services.DefaultEquinoxControlle
 import com.tecknobit.neutron.services.DefaultNeutronController;
 import com.tecknobit.neutron.services.wallet.service.WalletService;
 import com.tecknobit.neutroncore.enums.RevenuePeriod;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +30,17 @@ public class WalletController extends DefaultNeutronController {
     /**
      * {@code walletService} helper to manage the wallet database operations
      */
+    private final WalletService walletService;
+
+    /**
+     * Constructor to init the controller
+     *
+     * @param walletService The helper to manage the wallet database operations
+     */
     @Autowired
-    private WalletService walletService;
+    public WalletController(WalletService walletService) {
+        this.walletService = walletService;
+    }
 
     /**
      * Method to get the wallet status of the user

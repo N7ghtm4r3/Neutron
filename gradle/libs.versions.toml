@@ -1,12 +1,7 @@
 [versions]
-dokkaBase = "2.0.0"
-kotlin = "2.1.20"
-android-minSdk = "24"
-android-compileSdk = "35"
 androidGradlePlugin = "8.6.1"
-jetbrainsCompose = "1.7.3"
 dokka = "2.0.0"
-equinox = "1.1.1"
+equinox = "1.1.3"
 
 # backend
 apimanager = "2.2.4"
@@ -16,7 +11,7 @@ mysqlConnectorJava = "8.0.33"
 
 # core
 kotlinxDatetime = "0.6.2"
-kotlinxSerializationJson = "1.8.1"
+kotlinxSerializationJson = "1.9.0"
 
 [libraries]
 # backend
@@ -33,7 +28,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
 equinox-core = { module = "io.github.n7ghtm4r3:equinox-core", version.ref = "equinox" }
-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokkaBase" }
+dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }

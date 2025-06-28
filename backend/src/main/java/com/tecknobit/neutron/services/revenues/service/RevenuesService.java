@@ -64,14 +64,24 @@ public class RevenuesService extends EquinoxItemsHelper {
     /**
      * {@code revenuesRepository} instance for the revenues repository
      */
-    @Autowired
-    private RevenuesRepository revenuesRepository;
+    private final RevenuesRepository revenuesRepository;
 
     /**
      * {@code labelsRepository} instance for the revenue labels repository
      */
+    private final RevenueLabelsRepository labelsRepository;
+
+    /**
+     * Constructor to init the service
+     *
+     * @param revenuesRepository The instance for the revenues repository
+     * @param labelsRepository The instance for the revenue labels repository
+     */
     @Autowired
-    private RevenueLabelsRepository labelsRepository;
+    public RevenuesService(RevenuesRepository revenuesRepository, RevenueLabelsRepository labelsRepository) {
+        this.revenuesRepository = revenuesRepository;
+        this.labelsRepository = labelsRepository;
+    }
 
     /**
      * Method to retrieve all the labels created by the user

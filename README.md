@@ -1,6 +1,6 @@
 # Neutron
 
-**v1.0.2**
+**v1.0.3**
 
 This project, based on Java and the Spring Boot framework, is an open source self-hosted orders and ticket revenue manager for the projects 
 you are developing
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.tecknobit.neutroncore:neutroncore:1.0.2'
+  implementation 'com.tecknobit.neutroncore:neutroncore:1.0.3'
 }
 ```
 
@@ -44,7 +44,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.tecknobit.neutroncore:neutroncore:1.0.2")
+  implementation("com.tecknobit.neutroncore:neutroncore:1.0.3")
 }
 ```
 
@@ -53,13 +53,13 @@ dependencies {
 ### Clients
 
  - [Android](https://play.google.com/store/apps/details?id=com.tecknobit.neutron)
- - [Neutron desktop version](https://github.com/N7ghtm4r3/Neutron-Clients/releases/tag/1.0.2)
+ - [Neutron desktop version](https://github.com/N7ghtm4r3/Neutron-Clients/releases/tag/1.0.3)
  - iOS -> source code available, but cannot distribute due missing [Apple Developer Program license](https://developer.apple.com/programs/)
  - [Neutron webapp version](https://github.com/N7ghtm4r3/Neutron-Webapp/blob/main/README.md)
 
 ### Backend
 
-- <a href="https://github.com/N7ghtm4r3/Neutron/releases/tag/1.0.2">Backend service "out-of-the-box"</a>
+- <a href="https://github.com/N7ghtm4r3/Neutron/releases/tag/1.0.3">Backend service "out-of-the-box"</a>
 
 ## Usages
 
@@ -84,32 +84,17 @@ dependencies {
 
 The default properties to launch the backend service as designed are the following:
 
-``` properties
-# The properties considered critical could alter the flow of how the backend service was designed, so we do not recommend
-# to change them
-
-spring.datasource.url=jdbc:mysql://localhost:3306/neutron?createDatabaseIfNotExist=true
-server.port=1602
-spring.datasource.username=root
-spring.jpa.generate-ddl=true 
-spring.jpa.hibernate.ddl.auto=update
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-spring.mvc.dispatch-options-request=true
-spring.servlet.multipart.max-file-size=10MB
-spring.servlet.multipart.max-request-size=10MB
-```
-
-| Property                                  | Default value                                                     |    Not-Critical    | Recommended to change |
-|-------------------------------------------|-------------------------------------------------------------------|:------------------:|:---------------------:|
-| spring.datasource.url                     | jdbc:mysql://localhost:3306/neutron?createDatabaseIfNotExist=true | :white_check_mark: |          :x:          | 
-| server.port                               | 1602                                                              | :white_check_mark: |           /           |
-| spring.datasource.username                | root                                                              | :white_check_mark: |  :white_check_mark:   |
-| spring.jpa.generate-ddl                   | update                                                            |        :x:         |          :x:          |
-| spring.jpa.hibernate.ddl.auto             | auto                                                              |        :x:         |          :x:          |           
-| spring.jpa.properties.hibernate.dialect   | org.hibernate.dialect.MySQL8Dialect                               |        :x:         |          :x:          |           
-| spring.mvc.dispatch-options-request       | true                                                              |        :x:         |          :x:          |           
-| spring.servlet.multipart.max-file-size    | 10MB                                                              | :white_check_mark: |           /           |           
-| spring.servlet.multipart.max-request-size | 10MB                                                              | :white_check_mark: |           /           |
+| Property                                  | Default value                                                     |
+|-------------------------------------------|-------------------------------------------------------------------|
+| spring.datasource.url                     | jdbc:mysql://localhost:3306/neutron?createDatabaseIfNotExist=true | 
+| server.port                               | 1602                                                              |
+| spring.datasource.username                | root                                                              |
+| spring.jpa.generate-ddl                   | update                                                            |
+| spring.jpa.hibernate.ddl.auto             | auto                                                              |           
+| spring.jpa.properties.hibernate.dialect   | org.hibernate.dialect.MySQL8Dialect                               |           
+| spring.mvc.dispatch-options-request       | true                                                              |           
+| spring.servlet.multipart.max-file-size    | 10MB                                                              |           
+| spring.servlet.multipart.max-request-size | 10MB                                                              |
 
 The **spring.datasource.username** if is not set is used the default password of the MySQL environment
 
@@ -119,10 +104,10 @@ To customize the properties to launch the backend service you must create a file
 the server file (.jar)** and call it `custom.properties` as below:
 
 ``` bash
-  folderOfWhereYouPlacedTheServerFile
-   |-- custom.properties
-   |-- neutron.jar
-  ```
+folderOfWhereYouPlacedTheServerFile
+├── custom.properties
+└── neutron.jar
+```
 
 If your custom properties do not contain the properties of the default configuration will be used these default
 properties instead,
@@ -144,10 +129,10 @@ To start the **Neutron** service on your own infrastructure you have to follow t
   the server)** the default profile pic as below:
   ``` bash
   folderOfWhereYouPlacedTheServerFile
-   |-- resources
-   |   |-- profiles
-   |       |-- defProfilePic.png
-   |-- neutron.jar
+  ├── resources
+  │   └── profiles
+  │       └── defProfilePic.png
+  └── neutron.jar
   ```
   This action is required to provide the **defProfilePic** as logo or profile for the users.
   You can take a look directly <a href="https://github.com/N7ghtm4r3/Neutron/tree/main/images">here</a>

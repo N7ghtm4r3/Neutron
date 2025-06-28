@@ -2,8 +2,8 @@ rootProject.name = "Neutron"
 
 pluginManagement {
     plugins {
-        kotlin("jvm") version "2.1.0"
-        kotlin("multiplatform") version "2.1.0"
+        kotlin("jvm") version "2.2.0"
+        kotlin("multiplatform") version "2.2.0"
     }
     repositories {
         google()

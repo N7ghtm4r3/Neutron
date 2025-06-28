@@ -7,7 +7,7 @@ plugins {
 apply(plugin = "io.spring.dependency-management")
 
 group = "com.tecknobit.neutron"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenCentral()

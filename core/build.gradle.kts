@@ -1,5 +1,4 @@
 
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -11,7 +10,7 @@ plugins {
 }
 
 group = "com.tecknobit.neutroncore"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     google()
@@ -21,7 +20,6 @@ repositories {
 kotlin {
     jvm {
         compilations.all {
-            @OptIn(ExperimentalKotlinGradlePluginApi::class)
             this@jvm.compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_18)
             }
@@ -29,7 +27,6 @@ kotlin {
     }
     androidTarget {
         publishLibraryVariants("release")
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_18)
         }
@@ -85,7 +82,7 @@ afterEvaluate {
             create<MavenPublication>("maven") {
                 groupId = "com.tecknobit.neutroncore"
                 artifactId = "neutroncore"
-                version = "1.0.2"
+                version = "1.0.3"
                 from(components["kotlin"])
             }
         }
