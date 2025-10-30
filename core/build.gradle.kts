@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.tecknobit.neutroncore"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     google()
@@ -34,9 +34,11 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
+        iosSimulatorArm64(),
+        macosArm64(),
+        macosX64()
+    ).forEach { appleTarget ->
+        appleTarget.binaries.framework {
             baseName = "neutron-core"
             isStatic = true
         }
@@ -47,8 +49,6 @@ kotlin {
         binaries.executable()
         browser {
             webpackTask {
-                dependencies {
-                }
             }
         }
     }
@@ -70,7 +70,7 @@ kotlin {
 
 android {
     namespace = "com.tecknobit.neutroncore"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdk = 24
     }
@@ -82,7 +82,7 @@ afterEvaluate {
             create<MavenPublication>("maven") {
                 groupId = "com.tecknobit.neutroncore"
                 artifactId = "neutroncore"
-                version = "1.0.3"
+                version = "1.0.4"
                 from(components["kotlin"])
             }
         }
