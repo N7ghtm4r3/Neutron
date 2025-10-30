@@ -162,7 +162,7 @@ public class RevenuesService extends EquinoxItemsHelper {
         }
         if(retrieveProjectRevenues) {
             List<ProjectRevenue> projectRevenues = revenuesRepository.getProjectRevenues(userId, fromDate, pageable);
-            dropOutTemporalPeriodTickets(projectRevenues, fromDate);
+            pruneTicketsOutsidePeriod(projectRevenues, fromDate);
             revenues.addAll(projectRevenues);
             projectsCount = revenuesRepository.countProjectRevenues(userId, fromDate);
         }
@@ -176,16 +176,19 @@ public class RevenuesService extends EquinoxItemsHelper {
     }
 
     /**
-     * Method used to remove from the project revenues the tickets which have been closed before the specified date
+     * Method used to remove from the project revenues the tickets which have been closed before
+     * the specified date and make the same with the {@link InitialRevenue} related to the project
      *
      * @param projectRevenues The complete project revenues from drop out of temporal period tickets
      * @param date The specified date used as filter to remove those tickets which have been closed before
      *
      * @since 1.0.4
      */
-    private void dropOutTemporalPeriodTickets(List<ProjectRevenue> projectRevenues, long date) {
-        for (ProjectRevenue projectRevenue : projectRevenues)
+    private void pruneTicketsOutsidePeriod(List<ProjectRevenue> projectRevenues, long date) {
+        for (ProjectRevenue projectRevenue : projectRevenues) {
+            projectRevenue.countInitialRevenueIfAfter(date);
             projectRevenue.dropClosedTicketsBeforeDate(date);
+        }
     }
 
     /**

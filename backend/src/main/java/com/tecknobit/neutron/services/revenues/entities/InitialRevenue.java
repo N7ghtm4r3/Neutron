@@ -3,6 +3,7 @@ package com.tecknobit.neutron.services.revenues.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
+import com.tecknobit.equinoxbackend.annotations.MappingPurpose;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
@@ -32,6 +33,7 @@ public class InitialRevenue extends Revenue {
      * {@code projectRevenue} the project where the revenue is attached
      */
     @OneToOne
+    @MappingPurpose
     @JoinColumn(name = PROJECT_REVENUE_KEY)
     @JsonIgnoreProperties({
             INITIAL_REVENUE,

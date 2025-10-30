@@ -66,6 +66,15 @@ public class ProjectRevenue extends Revenue {
     private final List<TicketRevenue> tickets;
 
     /**
+     * {@code countInitialRevenue} Internal flag to indicate whether count the {@link #initialRevenue} using the
+     * {@link #getValue()} method
+     *
+     * @since 1.0.4
+     */
+    @Transient
+    private boolean countInitialRevenue;
+
+    /**
      * Constructor to init the {@link ProjectRevenue} class
      */
     @EmptyConstructor
@@ -104,18 +113,7 @@ public class ProjectRevenue extends Revenue {
         super(id, title, -1, revenueDate, owner);
         this.initialRevenue = initialRevenue;
         this.tickets = tickets;
-    }
-
-    /**
-     * Method used to remove from the {@link #tickets} list the tickets which have been closed before the specified date
-     *
-     * @param date The specified date used as filter to remove those tickets which have been closed before
-     *
-     * @since 1.0.4
-     */
-    @JsonIgnore
-    public void dropClosedTicketsBeforeDate(long date) {
-        tickets.removeIf(ticketRevenue -> ticketRevenue.isClosed() && ticketRevenue.revenueDate < date);
+        this.countInitialRevenue = true;
     }
 
     /**
@@ -123,7 +121,9 @@ public class ProjectRevenue extends Revenue {
      */
     @Override
     public double getValue() {
-        double value = initialRevenue.getValue();
+        double value = 0;
+        if(countInitialRevenue)
+            value = initialRevenue.getValue();
         for (TicketRevenue ticket : tickets)
             value += ticket.getValue();
         return TradingTools.roundValue(value, 2);
@@ -154,6 +154,7 @@ public class ProjectRevenue extends Revenue {
      * @param ticketTitle The title of the ticket to check
      * @return whether the ticket is attached as boolean
      */
+    @JsonIgnore
     public boolean hasTicket(String ticketTitle) {
         for (TicketRevenue ticket : tickets)
             if (ticket.getTitle().equals(ticketTitle))
@@ -167,11 +168,36 @@ public class ProjectRevenue extends Revenue {
      * @param ticketId The identifier of the ticket to check
      * @return whether the ticket is attached as {@link TicketRevenue}, if not exists null
      */
+    @JsonIgnore
     public TicketRevenue hasTicketById(String ticketId) {
         for (TicketRevenue ticket : tickets)
             if (ticket.getId().equals(ticketId))
                 return ticket;
         return null;
+    }
+
+    /**
+     * Method used to remove from the {@link #tickets} list the tickets which have been closed before the specified date
+     *
+     * @param date The specified date used as filter to remove those tickets which have been closed before
+     *
+     * @since 1.0.4
+     */
+    @JsonIgnore
+    public void dropClosedTicketsBeforeDate(long date) {
+        tickets.removeIf(ticketRevenue -> ticketRevenue.isClosed() && ticketRevenue.revenueDate < date);
+    }
+
+    /**
+     * Method used to set the {@link #countInitialRevenue} flag
+     *
+     * @param date The specified date used to determinee whether count or not the {@link #initialRevenue}
+     *
+     * @since 1.0.4
+     */
+    @JsonIgnore
+    public void countInitialRevenueIfAfter(long date) {
+        countInitialRevenue = initialRevenue.getRevenueTimestamp() >= date;
     }
 
 }
