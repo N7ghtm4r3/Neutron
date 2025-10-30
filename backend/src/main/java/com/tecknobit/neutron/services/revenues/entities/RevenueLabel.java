@@ -3,7 +3,6 @@ package com.tecknobit.neutron.services.revenues.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
 import com.tecknobit.equinoxbackend.environment.services.builtin.entity.EquinoxItem;
-import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.ComplexBatchItem;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -19,7 +18,6 @@ import static com.tecknobit.neutroncore.ContantsKt.*;
  * @author N7ghtm4r3 - Tecknobit
  * @see EquinoxItem
  * @see Revenue
- * @see ComplexBatchItem
  */
 @Entity
 @Table(name = LABELS_KEY)
