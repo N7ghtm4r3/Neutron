@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.trading.TradingTools;
 import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
-import com.tecknobit.equinoxcore.annotations.RequiresDocumentation;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 
@@ -107,7 +106,13 @@ public class ProjectRevenue extends Revenue {
         this.tickets = tickets;
     }
 
-    @RequiresDocumentation(additionalNotes = "TO INSERT SINCE")
+    /**
+     * Method used to remove from the {@link #tickets} list the tickets which have been closed before the specified date
+     *
+     * @param date The specified date used as filter to remove those tickets which have been closed before
+     *
+     * @since 1.0.4
+     */
     @JsonIgnore
     public void dropClosedTicketsBeforeDate(long date) {
         tickets.removeIf(ticketRevenue -> ticketRevenue.isClosed() && ticketRevenue.revenueDate < date);

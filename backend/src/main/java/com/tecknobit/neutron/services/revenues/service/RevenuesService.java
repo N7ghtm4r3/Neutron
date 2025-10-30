@@ -3,7 +3,6 @@ package com.tecknobit.neutron.services.revenues.service;
 import com.tecknobit.apimanager.apis.APIRequest;
 import com.tecknobit.apimanager.formatters.JsonHelper;
 import com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper;
-import com.tecknobit.equinoxcore.annotations.RequiresDocumentation;
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
 import com.tecknobit.neutron.services.revenues.batch.LabelsBatchQuery;
@@ -163,7 +162,7 @@ public class RevenuesService extends EquinoxItemsHelper {
         }
         if(retrieveProjectRevenues) {
             List<ProjectRevenue> projectRevenues = revenuesRepository.getProjectRevenues(userId, fromDate, pageable);
-            dropTicketsBeforeDate(projectRevenues, fromDate);
+            dropOutTemporalPeriodTickets(projectRevenues, fromDate);
             revenues.addAll(projectRevenues);
             projectsCount = revenuesRepository.countProjectRevenues(userId, fromDate);
         }
@@ -176,8 +175,15 @@ public class RevenuesService extends EquinoxItemsHelper {
         );
     }
 
-    @RequiresDocumentation(additionalNotes = "TO INSERT SINCE")
-    private void dropTicketsBeforeDate(List<ProjectRevenue> projectRevenues, long date) {
+    /**
+     * Method used to remove from the project revenues the tickets which have been closed before the specified date
+     *
+     * @param projectRevenues The complete project revenues from drop out of temporal period tickets
+     * @param date The specified date used as filter to remove those tickets which have been closed before
+     *
+     * @since 1.0.4
+     */
+    private void dropOutTemporalPeriodTickets(List<ProjectRevenue> projectRevenues, long date) {
         for (ProjectRevenue projectRevenue : projectRevenues)
             projectRevenue.dropClosedTicketsBeforeDate(date);
     }
