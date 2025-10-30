@@ -1,9 +1,11 @@
 package com.tecknobit.neutron.services.revenues.entities;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tecknobit.apimanager.trading.TradingTools;
 import com.tecknobit.equinoxbackend.annotations.EmptyConstructor;
+import com.tecknobit.equinoxcore.annotations.RequiresDocumentation;
 import com.tecknobit.neutron.services.users.entity.NeutronUser;
 import jakarta.persistence.*;
 
@@ -103,6 +105,12 @@ public class ProjectRevenue extends Revenue {
         super(id, title, -1, revenueDate, owner);
         this.initialRevenue = initialRevenue;
         this.tickets = tickets;
+    }
+
+    @RequiresDocumentation(additionalNotes = "TO INSERT SINCE")
+    @JsonIgnore
+    public void dropClosedTicketsBeforeDate(long date) {
+        tickets.removeIf(ticketRevenue -> ticketRevenue.isClosed() && ticketRevenue.revenueDate < date);
     }
 
     /**

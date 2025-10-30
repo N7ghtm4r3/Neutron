@@ -3,6 +3,7 @@ package com.tecknobit.neutron.services.revenues.service;
 import com.tecknobit.apimanager.apis.APIRequest;
 import com.tecknobit.apimanager.formatters.JsonHelper;
 import com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper;
+import com.tecknobit.equinoxcore.annotations.RequiresDocumentation;
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
 import com.tecknobit.neutron.services.revenues.batch.LabelsBatchQuery;
@@ -155,11 +156,15 @@ public class RevenuesService extends EquinoxItemsHelper {
         long revenuesCount = 0;
         long projectsCount = 0;
         if(retrieveGeneralRevenues) {
-            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
+            List<GeneralRevenue> generalRevenues = revenuesRepository.getGeneralRevenues(userId, fromDate, labels,
+                    pageable);
+            revenues.addAll(generalRevenues);
             revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
         }
         if(retrieveProjectRevenues) {
-            revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));
+            List<ProjectRevenue> projectRevenues = revenuesRepository.getProjectRevenues(userId, fromDate, pageable);
+            dropTicketsBeforeDate(projectRevenues, fromDate);
+            revenues.addAll(projectRevenues);
             projectsCount = revenuesRepository.countProjectRevenues(userId, fromDate);
         }
         revenues.sort((o1, o2) -> Long.compare(o2.getRevenueTimestamp(), o1.getRevenueTimestamp()));
@@ -169,6 +174,12 @@ public class RevenuesService extends EquinoxItemsHelper {
                 pageSize,
                 revenuesCount + projectsCount
         );
+    }
+
+    @RequiresDocumentation(additionalNotes = "TO INSERT SINCE")
+    private void dropTicketsBeforeDate(List<ProjectRevenue> projectRevenues, long date) {
+        for (ProjectRevenue projectRevenue : projectRevenues)
+            projectRevenue.dropClosedTicketsBeforeDate(date);
     }
 
     /**
@@ -510,7 +521,6 @@ public class RevenuesService extends EquinoxItemsHelper {
                 deleteAndDeleteUnrelatedLabels(revenue);
                 revenuesRepository.deleteGeneralRevenue(revenueId, userId);
                 return true;
-
             } else
                 return false;
         }
@@ -542,7 +552,6 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     public void convertRevenues(String userId, NeutronCurrency oldCurrency, NeutronCurrency newCurrency) {
         refreshCurrencyRates();
-        double taxChange = currencyRates.get(newCurrency);
         List<Revenue> userRevenues = getRevenues(userId, 0, MAX_VALUE, ALL).getData();
         for(Revenue revenue : userRevenues) {
             if(revenue instanceof ProjectRevenue projectRevenue) {
