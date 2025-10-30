@@ -7,12 +7,11 @@ plugins {
 apply(plugin = "io.spring.dependency-management")
 
 group = "com.tecknobit.neutron"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
-    maven("https://repo.clojars.org")
 }
 
 dependencies {

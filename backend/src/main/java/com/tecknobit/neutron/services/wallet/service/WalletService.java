@@ -1,7 +1,6 @@
 package com.tecknobit.neutron.services.wallet.service;
 
 import com.tecknobit.apimanager.trading.TradingTools;
-import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
 import com.tecknobit.neutron.services.revenues.entities.Revenue;
 import com.tecknobit.neutron.services.revenues.service.RevenuesService;
 import com.tecknobit.neutroncore.dtos.WalletStatus;
@@ -18,8 +17,6 @@ import static java.lang.Integer.MAX_VALUE;
  * The {@code WalletService} class is useful to manage all the wallet database operations
  *
  * @author N7ghtm4r3 - Tecknobit
- *
- * @see EquinoxItemsHelper
  */
 @Service
 public class WalletService {

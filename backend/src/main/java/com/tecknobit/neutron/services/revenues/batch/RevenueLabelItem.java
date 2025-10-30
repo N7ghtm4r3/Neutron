@@ -2,7 +2,7 @@ package com.tecknobit.neutron.services.revenues.batch;
 
 import com.tecknobit.equinoxbackend.annotations.BatchQueryItem;
 import com.tecknobit.equinoxbackend.annotations.TableColumns;
-import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.ComplexBatchItem;
+import com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper.ComplexBatchItem;
 import com.tecknobit.neutron.services.revenues.entities.GeneralRevenue;
 import com.tecknobit.neutron.services.revenues.entities.RevenueLabel;
 import com.tecknobit.neutron.services.revenues.service.RevenuesService;

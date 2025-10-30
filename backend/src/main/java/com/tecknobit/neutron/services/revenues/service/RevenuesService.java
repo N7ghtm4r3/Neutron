@@ -2,7 +2,7 @@ package com.tecknobit.neutron.services.revenues.service;
 
 import com.tecknobit.apimanager.apis.APIRequest;
 import com.tecknobit.apimanager.formatters.JsonHelper;
-import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
+import com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper;
 import com.tecknobit.equinoxcore.annotations.Wrapper;
 import com.tecknobit.equinoxcore.pagination.PaginatedResponse;
 import com.tecknobit.neutron.services.revenues.batch.LabelsBatchQuery;
@@ -24,9 +24,9 @@ import java.util.*;
 
 import static com.tecknobit.apimanager.apis.APIRequest.RequestMethod.GET;
 import static com.tecknobit.apimanager.trading.TradingTools.roundValue;
+import static com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
+import static com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
 import static com.tecknobit.equinoxbackend.environment.services.builtin.controller.EquinoxController.generateIdentifier;
-import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_IGNORE_INTO;
-import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.InsertCommand.INSERT_INTO;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.pagination.PaginatedResponse.DEFAULT_PAGE;
 import static com.tecknobit.neutroncore.ContantsKt.*;
@@ -155,11 +155,15 @@ public class RevenuesService extends EquinoxItemsHelper {
         long revenuesCount = 0;
         long projectsCount = 0;
         if(retrieveGeneralRevenues) {
-            revenues.addAll(revenuesRepository.getGeneralRevenues(userId, fromDate, labels, pageable));
+            List<GeneralRevenue> generalRevenues = revenuesRepository.getGeneralRevenues(userId, fromDate, labels,
+                    pageable);
+            revenues.addAll(generalRevenues);
             revenuesCount = revenuesRepository.countGeneralRevenues(userId, fromDate, labels);
         }
         if(retrieveProjectRevenues) {
-            revenues.addAll(revenuesRepository.getProjectRevenues(userId, fromDate, pageable));
+            List<ProjectRevenue> projectRevenues = revenuesRepository.getProjectRevenues(userId, fromDate, pageable);
+            pruneTicketsOutsidePeriod(projectRevenues, fromDate);
+            revenues.addAll(projectRevenues);
             projectsCount = revenuesRepository.countProjectRevenues(userId, fromDate);
         }
         revenues.sort((o1, o2) -> Long.compare(o2.getRevenueTimestamp(), o1.getRevenueTimestamp()));
@@ -169,6 +173,22 @@ public class RevenuesService extends EquinoxItemsHelper {
                 pageSize,
                 revenuesCount + projectsCount
         );
+    }
+
+    /**
+     * Method used to remove from the project revenues the tickets which have been closed before
+     * the specified date and make the same with the {@link InitialRevenue} related to the project
+     *
+     * @param projectRevenues The complete project revenues from drop out of temporal period tickets
+     * @param date The specified date used as filter to remove those tickets which have been closed before
+     *
+     * @since 1.0.4
+     */
+    private void pruneTicketsOutsidePeriod(List<ProjectRevenue> projectRevenues, long date) {
+        for (ProjectRevenue projectRevenue : projectRevenues) {
+            projectRevenue.countInitialRevenueIfAfter(date);
+            projectRevenue.dropClosedTicketsBeforeDate(date);
+        }
     }
 
     /**
@@ -510,7 +530,6 @@ public class RevenuesService extends EquinoxItemsHelper {
                 deleteAndDeleteUnrelatedLabels(revenue);
                 revenuesRepository.deleteGeneralRevenue(revenueId, userId);
                 return true;
-
             } else
                 return false;
         }
@@ -542,7 +561,6 @@ public class RevenuesService extends EquinoxItemsHelper {
      */
     public void convertRevenues(String userId, NeutronCurrency oldCurrency, NeutronCurrency newCurrency) {
         refreshCurrencyRates();
-        double taxChange = currencyRates.get(newCurrency);
         List<Revenue> userRevenues = getRevenues(userId, 0, MAX_VALUE, ALL).getData();
         for(Revenue revenue : userRevenues) {
             if(revenue instanceof ProjectRevenue projectRevenue) {

@@ -2,7 +2,8 @@ package com.tecknobit.neutron.services.revenues.batch;
 
 import com.tecknobit.equinoxbackend.annotations.BatchQueryImpl;
 import com.tecknobit.equinoxbackend.annotations.TableColumns;
-import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
+import com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper;
+import com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper.BatchQuery;
 import com.tecknobit.neutron.services.revenues.entities.GeneralRevenue;
 import com.tecknobit.neutron.services.revenues.entities.RevenueLabel;
 import jakarta.persistence.Query;
@@ -17,11 +18,11 @@ import static com.tecknobit.neutroncore.ContantsKt.REVENUE_IDENTIFIER_KEY;
  * Class used to execute a batch insert query with a {@link RevenueLabel} item and the related {@link GeneralRevenue}
  *
  * @see EquinoxItemsHelper
- * @see com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.BatchQuery
+ * @see EquinoxItemsHelper.BatchQuery
  * @see RevenueLabel
  */
 @BatchQueryImpl
-public class RevenueLabelsBatchQuery implements EquinoxItemsHelper.BatchQuery<RevenueLabel> {
+public class RevenueLabelsBatchQuery implements BatchQuery<RevenueLabel> {
 
     /**
      * {@code revenueId} the identifier of the revenue where attach the labels

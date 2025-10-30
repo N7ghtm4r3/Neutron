@@ -1,6 +1,6 @@
 package com.tecknobit.neutroncore.enums
 
-import kotlinx.datetime.Clock
+import com.tecknobit.equinoxcore.time.TimeFormatter
 
 /**
  * `RevenuePeriod` list of the available temporal period gap filter
@@ -53,7 +53,7 @@ enum class RevenuePeriod(
         require(offset > 0) { "Offset cannot be negative or equal to zero"}
         if(this == ALL)
             return 0
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = TimeFormatter.currentTimestamp()
         return now - (this.days * offset)
     }
 

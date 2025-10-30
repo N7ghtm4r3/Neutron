@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import static com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper._WHERE_;
+import static com.tecknobit.equinoxbackend.apis.database.SQLConstants._WHERE_;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.IDENTIFIER_KEY;
 import static com.tecknobit.equinoxcore.helpers.CommonKeysKt.USERS_KEY;
 import static com.tecknobit.neutroncore.ContantsKt.CURRENCY_KEY;
@@ -40,21 +40,6 @@ public interface NeutronUsersRepository extends EquinoxUsersRepository<NeutronUs
     )
     void changeCurrency(
             @Param(CURRENCY_KEY) String newCurrency,
-            @Param(IDENTIFIER_KEY) String id
-    );
-
-    /**
-     * Method to execute the query to delete the {@link NeutronUser} who requested a transfer from the current server
-     *
-     * @param id The identifier of the user
-     */
-    @Modifying(clearAutomatically = true)
-    @Transactional
-    @Query(
-            value = "DELETE FROM " + USERS_KEY + _WHERE_ + IDENTIFIER_KEY + "=:" + IDENTIFIER_KEY,
-            nativeQuery = true
-    )
-    void deleteAfterTransferred(
             @Param(IDENTIFIER_KEY) String id
     );
 

@@ -2,7 +2,7 @@ package com.tecknobit.neutron.services.revenues.batch;
 
 import com.tecknobit.equinoxbackend.annotations.BatchQueryImpl;
 import com.tecknobit.equinoxbackend.annotations.TableColumns;
-import com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper;
+import com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper;
 import com.tecknobit.neutron.services.revenues.entities.RevenueLabel;
 import jakarta.persistence.Query;
 
@@ -18,7 +18,7 @@ import static com.tecknobit.neutroncore.ContantsKt.REVENUE_LABEL_TEXT_KEY;
  * Class used to execute a batch insert query with a {@link RevenueLabel} item
  *
  * @see EquinoxItemsHelper
- * @see com.tecknobit.equinoxbackend.environment.services.builtin.service.EquinoxItemsHelper.BatchQuery
+ * @see com.tecknobit.equinoxbackend.apis.batch.EquinoxItemsHelper.BatchQuery
  * @see RevenueLabel
  */
 @BatchQueryImpl
